@@ -1,0 +1,35 @@
+# First stage, x86_64 build container
+FROM torizon/debian-cross-toolchain-arm64 AS cross-container
+
+# install the libpiod development dependencies
+RUN apt-get -y update && apt-get install -y \
+    libgpiod-dev:arm64 \
+    libgpiod2:arm64 \
+    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+# copy project source
+COPY gpio-test.c /project/gpio-test.c
+WORKDIR /project
+
+# compile
+RUN aarch64-linux-gnu-gcc -o gpio-test gpio-test.c -lgpiod
+
+# Second stage, arm64v8 container for target
+FROM torizon/arm64v8-debian-base AS deploy-container
+
+# To run gpio-test we only need the libgpiod2 library. The gpiod package can
+# be helpful for debugging.
+RUN apt-get -y update && apt-get install -y \
+    libgpiod2 \
+    gpiod \
+    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+# get the compiled program from the Build stage
+COPY --from=cross-container /project/gpio-test /deploy/gpio-test
+
+# put the test binary as the entry point
+ENTRYPOINT [ "/deploy/gpio-test" ]
+
+# Use CMD to pass the GPIO bank line arguments
+# Apalis iMX8 MXM3 pin 5 (Apalis GPIO3) is LSIO.GPIO0.IO12
+CMD [ "0", "12" ]
