@@ -1,0 +1,36 @@
+# First stage, x86_64 build container
+FROM torizon/debian-cross-toolchain-armhf AS cross-container
+
+# install the libpiod development dependencies
+RUN apt-get -y update && apt-get install -y \
+    libgpiod-dev:armhf \
+    libgpiod2:armhf \
+    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+# copy project source
+COPY gpio-test.c /project/gpio-test.c
+WORKDIR /project
+
+# compile
+RUN arm-linux-gnueabihf-gcc -o gpio-test gpio-test.c -lgpiod
+
+# Second stage, arm32v7 container for target
+FROM torizon/arm32v7-debian-base AS deploy-container
+
+# To run gpio-test we only need the libgpiod2 library. The gpiod package can
+# be helpful for debugging.
+RUN apt-get -y update && apt-get install -y \
+    libgpiod2 \
+    gpiod \
+    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+# get the compiled program from the Build stage
+COPY --from=cross-container /project/gpio-test /deploy/gpio-test
+
+# put the test binary as the entry point
+ENTRYPOINT [ "/deploy/gpio-test" ]
+
+# Use CMD to pass the GPIO bank line arguments
+# Apalis iMX6 MXM3 pin 5 (Apalis GPIO3) is GPIO2_IO6
+# (gpiochip0 -> i.MX 6 GPIO1, gpiochip1 -> i.MX 6 GPIO2)
+CMD [ "1", "6" ]
