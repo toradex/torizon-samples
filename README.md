@@ -8,3 +8,5 @@ Folders:
   samples to show how to use dbus from containers
 - **gpio**
   example using libgpiod from within a container
+- **grafana**
+  collectd-influxdb-grafana setup
