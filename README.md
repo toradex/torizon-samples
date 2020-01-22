@@ -10,3 +10,5 @@ Folders:
   example using libgpiod from within a container
 - **grafana**
   collectd-influxdb-grafana setup
+- **gps**
+  Read GPS(connected to UART) from within a container
