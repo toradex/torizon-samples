@@ -1,0 +1,49 @@
+version: '2.4'
+services:
+    grafana:
+        container_name: grafana
+        depends_on:
+            - influxdb
+        networks:
+            - backend
+            - frontend
+        volumes:
+            - 'grafana-storage:/var/lib/grafana'
+        ports:
+            - '3000:3000'
+        links:
+            - influxdb
+        image: grafana/grafana
+
+    influxdb:
+        container_name: influxdb
+        networks:
+            - backend
+        volumes:
+            - 'influxdb-grafana:/var/lib/influxdb'
+        image: influxdb
+
+    weather:
+        build:
+            context: .
+            args:
+                IMAGE_ARCH: arm32v7
+                TOOLCHAIN_ARCH: armhf
+                PKG_ARCH: armhf
+        container_name: weather
+        depends_on:
+            - influxdb
+        networks:
+            - backend
+            - frontend
+        command: ["wait-for-it.sh", "influxdb:8086", "-t", "60", "--", "weather"]
+
+networks:
+  backend:
+    internal: true
+  frontend:   
+    internal: false
+
+volumes:
+  grafana-storage:
+  influxdb-grafana:
