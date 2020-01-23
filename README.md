@@ -12,3 +12,5 @@ Folders:
   collectd-influxdb-grafana setup
 - **gps**
   Read GPS(connected to UART) from within a container
+- **weather**
+  current weather and forecast app for influxdb/grafana using openweathermap api
