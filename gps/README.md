@@ -12,7 +12,7 @@ GND  <-------->  GND
 ```
 Make sure the power supply and logic levels match between the board and gps.
 
-Copy this repostory to the board and build the container
+Copy this repository to the board and build the container
 
 For armhf:
 ```
