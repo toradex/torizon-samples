@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# Functions
-build_arm64 () {
-    echo 'Building for arm64v8 (arm64)'
-    docker build -f Dockerfile.arm64 -t yourusername/arm64v8-gpiod:latest .
-}
+# Docker hub user
+DOCKER_USER=yourusername
 
-build_armhf () {
-    echo 'Building for arm32v7 (armhf)'
-    docker build -f Dockerfile.armhf -t yourusername/arm32v7-gpiod:latest .
+# Function
+build_docker () {
+    # $1 is either arm32v7 or arm64v8
+    # $2 is either armhf or arm64
+    echo "Building for $1 ($2) / Docker hub user: $DOCKER_USER"
+    docker build -f Dockerfile.$2 -t $DOCKER_USER/$1-gpiod:latest .
 }
 
 # Main
@@ -18,9 +18,9 @@ if [ -z "$1" ]; then
 fi
 
 if [ "$1" = "arm32v7" ]; then
-    build_armhf
+    build_docker arm32v7 armhf
 elif [ "$1" = "arm64v8" ]; then
-    build_arm64
+    build_docker arm64v8 arm64
 else
     echo 'Pass "arm32v7" or "arm64v8" as parameter!'
 fi
