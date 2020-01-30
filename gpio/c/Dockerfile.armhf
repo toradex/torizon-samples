@@ -8,11 +8,12 @@ RUN apt-get -y update && apt-get install -y \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # copy project source
-COPY gpio-test.c /project/gpio-test.c
 WORKDIR /project
+COPY . /project
 
 # compile
-RUN arm-linux-gnueabihf-gcc -o gpio-test gpio-test.c -lgpiod
+RUN arm-linux-gnueabihf-gcc -o gpio-test gpio-test.c -lgpiod \
+    && arm-linux-gnueabihf-gcc -o gpio-event-test gpio-event-test.c -lgpiod
 
 # Second stage, arm32v7 container for target
 FROM torizon/arm32v7-debian-base AS deploy-container

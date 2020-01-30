@@ -8,11 +8,12 @@ RUN apt-get -y update && apt-get install -y \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # copy project source
-COPY gpio-test.c /project/gpio-test.c
 WORKDIR /project
+COPY . /project
 
 # compile
-RUN aarch64-linux-gnu-gcc -o gpio-test gpio-test.c -lgpiod
+RUN aarch64-linux-gnu-gcc -o gpio-test gpio-test.c -lgpiod \
+    && aarch64-linux-gnu-gcc -o gpio-event-test gpio-event-test.c -lgpiod
 
 # Second stage, arm64v8 container for target
 FROM torizon/arm64v8-debian-base AS deploy-container
