@@ -10,11 +10,12 @@ Folders:
   samples to show how to use dbus from containers
 - **gpio**
   example using libgpiod from within a container
-- **grafana**
-  collectd-influxdb-grafana setup
 - **gps**
   Read GPS(connected to UART) from within a container
+- **grafana**
+  collectd-influxdb-grafana setup
+- **sht31**
+  python/flask web app to show data from SHT31 I2C temp/humidity sensor
 - **weather**
   current weather and forecast app for influxdb/grafana using openweathermap api
-- **sht31**
-  application and library to read SHT31 over I2C
+

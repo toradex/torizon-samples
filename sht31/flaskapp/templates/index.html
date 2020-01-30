@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SHT31 Temperature and Humidity Measurements</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+    <!-- Chart.js -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+    <script src="{{ url_for('static', filename='js/sht31charts.js') }}"></script>
+</head>
+
+<body>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#realtime">Realtime</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#history">History</a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane container active" id="realtime">
+            <h3>Realtime Measurements</h3>
+            <div class="card">
+                <div class="card-body">
+                    <canvas id="canvas1"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane container fade" id="history">
+            <div class="col-12">
+                <h3>Historical Data</h3>
+                <form>
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="fromInput">From: </label>
+                            <input type="text" class="form-control mb-2 mr-sm-2" id="fromInput"
+                                placeholder="YYYY-MM-DDTHH:MM:SS.nnnnnnnnnZ">
+                            <small class="form-text text-muted">rfc3339 date time string</small>
+                        </div>
+                        <div class="col-4">
+                            <label for="toInput">To: </label>
+                            <input type="text" class="form-control mb-2 mr-sm-2" id="toInput"
+                                placeholder="YYYY-MM-DDTHH:MM:SS.nnnnnnnnnZ">
+                            <small class="form-text text-muted">rfc3339 date time string</small>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">Submit</button>
+                </form>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <canvas id="canvas2"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
