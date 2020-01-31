@@ -4,7 +4,9 @@ All sample code related to TorizonCore project.
 
 Folders:  
 
-- **dbus**  
+- **apt-proxy**
+  how to use squid-deb-proxy in a Dockerfile
+- **dbus**
   samples to show how to use dbus from containers
 - **gpio**
   example using libgpiod from within a container
