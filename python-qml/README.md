@@ -1,8 +1,9 @@
-## Python QML Integration 
+    ## Python QML Integration 
 
-In this sample code, UI is designed in QML and integrated with python project.
-When user click on the button, humidity and temperature is read from SHT3x
-kernel space driver and shown to the user on GUI.
+In this sample code, UI is designed in QML and integrated with python project
+using PySide2. When user click on the button, humidity and temperature is read 
+from SHT3x kernel space driver (assuming it is already set with address 0x44) 
+and shown to the user on GUI.
 
 It contains a docker file to create an image out of it.
 ```
