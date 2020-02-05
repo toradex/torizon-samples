@@ -1,13 +1,15 @@
 # samples
 
-All sample code related to TorizonCore project.  
+All sample code related to TorizonCore project.
 
-Folders:  
+Folders:
 
 - **apt-proxy**
   how to use squid-deb-proxy in a Dockerfile
 - **dbus**
   samples to show how to use dbus from containers
+- **dlr-gstreamer**
+  shows how to use gstreamer to obtain video frames to process it for Computer Vision
 - **gpio**
   example using libgpiod from within a container
 - **grafana**
