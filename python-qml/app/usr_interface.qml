@@ -1,6 +1,7 @@
 import QtQuick 2.11
 import QtQuick.Window 2.11
 import QtQuick.Controls 1.0
+import QtQuick.Dialogs 1.3
 
 Window {
     id: root
@@ -24,7 +25,6 @@ Window {
         text: qsTr("Temp/Hum")
         clip: false
         checkable: false
-        iconSource: ""
         opacity: 1
         onClicked: pythonObj.generateEvent()
     }
@@ -54,13 +54,17 @@ Window {
         font.pixelSize: 12
     }
     signal showReadings(double reading,string type)
-    Component.onCompleted: pythonObj.readSignal.connect(showReadings)
+    signal showError(string err)
+	    
+    Component.onCompleted: pythonObj.readSignal.connect(showReadings),
+			   pythonObj.errSignal.connect(showError)	
 
     Connections {
         target: root
-        onShowReadings: setValues(reading,type) // first letter of signal must be capital for handler
+        onShowError: setErr(err) // first letter of signal must be capital for handler
+	onShowReadings: setValues(reading,type) // first letter of signal must be capital for handler
     }
-
+		
     Text {
         id: humidity
         x: 44
@@ -75,11 +79,27 @@ Window {
         fontSizeMode: Text.Fit
     }
 
+    function setErr(err)
+    {
+        messageDialog.text = err
+	messageDialog.open()
+    }
+ 
     function setValues(val, type)
     {
         if (type === 'tmp')
             temperature.text = 'Tem:  ' + val.toFixed(1);
         else if(type === 'hum')
             humidity.text = "Hum: " + val.toFixed(1);
+    }
+	   
+    MessageDialog {
+        id: messageDialog
+        title: "Error!!"
+        text: ""
+        onAccepted: {
+            close()
+        }
+	icon: StandardIcon.Critical
     }
 }
