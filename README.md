@@ -18,3 +18,5 @@ Folders:
   current weather and forecast app for influxdb/grafana using openweathermap api
 - **sht31**
   application and library to read SHT31 over I2C
+- **python-qml**
+  how to integrate QML file with python project using PySide2    
