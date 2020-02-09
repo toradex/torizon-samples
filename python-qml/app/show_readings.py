@@ -17,8 +17,8 @@ class EventGenerator(QObject):
     @Slot()
     def generateEvent(self):
         global value
-        if readSensor() == None:
-	    self.errSignal.emit('No sensor found on i2c bus at address 0x44')
+        if readSensor() == -1:
+            self.errSignal.emit('No sensor found on i2c bus at address 0x44')
 
         self.readSignal.emit(value[0],'tmp')
         self.readSignal.emit(value[1],'hum')
@@ -28,7 +28,7 @@ def readSensor():
     shtObj = find_sensor_by_type('sht3x')
 
     if not shtObj:
-        return None
+        return -1
 
     def reportSensorValues(sensorName):
         def sensorValue(timestamp, values):
