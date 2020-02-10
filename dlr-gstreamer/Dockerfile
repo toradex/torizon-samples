@@ -52,14 +52,6 @@ RUN git clone --recursive https://github.com/neo-ai/neo-ai-dlr.git
 RUN cd neo-ai-dlr;mkdir build;cd build;cmake ..;make -j`nproc`
 RUN cd neo-ai-dlr/python;python3 setup.py install --user
 
-# Install Flask
-RUN apt-get -y update && apt-get install -y \
-    python3-pip \
-    && apt-get clean && apt-get autoremove
-
-RUN pip3 install requests flask flask_restful flask_cors \
-    && apt-get clean && apt-get autoremove
-
 # Copy project files
 RUN mkdir -p model
 COPY model model
