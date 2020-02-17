@@ -88,7 +88,7 @@ Window {
     function setValues(val, type)
     {
         if (type === 'tmp')
-            temperature.text = 'Tem:  ' + val.toFixed(1);
+            temperature.text = 'Tem: ' + val.toFixed(1);
         else if(type === 'hum')
             humidity.text = "Hum: " + val.toFixed(1);
     }
