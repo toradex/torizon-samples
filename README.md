@@ -20,4 +20,5 @@ Folders:
   python/flask web app to show data from SHT31 I2C temp/humidity sensor
 - **weather**
   current weather and forecast app for influxdb/grafana using openweathermap api
-
+- **python-qml**
+  how to integrate QML file with python project using PySide2    
