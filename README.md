@@ -4,8 +4,6 @@ All sample code related to TorizonCore project.
 
 Folders:
 
-- **apt-proxy**
-  how to use squid-deb-proxy in a Dockerfile
 - **dbus**
   samples to show how to use dbus from containers
 - **dlr-gstreamer**
