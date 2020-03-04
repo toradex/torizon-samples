@@ -1,0 +1,64 @@
+version: "2.4"
+services:
+  weston:
+    image: torizon/arm64v8-debian-weston-vivante:latest
+    # please uncomment the following two lines to accept the
+    # EULA required to run imx8 vivante graphic drivers
+    #environment:
+    # - -ACCEPT_FSL_EULA=1
+    # Required to get udev events from host udevd via netlink
+    network_mode: host
+    volumes:
+      - type: bind
+        source: /tmp
+        target: /tmp
+      - type: bind
+        source: /dev
+        target: /dev
+      - type: bind
+        source: /run/udev
+        target: /run/udev
+    cap_add:
+      - CAP_SYS_TTY_CONFIG
+    # Add device access rights through cgroup...
+    device_cgroup_rules:
+      # ... for tty0
+      - 'c 4:0 rmw'
+      # ... for tty7
+      - 'c 4:7 rmw'
+      # ... for /dev/input devices
+      - 'c 13:* rmw'
+      - 'c 199:* rmw'
+      # ... for /dev/dri devices
+      - 'c 226:* rmw'
+
+  portainer:
+    image: portainer/portainer:latest
+    command: -H unix:///var/run/docker.sock --admin-password=$$2y$$05$$wUwPQ6QCd/Y5IB/JLPTYn.RVuyKozg7vlqDCGA6Z7WrL6b5jDLSby
+    ports:
+      - 9000:9000
+    volumes:
+      - type: volume
+        source: portainer_data
+        target: /data
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+
+  kiosk:
+    image: torizon/arm64v8-debian-kiosk-mode-browser:latest
+    command: --window-mode http://portainer:9000
+    shm_size: 256mb
+    volumes:
+      - type: bind
+        source: /tmp
+        target: /tmp
+      - type: bind
+        source: /var/run/dbus
+        target: /var/run/dbus
+    depends_on:
+      - portainer
+      - weston
+
+volumes:
+  portainer_data:
