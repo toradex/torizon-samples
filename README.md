@@ -19,4 +19,7 @@ Folders:
 - **weather**
   current weather and forecast app for influxdb/grafana using openweathermap api
 - **python-qml**
-  how to integrate QML file with python project using PySide2    
+  how to integrate QML file with python project using PySide2 
+- **debian-container**
+  demonstration to explain how docker-compose works
+     
