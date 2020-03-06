@@ -1,0 +1,11 @@
+gpiodetect --help
+echo ""
+gpioinfo --help
+echo ""
+gpiofind --help
+echo ""
+gpioget --help
+echo ""
+gpioset --help
+echo ""
+gpiomon --help

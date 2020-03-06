@@ -1,0 +1,13 @@
+FROM torizon/arm64v8-debian-base
+
+RUN apt-get -y update && apt-get install -y \
+    gpiod \
+    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+# Allow the user torizon use GPIOs
+RUN usermod -a -G gpio torizon
+
+# Add sample bash scripts for convenience
+COPY ./*.sh /usr/local/bin
+
+CMD [ "bash" ]
