@@ -1,0 +1,47 @@
+version: "2.4"
+services:
+  weston:
+    image: torizon/arm32v7-debian-weston
+    # please uncomment the following two lines to accept the
+    # EULA required to run imx8 vivante graphic drivers
+    #environment:
+    # - -ACCEPT_FSL_EULA=1
+    # Required to get udev events from host udevd via netlink
+    network_mode: host
+    devices:
+      - /dev/video2:/dev/video2
+    volumes:
+      - type: bind
+        source: /tmp
+        target: /tmp
+      - type: bind  
+        source: /run/udev
+        target: /run/udev
+      - type: bind
+        source: /dev
+        target: /dev
+    cap_add:
+      - CAP_SYS_TTY_CONFIG
+    # Add device access rights through cgroup...
+    device_cgroup_rules:
+      # ... for tty0
+      - 'c 4:0 rmw'
+      # ... for tty7
+      - 'c 4:7 rmw'
+      # ... for /dev/input devices
+      - 'c 13:* rmw'
+      - 'c 199:* rmw'
+      # ... for /dev/dri devices
+      - 'c 226:* rmw'
+      - 'c 81:* rmw'
+  wayland:
+    depends_on: 
+      - weston
+    image: <your-username>/<your-image>
+    devices:
+      - /dev/video2:/dev/video2
+    volumes:
+       - /tmp:/tmp 
+       - /sys:/sys
+       - /dev:/dev
+    restart: on-failure
