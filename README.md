@@ -14,6 +14,8 @@ Folders:
   Read GPS(connected to UART) from within a container
 - **grafana**
   collectd-influxdb-grafana setup
+- **gstreamer**
+  in a docker container on Torizon
 - **sht31**
   python/flask web app to show data from SHT31 I2C temp/humidity sensor
 - **weather**
@@ -22,4 +24,3 @@ Folders:
   how to integrate QML file with python project using PySide2 
 - **debian-container**
   demonstration to explain how docker-compose works
-     
