@@ -27,16 +27,18 @@ int main()
     std::string hostname = boost::asio::ip::host_name();
 
     auto influxdb = influxdb::InfluxDBFactory::Get("http://influxdb:8086?");
-    bool connected = false;
-    while (!connected)
+    int retries = 30; // The number of retries, and total seconds, to wait for Influx
+    for (int retry = 0; retry < retries; retry++)
     {
         try
         {
             influxdb->query("CREATE DATABASE Weather");
-            connected = true;
+            break;
         }
         catch (std::runtime_error msg)
         {
+            std::cout << "InfluxDB is not available, will retry in 1 second. Total time waiting: ";
+            std::cout << retry + 1 << " second(s)" << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
