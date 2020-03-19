@@ -26,3 +26,5 @@ Folders:
   demonstration to explain how docker-compose works
 - **opencl**
   how to use OpenCL 1.2 in iMX8 in a Docker container and Torizon
+- **aws-iot**
+  Getting Started with AWS IoT Greengrass for Torizon
