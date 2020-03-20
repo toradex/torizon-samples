@@ -2,7 +2,12 @@
 import sys
 import pynmea2
 import serial
-ser = serial.Serial("/dev/ttymxc1",9600, 8, 'N', 1, timeout=1)
+
+serial_port = "/dev/ttymxc1"
+if len(sys.argv) > 1:
+    serial_port = sys.argv[1]
+
+ser = serial.Serial(serial_port,9600, 8, 'N', 1, timeout=1)
 while True:
      data = ser.readline()
      if sys.version_info[0] == 3:
