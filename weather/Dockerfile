@@ -46,3 +46,5 @@ RUN apt-get install -y libcurl4 libboost-system1.67.0 libjsoncpp1 \
 # take application executable from build container
 COPY --from=build /usr/lib/libInfluxDB.so /usr/lib
 COPY --from=build /usr/bin/weather /usr/bin/
+
+ENTRYPOINT [ "/usr/bin/weather" ]
