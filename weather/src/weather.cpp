@@ -27,7 +27,7 @@ int main()
     std::string hostname = boost::asio::ip::host_name();
 
     auto influxdb = influxdb::InfluxDBFactory::Get("http://influxdb:8086?");
-    int retries = 30; // The number of retries, and total seconds, to wait for Influx
+    int retries = 45; // The number of retries, and total seconds, to wait for Influx
     for (int retry = 0; retry < retries; retry++)
     {
         try
