@@ -10,4 +10,4 @@ COPY readgps.py /usr/bin
 
 RUN pip install -r /requirements.txt
 
-CMD python3 /usr/bin/readgps.py
+ENTRYPOINT [ "/usr/bin/readgps.py" ]
