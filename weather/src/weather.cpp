@@ -35,7 +35,7 @@ int main()
             influxdb->query("CREATE DATABASE Weather");
             break;
         }
-        catch (std::runtime_error msg)
+        catch (std::runtime_error &msg)
         {
             std::cout << "InfluxDB is not available, will retry in 1 second. Total time waiting: ";
             std::cout << retry + 1 << " second(s)" << std::endl;
