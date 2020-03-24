@@ -36,7 +36,6 @@ services:
         networks:
             - backend
             - frontend
-        command: ["wait-for-it.sh", "influxdb:8086", "-t", "60", "--", "weather"]
 
 networks:
   backend:

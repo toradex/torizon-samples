@@ -26,7 +26,7 @@ RUN git clone https://github.com/awegrzyn/influxdb-cxx.git
 COPY $TOOLCHAIN_ARCH-toolchain.cmake $TOOLCHAIN_ARCH-toolchain.cmake
 RUN mkdir influxdb-cxx/build
 RUN cd influxdb-cxx/build && cmake .. -DCMAKE_TOOLCHAIN_FILE=/$TOOLCHAIN_ARCH-toolchain.cmake \
-                                      -DCMAKE_INSTALL_PREFIX=/usr
+    -DCMAKE_INSTALL_PREFIX=/usr
 RUN cd influxdb-cxx/build && make install
 
 # build weather app
@@ -47,7 +47,4 @@ RUN apt-get install -y libcurl4 libboost-system1.67.0 libjsoncpp1 \
 COPY --from=build /usr/lib/libInfluxDB.so /usr/lib
 COPY --from=build /usr/bin/weather /usr/bin/
 
-# We need to wait for the influxdb service
-# https://docs.docker.com/compose/startup-order/
-# https://github.com/vishnubob/wait-for-it (MIT License)
-COPY wait-for-it.sh /usr/bin
+ENTRYPOINT [ "/usr/bin/weather" ]
