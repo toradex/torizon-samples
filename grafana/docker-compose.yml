@@ -11,7 +11,7 @@ services:
             - '3000:3000'
         links:
             - influxdb
-        image: grafana/grafana
+        image: grafana/grafana:6.7.1
 
     influxdb:
         container_name: influxdb
