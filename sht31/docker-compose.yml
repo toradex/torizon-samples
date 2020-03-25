@@ -103,7 +103,7 @@ services:
         "--",
         "/usr/bin/start-browser",
         "--window-mode",
-        "http://X.X.X.X:5000",
+        "http://flaskapp:5000",
       ]
     networks:
       - frontend
