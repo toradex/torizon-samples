@@ -14,7 +14,7 @@ services:
     tty: true
     container_name: sht31-influxdb
     devices:
-      - "/dev/i2c-0"
+      - "/dev/apalis-i2c1"
     depends_on:
       - influxdb
     networks:
@@ -28,6 +28,7 @@ services:
         "--",
         "python3",
         "/usr/bin/sht31-influxdb.py",
+        "/dev/apalis-i2c1",
       ]
 
   flaskapp:
@@ -103,7 +104,7 @@ services:
         "--",
         "/usr/bin/start-browser",
         "--window-mode",
-        "http://X.X.X.X:5000",
+        "http://flaskapp:5000",
       ]
     networks:
       - frontend

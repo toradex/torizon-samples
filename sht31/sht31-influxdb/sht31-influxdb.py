@@ -2,9 +2,14 @@ from sht31 import sht31
 from influxdb import InfluxDBClient
 import socket
 import time
+import sys
 
-# Set the bus number and device address
-mysht31 = sht31.SHT31(0, 0x44)
+if len(sys.argv) < 2:
+    print("I2C device as argument expected")
+    sys.exit(1)
+
+# Set the I2C device and device address
+mysht31 = sht31.SHT31(sys.argv[1], 0x44)
 
 hostname = socket.gethostname()
 
