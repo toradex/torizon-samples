@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  greengrass:
+    init: true
+    container_name: aws-iot-greengrass
+    image: torizonextras/arm64v8-aws-greengrass
+    volumes:
+      - ./certs:/greengrass/certs
+      - ./config:/greengrass/config
+      - ./deployment:/greengrass/ggc/deployment
+      - ./log:/greengrass/ggc/var/log
+    ports:
+      - "8883:8883"
