@@ -35,7 +35,8 @@ Docker compose will start a browser in kiosk mode and point it to the web page
 served by the flaskapp. The page contains two tabs; one for realtime chart and
 other for historical data chart.
 
-This was tested on Apalis iMX6 Evaluation Board, i2c-0. For UART and pinout
-information on this and other boards, please refer to
-https://developer.toradex.com/knowledge-base/i2c-(linux)
+This was tested on Apalis iMX6 Evaluation Board, using Apalis I2C1
+(/dev/apalis-i2c1). Adjust docker-compose.yml to use the I2C bus for a
+particular module/familiy.
+
 
