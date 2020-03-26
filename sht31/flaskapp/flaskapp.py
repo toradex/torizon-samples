@@ -1,4 +1,4 @@
-from flask import Flask, Response, render_template
+from flask import Flask, Response, render_template, jsonify
 from influxdb import InfluxDBClient
 
 import os
@@ -20,28 +20,34 @@ def index():
 @app.route("/current")
 def current():
     result = client.query('SELECT LAST(*) FROM "conditions"')
-    return result.raw
+    return jsonify(result.raw)
 
+# Similar to /current but returns a JSON string. This is used in /sensor-data
+# below so that we do not need to use jsonify here which requires app context
+# when called from generate_sensor_data()
+@app.route("/currents")
+def currents():
+    result = client.query('SELECT LAST(*) FROM "conditions"')
+    return json.dumps(result.raw)
 
 @app.route("/fromtime/<fromTime>/totime/<toTime>")
 def range(fromTime, toTime):
     result = client.query(
         'SELECT * FROM "conditions" WHERE time >= \'{}\' AND time <= \'{}\''.format(fromTime, toTime))
-    return result.raw
+    return jsonify(result.raw)
 
 
 @app.route("/lastnduration/<lastNDuration>")
 def last(lastNDuration):
     result = client.query(
         'SELECT * FROM "conditions" WHERE time > now() - {}'.format(lastNDuration))
-    return result.raw
-
+    return jsonify(result.raw)
 
 @app.route('/sensor-data')
 def sensor_data():
     def generate_sensor_data():
         while True:
-            result_raw = current()
+            result_raw = json.loads(currents())
             result_raw["series"][0]["values"][0][0] = datetime.now().strftime(
                 '%Y-%m-%d %H:%M:%S')
             json_data = json.dumps(result_raw)
