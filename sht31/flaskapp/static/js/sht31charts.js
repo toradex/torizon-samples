@@ -21,6 +21,18 @@ $(document).ready(function () {
                 borderColor: 'rgb(132, 99, 255)',
                 data: [],
                 fill: false,
+            }, {
+                label: "Lat: ",
+                backgroundColor: 'rgb(255,255,255)',
+                borderColor: 'rgb(255,255,255)',
+                data: [],
+                fill: false,
+            }, {
+                label: "Lon: ",
+                backgroundColor: 'rgb(255,255,255)',
+                borderColor: 'rgb(255,255,255)',
+                data: [],
+                fill: false,
             }],
         },
         options: {
@@ -68,11 +80,16 @@ $(document).ready(function () {
             config1.data.datasets[0].data.shift();
             config1.data.datasets[1].data.shift();
             config1.data.datasets[2].data.shift();
+            config1.data.datasets[3].data.shift();
+            config1.data.datasets[4].data.shift();
         }
         config1.data.labels.push(data.series[0].values[0][0]);
         config1.data.datasets[0].data.push(data.series[0].values[0][1]);
         config1.data.datasets[1].data.push(data.series[0].values[0][2]);
         config1.data.datasets[2].data.push(data.series[0].values[0][3]);
+        config1.data.datasets[3].label = "Lat: " + data.series[0].values[0][4];
+        config1.data.datasets[4].label = "Lon: " + data.series[0].values[0][5];
+        
         lineChart1.update();
     }
 
@@ -149,6 +166,7 @@ $(document).ready(function () {
                 config2.data.datasets[0].data = []
                 config2.data.datasets[1].data = []
                 config2.data.datasets[2].data = []
+               
                 for (var i = 0; i < data.series[0].values.length; i++) {
                     config2.data.labels.push(data.series[0].values[i][0]);
                     config2.data.datasets[0].data.push(data.series[0].values[i][1]);
