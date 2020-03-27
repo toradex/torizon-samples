@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <PropertyPageSchema Include="$(TorizonExtPath)\CPPProjects\TorizonCPPRules.xml" />
+    <AvailableItemName Include="TorizonCPPApp"/>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Platform)'=='ARM'">
+    <PropertyPageSchema Include="$(TorizonExtPath)\CPPProjects\TorizonARMCPPRules.xml" />
+    <AvailableItemName Include="TorizonCPPARMApp"/>
+  </ItemGroup>
+  <Import Condition="'$(Platform)'=='ARM'" Project="$(TorizonExtPath)\CPPProjects\TorizonARMCPPBuild.xml"/>
+</Project>
