@@ -15,14 +15,14 @@ class SHT31:
         # Address, usually 0x44(68), is configurable to 0x45(69) by pulling up ADDR pin
         # Single shot mode measurement command with clock stretching enabled 0x2C(44)
         # High repeatability measurement 0x06(06)
-        bus.write_i2c_block_data(self.addr, 0x2C, [0x06])
+        bus.write_i2c_block_data(self.addr, 0x2C, [0x06], force=True)
 
         time.sleep(0.5)
 
         # SHT31 address, register address, number of bytes to read
         # Read from 0x00(00), this is ignored by the sensor, still need to specify for SMBus
         # Read 6 bytes: Temp MSB, Temp LSB, Temp CRC, Humididty MSB, Humidity LSB, Humidity CRC
-        data = bus.read_i2c_block_data(self.addr, 0x00, 6)
+        data = bus.read_i2c_block_data(self.addr, 0x00, 6, force=True)
 
         return data
 
