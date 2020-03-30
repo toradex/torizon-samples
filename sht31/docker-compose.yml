@@ -94,7 +94,6 @@ services:
       context: kiosk
     container_name: kiosk
     entrypoint: []
-    # Replace X.X.X.X with your board's IP address
     command:
       [
         "wait-for-it",
