@@ -1,0 +1,72 @@
+devices:
+    common:
+    - /dev/gpiochip0
+    - /dev/gpiochip1
+    - /dev/gpiochip2
+    - /dev/gpiochip3
+    - /dev/gpiochip4
+    - /dev/gpiochip5
+    - /dev/gpiochip6
+    debug: []
+    release: []
+dockercomposefile:
+    common: docker-compose.yml
+    debug: ''
+    release: ''
+extraparms:
+    common: {}
+    debug: {}
+    release: {}
+id: 00000000-0000-0000-0000-000000000000
+images:
+    debug: sha256:9960248df09dcecf4aefca1b2e3d84d7606be2d8a456a2963f6859749e1a2f4b
+    release: null
+modificationdate: '2020-03-25T14:29:32.856192'
+networks:
+    common:
+    - '#%application.id%#_backend'
+    debug: []
+    release: []
+platformid: arm32v7-debian-base_buster
+ports:
+    common: {}
+    debug: {}
+    release: {}
+privatekey: ''
+props:
+    common:
+        arg: ''
+        buildcommands: RUN usermod -a -G gpio torizon
+        buildfiles: ''
+        command: ''
+        devpackages: libcurl4-openssl-dev:armhf libboost1.67-dev:armhf libboost-system1.67-dev:armhf
+            libgpiod-dev:armhf libgpiod2:armhf
+        env: ''
+        expose: ''
+        extrapackages: libgpiod2 gpiod libcurl4 libboost-system1.67.0
+        preinstallcommands: ''
+        sdkpostinstallcommands: ''
+        sdkpreinstallcommands: ''
+        targetfiles: ''
+    debug:
+        arg: 'ARG SSHUSERNAME=#%application.username%#
+
+            '
+    release: {}
+publickey: ''
+sdksshaddress:
+    HostIp: 0.0.0.0
+    HostPort: '32768'
+shutdownscript:
+    common: ''
+    debug: ''
+    release: ''
+startupscript:
+    common: startupscript.sh
+    debug: ''
+    release: ''
+username: torizon
+volumes:
+    common: {}
+    debug: {}
+    release: {}

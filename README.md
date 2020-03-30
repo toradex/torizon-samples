@@ -28,3 +28,5 @@ Folders:
   how to use OpenCL 1.2 in iMX8 in a Docker container and Torizon
 - **aws-iot**
   Getting Started with AWS IoT Greengrass for Torizon
+- **gpioinfluxdb**
+  C++ sample showing how to access GPIO pins and write data into influxDB

@@ -1,0 +1,272 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_debian_buster-slim_arm32v7|ARM">
+      <Configuration>Debug_debian_buster-slim_arm32v7</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_debian_buster-slim_arm32v7|x64">
+      <Configuration>Debug_debian_buster-slim_arm32v7</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_debian_buster-slim_arm64v8|ARM">
+      <Configuration>Debug_debian_buster-slim_arm64v8</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_debian_buster-slim_arm64v8|x64">
+      <Configuration>Debug_debian_buster-slim_arm64v8</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_debian_buster-slim_arm32v7|ARM">
+      <Configuration>Release_debian_buster-slim_arm32v7</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_debian_buster-slim_arm32v7|x64">
+      <Configuration>Release_debian_buster-slim_arm32v7</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_debian_buster-slim_arm64v8|ARM">
+      <Configuration>Release_debian_buster-slim_arm64v8</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_debian_buster-slim_arm64v8|x64">
+      <Configuration>Release_debian_buster-slim_arm64v8</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4f1a1081-35da-4371-b42a-7b214594b537}</ProjectGuid>
+    <Keyword>Linux</Keyword>
+    <RootNamespace>CPPProjectTemplate</RootNamespace>
+    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
+    <ApplicationType>Linux</ApplicationType>
+    <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
+    <TargetLinuxPlatform>Generic</TargetLinuxPlatform>
+    <LinuxProjectType>{D51BCBC9-82E9-4017-911E-C93873C4EA2B}</LinuxProjectType>
+    <ProjectName>GPIOInfluxDB</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <RemoteRootDir>~/</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug_debian_buster-slim_arm64v8'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug_debian_buster-slim_arm32v7'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release_debian_buster-slim_arm64v8'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release_debian_buster-slim_arm32v7'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug_debian_buster-slim_arm32v7|x64'">
+    <RemoteCCompileToolExe>arm-linux-gnueabihf-g++</RemoteCCompileToolExe>
+    <RemoteCppCompileToolExe>arm-linux-gnueabihf-g++</RemoteCppCompileToolExe>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release_debian_buster-slim_arm32v7|x64'">
+    <RemoteCCompileToolExe>arm-linux-gnueabihf-g++</RemoteCCompileToolExe>
+    <RemoteCppCompileToolExe>arm-linux-gnueabihf-g++</RemoteCppCompileToolExe>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug_debian_buster-slim_arm64v8|x64'">
+    <RemoteCCompileToolExe>aarch64-linux-gnu-g++</RemoteCCompileToolExe>
+    <RemoteCppCompileToolExe>aarch64-linux-gnu-g++</RemoteCppCompileToolExe>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release_debian_buster-slim_arm64v8|x64'">
+    <RemoteCCompileToolExe>aarch64-linux-gnu-g++</RemoteCCompileToolExe>
+    <RemoteCppCompileToolExe>aarch64-linux-gnu-g++</RemoteCppCompileToolExe>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_debian_buster-slim_arm32v7|x64'">
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <RemotePostBuildEventUseInBuild>true</RemotePostBuildEventUseInBuild>
+    <RemoteLdToolExe>arm-linux-gnueabihf-g++</RemoteLdToolExe>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_debian_buster-slim_arm32v7|x64'">
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <RemotePostBuildEventUseInBuild>true</RemotePostBuildEventUseInBuild>
+    <RemoteLdToolExe>arm-linux-gnueabihf-g++</RemoteLdToolExe>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_debian_buster-slim_arm64v8|x64'">
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <RemotePostBuildEventUseInBuild>true</RemotePostBuildEventUseInBuild>
+    <RemoteLdToolExe>aarch64-linux-gnu-g++</RemoteLdToolExe>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_debian_buster-slim_arm64v8|x64'">
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <RemotePostBuildEventUseInBuild>true</RemotePostBuildEventUseInBuild>
+    <RemoteLdToolExe>aarch64-linux-gnu-g++</RemoteLdToolExe>
+  </PropertyGroup>
+  <PropertyGroup Label="TorizonCPPApp" Condition="'$(Configuration)|$(Platform)'=='Debug_debian_buster-slim_arm32v7|ARM'">
+    <torizon_configpath>C:\Users\valte\source\repos\GPIOInfluxDB\appconfig_0</torizon_configpath>
+    <torizon_configtype>debug</torizon_configtype>
+  </PropertyGroup>
+  <PropertyGroup Label="TorizonCPPApp" Condition="'$(Configuration)|$(Platform)'=='Debug_debian_buster-slim_arm32v7|x64'">
+    <torizon_configpath>C:\Users\valte\source\repos\GPIOInfluxDB\appconfig_0</torizon_configpath>
+    <torizon_configtype>debug</torizon_configtype>
+  </PropertyGroup>
+  <PropertyGroup Label="TorizonCPPApp" Condition="'$(Configuration)|$(Platform)'=='Release_debian_buster-slim_arm32v7|ARM'">
+    <torizon_configpath>C:\Users\valte\source\repos\GPIOInfluxDB\appconfig_0</torizon_configpath>
+    <torizon_configtype>release</torizon_configtype>
+  </PropertyGroup>
+  <PropertyGroup Label="TorizonCPPApp" Condition="'$(Configuration)|$(Platform)'=='Release_debian_buster-slim_arm32v7|x64'">
+    <torizon_configpath>C:\Users\valte\source\repos\GPIOInfluxDB\appconfig_0</torizon_configpath>
+    <torizon_configtype>release</torizon_configtype>
+  </PropertyGroup>
+  <PropertyGroup Label="TorizonCPPApp" Condition="'$(Configuration)|$(Platform)'=='Debug_debian_buster-slim_arm64v8|ARM'">
+    <torizon_configpath>C:\Users\valte\source\repos\GPIOInfluxDB\appconfig_1</torizon_configpath>
+    <torizon_configtype>debug</torizon_configtype>
+  </PropertyGroup>
+  <PropertyGroup Label="TorizonCPPApp" Condition="'$(Configuration)|$(Platform)'=='Debug_debian_buster-slim_arm64v8|x64'">
+    <torizon_configpath>C:\Users\valte\source\repos\GPIOInfluxDB\appconfig_1</torizon_configpath>
+    <torizon_configtype>debug</torizon_configtype>
+  </PropertyGroup>
+  <PropertyGroup Label="TorizonCPPApp" Condition="'$(Configuration)|$(Platform)'=='Release_debian_buster-slim_arm64v8|ARM'">
+    <torizon_configpath>.\appconfig_1</torizon_configpath>
+    <torizon_configtype>release</torizon_configtype>
+  </PropertyGroup>
+  <PropertyGroup Label="TorizonCPPApp" Condition="'$(Configuration)|$(Platform)'=='Release_debian_buster-slim_arm64v8|x64'">
+    <torizon_configpath>.\appconfig_1</torizon_configpath>
+    <torizon_configtype>release</torizon_configtype>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_debian_buster-slim_arm32v7|x64'">
+    <Link>
+      <AdditionalOptions> -Wl,--dynamic-linker=/lib/ld-linux-armhf.so.3</AdditionalOptions>
+      <LibraryDependencies>curl;pthread;boost_system;gpiod</LibraryDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>"$(TorizonExtPath)\TorizonBuildContainer.exe" "$(torizon_configpath)" "$(torizon_configtype)" -sdk</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>xcopy /EIQY  "$(ProjectDir)obj\x64\*.*" "$(ProjectDir)obj\ARM" &amp;&amp; xcopy /EIQY  "$(ProjectDir)bin\x64\*.*" "$(ProjectDir)bin\ARM"</Command>
+    </PostBuildEvent>
+    <RemotePostBuildEvent>
+      <Command>rsync -r $(RemoteProjectDir)/obj/x64/* $(RemoteProjectDir)/obj/ARM &amp;&amp; rsync -r $(RemoteProjectDir)/bin/x64/* $(RemoteProjectDir)/bin/ARM</Command>
+    </RemotePostBuildEvent>
+    <ClCompile>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_debian_buster-slim_arm32v7|x64'">
+    <Link>
+      <AdditionalOptions> -Wl,--dynamic-linker=/lib/ld-linux-armhf.so.3</AdditionalOptions>
+      <LibraryDependencies>curl;pthread;boost_system;gpiod</LibraryDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>"$(TorizonExtPath)\TorizonBuildContainer.exe" "$(torizon_configpath)" "$(torizon_configtype)" -onlysdk</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>xcopy /EIQY  "$(ProjectDir)obj\x64\*.*" "$(ProjectDir)obj\ARM" &amp;&amp; xcopy /EIQY  "$(ProjectDir)bin\x64\*.*" "$(ProjectDir)bin\ARM" &amp;&amp; xcopy /EIQY  "$(OutputPath)*.*" "$(torizon_configpath)\work\bin\" &amp;&amp; "$(TorizonExtPath)\TorizonBuildContainer.exe" "$(torizon_configpath)" "$(torizon_configtype)" -forcebuild</Command>
+    </PostBuildEvent>
+    <RemotePostBuildEvent>
+      <Command>rsync -r $(RemoteProjectDir)/obj/x64/* $(RemoteProjectDir)/obj/ARM &amp;&amp; rsync -r $(RemoteProjectDir)/bin/x64/* $(RemoteProjectDir)/bin/ARM</Command>
+    </RemotePostBuildEvent>
+    <ClCompile>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_debian_buster-slim_arm64v8|x64'">
+    <Link>
+      <AdditionalOptions> -Wl,--dynamic-linker=/lib/ld-linux-aarch64.so.1</AdditionalOptions>
+      <LibraryDependencies>curl;pthread;boost_system;gpiod</LibraryDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>"$(TorizonExtPath)\TorizonBuildContainer.exe" "$(torizon_configpath)" "$(torizon_configtype)" -sdk</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>xcopy /EIQY  "$(ProjectDir)obj\x64\*.*" "$(ProjectDir)obj\ARM" &amp;&amp; xcopy /EIQY  "$(ProjectDir)bin\x64\*.*" "$(ProjectDir)bin\ARM"</Command>
+    </PostBuildEvent>
+    <RemotePostBuildEvent>
+      <Command>rsync -r $(RemoteProjectDir)/obj/x64/* $(RemoteProjectDir)/obj/ARM &amp;&amp; rsync -r $(RemoteProjectDir)/bin/x64/* $(RemoteProjectDir)/bin/ARM</Command>
+    </RemotePostBuildEvent>
+    <ClCompile>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_debian_buster-slim_arm64v8|x64'">
+    <Link>
+      <AdditionalOptions> -Wl,--dynamic-linker=/lib/ld-linux-aarch64.so.1</AdditionalOptions>
+      <LibraryDependencies>curl;pthread;boost_system;gpiod</LibraryDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>"$(TorizonExtPath)\TorizonBuildContainer.exe" "$(torizon_configpath)" "$(torizon_configtype)" -onlysdk</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>xcopy /EIQY  "$(ProjectDir)obj\x64\*.*" "$(ProjectDir)obj\ARM" &amp;&amp; xcopy /EIQY  "$(ProjectDir)bin\x64\*.*" "$(ProjectDir)bin\ARM" &amp;&amp; xcopy /EIQY  "$(OutputPath)*.*" "$(torizon_configpath)\work\bin\" &amp;&amp; "$(TorizonExtPath)\TorizonBuildContainer.exe" "$(torizon_configpath)" "$(torizon_configtype)" -forcebuild</Command>
+    </PostBuildEvent>
+    <RemotePostBuildEvent>
+      <Command>rsync -r $(RemoteProjectDir)/obj/x64/* $(RemoteProjectDir)/obj/ARM &amp;&amp; rsync -r $(RemoteProjectDir)/bin/x64/* $(RemoteProjectDir)/bin/ARM</Command>
+    </RemotePostBuildEvent>
+    <ClCompile>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_debian_buster-slim_arm32v7|ARM'">
+    <ClCompile>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>curl;pthread;boost_system;gpiod</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_debian_buster-slim_arm64v8|ARM'">
+    <ClCompile>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>curl;pthread;boost_system;gpiod</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_debian_buster-slim_arm32v7|ARM'">
+    <ClCompile>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>curl;pthread;boost_system;gpiod</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_debian_buster-slim_arm64v8|ARM'">
+    <ClCompile>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>curl;pthread;boost_system;gpiod</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="HTTP.cxx" />
+    <ClCompile Include="InfluxDB.cxx" />
+    <ClCompile Include="InfluxDBFactory.cxx" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Point.cxx" />
+    <ClCompile Include="UDP.cxx" />
+    <ClCompile Include="UnixSocket.cxx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="appconfig_0\docker-compose.yml" />
+    <None Include="appconfig_1\docker-compose.yml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="HTTP.h" />
+    <ClInclude Include="InfluxDB.h" />
+    <ClInclude Include="InfluxDBFactory.h" />
+    <ClInclude Include="Point.h" />
+    <ClInclude Include="Transport.h" />
+    <ClInclude Include="UDP.h" />
+    <ClInclude Include="UnixSocket.h" />
+    <ClInclude Include="UriParser.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="TorizonCppApp.targets" />
+  </ImportGroup>
+</Project>
