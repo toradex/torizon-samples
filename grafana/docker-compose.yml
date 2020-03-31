@@ -1,41 +1,41 @@
-version: '2.4'
+version: "2.4"
 services:
-    grafana:
-        container_name: grafana
-        networks:
-            - backend
-            - frontend
-        volumes:
-            - 'grafana-storage:/var/lib/grafana'
-        ports:
-            - '3000:3000'
-        links:
-            - influxdb
-        image: grafana/grafana
+  grafana:
+    container_name: grafana
+    networks:
+      - backend
+      - frontend
+    volumes:
+      - "grafana-storage:/var/lib/grafana"
+    ports:
+      - "3000:3000"
+    links:
+      - influxdb
+    image: grafana/grafana:6.7.1
 
-    influxdb:
-        container_name: influxdb
-        networks:
-            - backend
-        volumes:
-            - '$PWD/influxdb.conf:/etc/influxdb/influxdb.conf:ro'
-            - '$PWD/types.db:/usr/share/collectd/types.db:ro'
-            - 'influxdb-grafana:/var/lib/influxdb'
-        image: influxdb
+  influxdb:
+    container_name: influxdb
+    networks:
+      - backend
+    volumes:
+      - "$PWD/influxdb.conf:/etc/influxdb/influxdb.conf:ro"
+      - "$PWD/types.db:/usr/share/collectd/types.db:ro"
+      - "influxdb-grafana:/var/lib/influxdb"
+    image: influxdb:1.7.10
 
-    collectd:
-        build: .
-        container_name: collectd
-        privileged: true
-        networks:
-            - backend
-        volumes:
-            - '$PWD/collectd.conf:/etc/collectd/collectd.conf'
+  collectd:
+    build: .
+    container_name: collectd
+    privileged: true
+    networks:
+      - backend
+    volumes:
+      - "$PWD/collectd.conf:/etc/collectd/collectd.conf"
 
 networks:
   backend:
     internal: true
-  frontend:   
+  frontend:
     internal: false
 
 volumes:

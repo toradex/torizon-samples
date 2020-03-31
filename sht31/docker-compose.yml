@@ -6,7 +6,7 @@ services:
       - backend
     volumes:
       - "influxdb:/var/lib/influxdb"
-    image: influxdb
+    image: influxdb:1.7.10
 
   sht31-influxdb:
     build:
