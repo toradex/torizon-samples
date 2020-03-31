@@ -1,28 +1,28 @@
-version: '2.4'
+version: "2.4"
 services:
   influxdb:
     container_name: influxdb
     networks:
-          - backend
+      - backend
     volumes:
-          # create a persistent volume for InfluxDB's data:
-          - /home/torizon/influxdb/data:/var/lib/influxdb
-          # mount our configuration file:
-          - /home/torizon/influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro
-    image: influxdb
+      # create a persistent volume for InfluxDB's data:
+      - /home/torizon/influxdb/data:/var/lib/influxdb
+      # mount our configuration file:
+      - /home/torizon/influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro
+    image: influxdb:1.7.10
 
   grafana:
     container_name: grafana
     volumes:
-          # store Grafana's configuration:
-          - 'grafana-storage:/var/lib/grafana'
-    networks: 
-          - backend
-          - frontend
+      # store Grafana's configuration:
+      - "grafana-storage:/var/lib/grafana"
+    networks:
+      - backend
+      - frontend
     ports:
-          # expose default web server port:
-          - '3000:3000'
-    image: grafana/grafana:master
+      # expose default web server port:
+      - "3000:3000"
+    image: grafana/grafana:6.7.1
 
 volumes:
   grafana-storage:
