@@ -15,6 +15,7 @@ services:
     container_name: sht31-influxdb
     devices:
       - "/dev/apalis-i2c1"
+      - "/dev/apalis-tty2"
     depends_on:
       - influxdb
     networks:
@@ -29,6 +30,7 @@ services:
         "python3",
         "/usr/bin/sht31-influxdb.py",
         "/dev/apalis-i2c1",
+        "/dev/apalis-tty2", 
       ]
 
   flaskapp:
