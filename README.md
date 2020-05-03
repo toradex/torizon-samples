@@ -30,3 +30,5 @@ Folders:
   Getting Started with AWS IoT Greengrass for Torizon
 - **gpioinfluxdb**
   C++ sample showing how to access GPIO pins and write data into influxDB
+- **pwm**
+  c sample showing how to interact with pwm interface exposed through sysfs
