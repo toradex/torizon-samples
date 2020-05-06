@@ -1,27 +1,24 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <gpiod.h>
+#include <string.h>
 
-struct gpiod_line *get_gpio_line(int bank, int gpio)
+struct gpiod_line *get_gpio_line(char* bank, int gpio)
 {
 	struct gpiod_chip *chip;
 	struct gpiod_line *line;
 
 	/* open the GPIO bank */
-	chip = gpiod_chip_open_by_number(bank);
+	chip = gpiod_chip_open_by_name(bank);
 	if (chip == NULL)
-	       goto error;
+		return NULL;
 
 	/* open the GPIO line */
 	line = gpiod_chip_get_line(chip, gpio);
 	if (line == NULL)
-		goto error;
+		return NULL;
 
 	return line;
-
-error:
-	perror("Error setting gpiod\n");
-	return NULL;
 }
 
 int main(int argc, char *argv[])
@@ -31,18 +28,46 @@ int main(int argc, char *argv[])
 	struct gpiod_line_event event;
 	int line_value = 0;
 	int ret;
+	char chip[32];
+	unsigned int offset;
 
 	/* check the arguments */
-	if (argc < 5) {
-		printf("Usage: "
-			"gpio-event-test <input-bank> <input-gpio> <output-bank> <output-gpio>\n");
+	if (!(argc == 3 || argc == 5)) {
+		printf("Usage by bank/pin number:\n"
+			"\tgpio-event INPUT-BANK-NUMBER INPUT-GPIO-NUMBER OUTPUT-BANK-NUMBER OUTPUT-GPIO-NUMBER\n"
+			"Usage by SODIMM name:\n"
+			"\tgpio-event INPUT-SODIMM-NAME OUTPUT-SODIMM-NAME\n");
 		return EXIT_FAILURE;
 	}
 
-	input_line = get_gpio_line(atoi(argv[1]), atoi(argv[2]));
+	if (argc == 5) {
+		char gpio_chip[10];
+		snprintf(gpio_chip, sizeof(gpio_chip), "gpiochip%s", argv[1]);
+		input_line = get_gpio_line(gpio_chip, atoi(argv[2]));
+		snprintf(gpio_chip, sizeof(gpio_chip), "gpiochip%s", argv[3]);
+		output_line = get_gpio_line(gpio_chip, atoi(argv[4]));
+	}
+	else {	
+		if (gpiod_ctxless_find_line(argv[1], chip, sizeof(chip), &offset) <= 0) {
+			printf("Error finding GPIO\n");
+			return EXIT_FAILURE;
+		}
+		input_line = get_gpio_line(chip, offset);
+		if (input_line == NULL) {
+			perror("Error setting gpiod\n");
+			return EXIT_FAILURE;
+		}
 
-	output_line = get_gpio_line(atoi(argv[3]), atoi(argv[4]));
-
+		if (gpiod_ctxless_find_line(argv[2], chip, sizeof(chip), &offset) <= 0) {
+			printf("Error finding GPIO\n");
+			return EXIT_FAILURE;
+		}
+		output_line = get_gpio_line(chip, offset);
+		if (output_line == NULL) {
+			perror("Error setting gpiod\n");
+			return EXIT_FAILURE;
+		}
+	}
 	ret = gpiod_line_request_rising_edge_events(input_line, "gpio-test");
 	if (ret < 0) {
 		perror("Request events failed\n");
@@ -73,8 +98,4 @@ int main(int argc, char *argv[])
 	}
 
 	return EXIT_SUCCESS;
-
-error:
-	printf("Error setting gpiod\n");
-	return EXIT_FAILURE;
 }
