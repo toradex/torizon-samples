@@ -1,0 +1,32 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/HelloWorld.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "-r",
+                "${command:torizon.getDotNetRuntimeId}",
+                "-o",
+                "${workspaceFolder}/${config:torizon.appfolder}/work/HelloWorld",
+                "${workspaceFolder}/HelloWorld.csproj"
+            ],
+            "problemMatcher": "$msCompile",
+            "dependsOn": [
+                "build"
+            ]
+        }
+    ]
+}
