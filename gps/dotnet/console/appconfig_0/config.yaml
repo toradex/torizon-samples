@@ -1,0 +1,67 @@
+devices:
+    common:
+    - /dev/apalis-tty4
+    debug: []
+    release: []
+dockercomposefile:
+    common: ''
+    debug: ''
+    release: ''
+extraparms:
+    common: {}
+    debug: {}
+    release: {}
+id: 00000000-0000-0000-0000-000000000000
+images:
+    debug: sha256:ee6debbc41d6a966376eb41a0fe9e32d0e30853461f274d1ca88e259d3b9dfd3
+    release: null
+modificationdate: '2020-05-12T19:23:49.298312'
+networks:
+    common: []
+    debug: []
+    release: []
+platformid: arm32v7-debian-dotnet_buster
+ports:
+    common: {}
+    debug: {}
+    release: {}
+privatekey: ''
+props:
+    common:
+        appargs: ''
+        appname: gps
+        arg: ''
+        buildcommands: RUN usermod -a -G dialout torizon
+        buildfiles: ''
+        command: ''
+        devpackages: ''
+        env: ENV GPS_SERIAL_PORT=/dev/apalis-tty4
+        expose: ''
+        extrapackages: ''
+        language: dotnet
+        preinstallcommands: ''
+        runtime: dotnet
+        sdkpostinstallcommands: ''
+        sdkpreinstallcommands: ''
+        targetfiles: ''
+    debug:
+        arg: 'ARG SSHUSERNAME=#%application.username%#
+
+            '
+    release: {}
+publickey: ''
+sdksshaddress: null
+shutdownscript:
+    common: ''
+    debug: ''
+    release: ''
+startupscript:
+    common: ''
+    debug: ''
+    release: ''
+username: torizon
+volumes:
+    common: {}
+    debug:
+        /home/torizon/gps: /gps,rw
+    release: {}
