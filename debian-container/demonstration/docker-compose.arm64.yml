@@ -47,6 +47,8 @@ services:
 
   kiosk:
     image: torizon/arm64v8-debian-kiosk-mode-browser:latest
+    security_opt:
+      - seccomp:unconfined
     command: --window-mode http://portainer:9000
     shm_size: 256mb
     volumes:

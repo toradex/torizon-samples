@@ -43,6 +43,8 @@ services:
 
   kiosk:
     image: torizon/arm32v7-debian-kiosk-mode-browser:latest
+    security_opt:
+      - seccomp:unconfined
     command: --window-mode http://portainer:9000
     volumes:
       - type: bind
