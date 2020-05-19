@@ -1,0 +1,66 @@
+devices:
+    common:
+    - /dev/gpiochip1
+    debug: []
+    release: []
+dockercomposefile:
+    common: ''
+    debug: ''
+    release: ''
+extraparms:
+    common: {}
+    debug: {}
+    release: {}
+id: 00000000-0000-0000-0000-000000000000
+images:
+    debug: sha256:9e739b35689bdbabe7cd118129ce95944310a74b661e9438b7a4f4a6d2401028
+    release: sha256:33975d2d82d0abacef1d4a66503e9641dd3fb5fd00e9e8a03cd9a7e29723f216
+modificationdate: '2020-05-11T14:04:59.932152'
+networks:
+    common: []
+    debug: []
+    release: []
+platformid: arm32v7-debian-dotnet_buster
+ports:
+    common: {}
+    debug: {}
+    release: {}
+privatekey: ''
+props:
+    common:
+        appargs: 1 6
+        appname: HelloWorld
+        arg: ''
+        buildcommands: RUN usermod -a -G gpio torizon
+        command: ''
+        devpackages: ''
+        env: ''
+        expose: ''
+        extrapackages: libgpiod2 libgpiod-dev
+        language: dotnet
+        preinstallcommands: ''
+        runtime: dotnet
+        sdkpostinstallcommands: ''
+        sdkpreinstallcommands: ''
+        targetfiles: ''
+    debug:
+        arg: 'ARG SSHUSERNAME=#%application.username%#
+
+            '
+    release: {}
+publickey: ''
+sdksshaddress: null
+shutdownscript:
+    common: ''
+    debug: ''
+    release: ''
+startupscript:
+    common: ''
+    debug: ''
+    release: ''
+username: torizon
+volumes:
+    common: {}
+    debug:
+        /home/torizon/HelloWorld: /HelloWorld,rw
+    release: {}
