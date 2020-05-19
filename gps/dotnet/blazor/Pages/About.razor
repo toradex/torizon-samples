@@ -1,0 +1,34 @@
+﻿@page "/about"
+
+<h1>About</h1>
+
+<table class="table">
+    <tbody>
+        @foreach (var info in infos)
+        {
+            <tr>
+            <th scope="row">@info.Title</th>
+                <td>@info.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Info> infos = new List<Info>();
+
+    private void AddInfo (string title, string desc)
+    {
+        var info = new Info();
+        info.Title = title;
+        info.Description = desc;
+        infos.Add(info);
+    }
+
+    protected override void OnInitialized()
+    {
+        AddInfo("Hardware Architecture", RuntimeInformation.OSArchitecture.ToString());
+        AddInfo("OS Description", RuntimeInformation.OSDescription.ToString());
+        AddInfo(".NET Info", RuntimeInformation.FrameworkDescription.ToString());
+    }
+}

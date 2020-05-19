@@ -1,0 +1,72 @@
+﻿@page "/"
+@inject Services.GPS gps
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<div class="alert @alertType alert-dismissible @alertShow" role="alert">
+  @alertMessage @locationDataString
+</div>
+
+<div id="map_canvas">
+</div>
+
+@code{
+    private string alertShow = "collapse";
+    private string alertType = "alert-danger";
+    private string alertMessage = "";
+    private string locationDataString = "";
+    private bool initialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            gps.AddListener(OnNmeaMessageReceived);
+            gps.Connect();
+            
+            if (gps.Device.IsOpen) {
+                alertType = "alert-secondary";
+                alertMessage = "GPS Connected";
+                alertShow = "fade show";
+            } else {
+                alertMessage = gps.ErrorMessage;
+                alertShow = "fade show";
+                Console.Error.WriteLine(gps.ErrorMessage);
+            }
+
+            // initialize google maps
+            await JSRuntime.InvokeVoidAsync("initialize", 0, 0);
+            StateHasChanged();
+        }
+    }
+
+    private void OnNmeaMessageReceived(object sender, NmeaMessageReceivedEventArgs args)
+    {
+        if (args.Message is Rmc rmc)
+        {
+            Console.WriteLine("Latitude = " + rmc.Latitude);
+            Console.WriteLine("Longitude = " + rmc.Longitude);
+
+            if (!Double.IsNaN(rmc.Latitude) && !Double.IsNaN(rmc.Longitude))
+            {
+                // update alert
+                locationDataString = $"Lat: {rmc.Latitude} Lng: {rmc.Longitude}";
+
+                // update google maps with the GPS data
+                if (initialized)
+                    JSRuntime.InvokeVoidAsync("update", rmc.Latitude, rmc.Longitude);
+                else
+                {
+                    initialized = true;
+                    JSRuntime.InvokeVoidAsync("initialize", rmc.Latitude, rmc.Longitude);
+                }
+            }
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        // remove gps listener
+        gps.RemoveListener(OnNmeaMessageReceived);
+    }
+}
