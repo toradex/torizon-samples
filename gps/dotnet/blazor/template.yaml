@@ -1,0 +1,12 @@
+label: ASP.NET Blazor Application
+detail: $(globe) Creates a minimal Blazor server application
+description: blazorserver
+platforms:
+  - arm32v7-debian-aspdotnet_buster
+  - arm64v8-debian-aspdotnet_buster
+properties:
+  ports:
+    common:
+      "5000/tcp": "5000"
+    debug: {}
+    release: {}
