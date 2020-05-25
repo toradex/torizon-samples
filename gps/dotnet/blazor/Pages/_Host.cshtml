@@ -1,0 +1,79 @@
+﻿@page "/"
+@namespace blazorGoogleMaps.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dotnet</title>
+    <base href="~/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link href="css/site.css" rel="stylesheet" />
+</head>
+<body>
+    <app>
+        <component type="typeof(App)" render-mode="ServerPrerendered" />
+    </app>
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.server.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=NULL&v=3"></script>
+    
+    <script>
+        function animateMapZoomTo(map, targetZoom) {
+            var currentZoom = arguments[2] || map.getZoom();
+            if (currentZoom != targetZoom) {
+                google.maps.event.addListenerOnce(map, 'zoom_changed', function (event) {
+                    animateMapZoomTo(map, targetZoom, currentZoom + (targetZoom > currentZoom ? 1 : -1));
+                });
+                setTimeout(function(){ map.setZoom(currentZoom) }, 80);
+            }
+        }
+        function initialize(lat, lng) {
+            var latlng = new google.maps.LatLng(lat, lng);
+            var options = {
+                zoom: 14, center: latlng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            window.map = new google.maps.Map(document.getElementById
+                ("map_canvas"), options);
+            
+            setTimeout(() => {
+                var marker = new google.maps.Marker({
+                    position: latlng,
+                    map: window.map,
+                    title: 'Toradex Board'
+                });
+                animateMapZoomTo(window.map, 20);
+            }, 1500);
+        }
+        function update(nlat, nlng) {
+            var latlng = new google.maps.LatLng(nlat, nlng);
+            window.map.setCenter({
+                lat: nlat,
+                lng: nlng
+            });
+            var marker = new google.maps.Marker({
+                    position: latlng,
+                    map: window.map,
+                    title: 'Toradex Board'
+            });
+        }
+    </script>
+</body>
+</html>
