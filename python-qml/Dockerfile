@@ -1,14 +1,18 @@
+# Choose IMAGE_ARCH either "arm32v7" or "arm64v8"
 ARG IMAGE_ARCH=arm32v7
-FROM torizon/$IMAGE_ARCH-debian-qt5-wayland:buster
+# Either leave MODULES_VIVANTE empty or set it to "-vivante"
+# which is the suffix for both the Docker image as well as Debian packages
+ARG MODULES_VIVANTE
+FROM torizon/$IMAGE_ARCH-debian-qt5-wayland$MODULES_VIVANTE:buster
 
 ARG APPNAME=show_readings.py
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
-    qml-module-qtquick2 \
-    qml-module-qtquick-controls \
-    qml-module-qtquick-controls2 \
-    qml-module-qtquick-dialogs \
+    qml-module-qtquick2$MODULES_VIVANTE \
+    qml-module-qtquick-controls$MODULES_VIVANTE \
+    qml-module-qtquick-controls2$MODULES_VIVANTE \
+    qml-module-qtquick-dialogs$MODULES_VIVANTE \
     python3-pyside2.qtcore \
     python3-pyside2.qtquick \
     python3-pyside2.qtwidgets \
