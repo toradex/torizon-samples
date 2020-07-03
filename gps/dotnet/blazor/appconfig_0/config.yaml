@@ -17,8 +17,7 @@ images:
     release: ''
 modificationdate: '2020-05-19T15:32:32.568151'
 networks:
-    common:
-    - blazor
+    common: []
     debug: []
     release: []
 platformid: arm32v7-debian-aspdotnet_buster
