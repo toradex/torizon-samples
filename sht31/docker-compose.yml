@@ -119,6 +119,8 @@ services:
       - type: bind
         source: /dev/dri
         target: /dev/dri
+    security_opt:
+      - seccomp:unconfined      
     depends_on:
       - weston
       - influxdb

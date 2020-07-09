@@ -42,6 +42,8 @@ services:
     # For i.MX 8-based modules use this image:
     image: torizon/arm64v8-debian-kiosk-mode-browser:latest
     command: --window-mode http://grafana:3000
+    security_opt:
+      - seccomp:unconfined    
     networks:
       - frontend
     volumes:
