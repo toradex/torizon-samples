@@ -69,7 +69,7 @@ RUN apt-get update && apt-get install -y libopencv4.2-java libopencv4.2-jni \
     && apt-get clean && apt-get autoremove
 
 #### INSTALL DLR ####
-RUN git clone --recursive https://github.com/neo-ai/neo-ai-dlr.git
+RUN git clone --recursive https://github.com/neo-ai/neo-ai-dlr.git -b v1.2.0
 RUN cd neo-ai-dlr;mkdir build;cd build;cmake ..;make -j`nproc`
 RUN cd neo-ai-dlr/python;python3 setup.py install --user
 
