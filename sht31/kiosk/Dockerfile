@@ -1,7 +1,7 @@
-ARG IMAGE_ARCH=arm32v7
-# For Apalis iMX8 use IMAGE_ARCH=arm64v8
+ARG IMAGE_ARCH=linux/arm
+# For Apalis iMX8 use IMAGE_ARCH=linux/arm64
 
-FROM torizon/$IMAGE_ARCH-debian-kiosk-mode-browser:buster
+FROM --platform=$IMAGE_ARCH torizon/kiosk-mode-browser:1
 
 # Switch to root user to install additional packages
 USER root

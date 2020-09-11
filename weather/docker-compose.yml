@@ -27,7 +27,7 @@ services:
     build:
       context: .
       args:
-        IMAGE_ARCH: arm32v7
+        IMAGE_ARCH: linux/arm
         TOOLCHAIN_ARCH: armhf
         PKG_ARCH: armhf
     container_name: weather

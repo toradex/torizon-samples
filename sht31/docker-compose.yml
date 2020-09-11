@@ -62,9 +62,9 @@ services:
     environment:
       - ACCEPT_FSL_EULA=1
     container_name: weston
-    image: torizon/arm32v7-debian-weston:latest
+    image: torizon/weston:1
     # For Apalis iMX8 use this image
-    # image: torizon/arm64v8-debian-weston-vivante:latest
+    # image: torizon/weston-vivante:1
     # Required to get udev events from host udevd via netlink
     network_mode: host
     volumes:

@@ -1,7 +1,7 @@
 version: "2.4"
 services:
   weston:
-    image: torizon/arm32v7-debian-weston:latest
+    image: torizon/weston:1
     # Required to get udev events from host udevd via netlink
     network_mode: host
     volumes:
@@ -42,7 +42,7 @@ services:
         target: /var/run/docker.sock
 
   kiosk:
-    image: torizon/arm32v7-debian-kiosk-mode-browser:latest
+    image: torizon/kiosk-mode-browser:1
     security_opt:
       - seccomp:unconfined
     command: --window-mode http://portainer:9000

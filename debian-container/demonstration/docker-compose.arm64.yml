@@ -1,7 +1,7 @@
 version: "2.4"
 services:
   weston:
-    image: torizon/arm64v8-debian-weston-vivante:latest
+    image: torizon/weston-vivante:1
     # please uncomment the following two lines to accept the
     # EULA required to run imx8 vivante graphic drivers
     #environment:
@@ -46,7 +46,7 @@ services:
         target: /var/run/docker.sock
 
   kiosk:
-    image: torizon/arm64v8-debian-kiosk-mode-browser:latest
+    image: torizon/kiosk-mode-browser:1
     security_opt:
       - seccomp:unconfined
     command: --window-mode http://portainer:9000

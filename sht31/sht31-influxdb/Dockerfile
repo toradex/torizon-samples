@@ -1,7 +1,8 @@
-ARG IMAGE_ARCH=arm32v7
-# For Apalis iMX8 use IMAGE_ARCH=arm64v8
+ARG IMAGE_ARCH=linux/arm
+# For Apalis iMX8 use IMAGE_ARCH=linux/arm64
+ARG IMAGE_TAG=1-buster
 
-FROM torizon/$IMAGE_ARCH-debian-base:buster
+FROM --platform=$IMAGE_ARCH torizon/debian:$IMAGE_TAG
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends python3 \

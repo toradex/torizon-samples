@@ -1,5 +1,6 @@
-ARG IMAGE_ARCH=arm32v7
-FROM torizon/$IMAGE_ARCH-debian-base:buster
+ARG IMAGE_ARCH=linux/arm
+ARG IMAGE_TAG=1-buster
+FROM --platform=$IMAGE_ARCH torizon/debian:$IMAGE_TAG
 
 RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip python3-setuptools && rm -rf /var/lib/apt/lists/*
 

@@ -14,7 +14,7 @@ running it, Weston container is needed to be run which will be the graphics
 server. Weston container is to be run in a separate terminal.
 ```
 docker run --rm -it --privileged -v /tmp:/tmp -v /dev:/dev -v /run/udev/:/run/
-udev torizon/arm32v7-debian-weston:buster weston-launch --tty=/dev/tty7 --user=
+udev torizon/weston:1 weston-launch --tty=/dev/tty7 --user=
 root
 ```
 

@@ -1,7 +1,7 @@
 version: "2.4"
 services:
   weston:
-    image: torizon/arm64v8-debian-weston-vivante:buster
+    image: torizon/weston-vivante:1
     network_mode: host
     environment:
       - ACCEPT_FSL_EULA=1

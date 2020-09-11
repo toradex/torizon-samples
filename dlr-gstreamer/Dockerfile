@@ -1,4 +1,4 @@
-FROM torizon/arm64v8-debian-wayland-base-vivante
+FROM torizon/wayland-base-vivante:1
 
 WORKDIR /home/torizon
 

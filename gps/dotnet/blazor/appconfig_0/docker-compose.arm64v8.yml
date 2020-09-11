@@ -4,7 +4,7 @@ services:
     environment:
       - ACCEPT_FSL_EULA=1
     container_name: weston
-    image: torizon/arm64v8-debian-weston-vivante
+    image: torizon/weston-vivante:1
     # Required to get udev events from host udevd via netlink
     network_mode: host
     volumes:

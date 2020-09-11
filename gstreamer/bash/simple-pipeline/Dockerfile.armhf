@@ -1,4 +1,4 @@
-FROM torizon/arm32v7-debian-wayland-base
+FROM --platform=linux/arm torizon/wayland-base:1
  
 RUN apt-get -y update && apt-get install -y \
 	libgstreamer1.0-0 \
@@ -14,7 +14,7 @@ RUN apt-get -y update && apt-get install -y \
 	gstreamer1.0-gl \
 	gstreamer1.0-gtk3 \
 	gstreamer1.0-qt5 \
-	gstreamer1.0-pulseaudio
+	gstreamer1.0-pulseaudio \
 	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
  
 ENTRYPOINT ["gst-launch-1.0"] 

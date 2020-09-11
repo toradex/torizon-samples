@@ -1,7 +1,8 @@
 # SDK container as base
-ARG TOOLCHAIN_ARCH
-ARG IMAGE_ARCH
-FROM torizon/debian-cross-toolchain-$TOOLCHAIN_ARCH:latest AS build
+ARG TOOLCHAIN_ARCH=armhf
+ARG IMAGE_ARCH=linux/arm
+ARG IMAGE_TAG=1-buster
+FROM torizon/debian-cross-toolchain-$TOOLCHAIN_ARCH:1 AS build
 
 ARG TOOLCHAIN_ARCH
 ARG PKG_ARCH
@@ -36,7 +37,7 @@ RUN cd src/build && cmake .. -DCMAKE_TOOLCHAIN_FILE=/$TOOLCHAIN_ARCH-toolchain.c
 RUN cd src/build && make install
 
 # create 2nd container for target
-FROM torizon/$IMAGE_ARCH-debian-base:latest
+FROM --platform=$IMAGE_ARCH torizon/debian:$IMAGE_TAG
 
 # install runtime libraries
 RUN apt-get update

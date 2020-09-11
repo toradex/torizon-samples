@@ -21,7 +21,7 @@ docker build -t gps .
 
 For arm64:
 ```
-docker build --build-arg IMAGE_ARCH=arm64v8 -t gps .
+docker build --build-arg IMAGE_ARCH=linux/arm64 -t gps .
 ```
 
 Run the container using the following command:
