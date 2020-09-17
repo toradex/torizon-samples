@@ -1,11 +1,12 @@
 # SDK container as base
 ARG TOOLCHAIN_ARCH=armhf
+ARG PKG_ARCH=armhf
 ARG IMAGE_ARCH=linux/arm
 ARG IMAGE_TAG=1-buster
-FROM torizon/debian-cross-toolchain-$TOOLCHAIN_ARCH:1 AS build
+FROM torizon/debian-cross-toolchain-$PKG_ARCH:1 AS build
 
-ARG TOOLCHAIN_ARCH
 ARG PKG_ARCH
+ARG TOOLCHAIN_ARCH
 
 RUN echo "dpkg --add-architecture $PKG_ARCH"
 RUN dpkg --add-architecture "$PKG_ARCH"
