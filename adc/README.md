@@ -12,7 +12,7 @@ docker build . -t adc-sample
 
 - To build an image for arm64v8, execute
 ```
-docker build . --build-arg IMAGE_ARCH=arm64v8 --build-arg CROSS_TC_IMAGE_ARCH=arm64 --build-arg ARCH_ARG=linux/arm64 --build-arg IMAGE_TAG=1-buster -t adc-sample
+docker build . --build-arg CROSS_TC_IMAGE_ARCH=arm64 --build-arg ARCH_ARG=linux/arm64 --build-arg IMAGE_TAG=1-buster --build-arg GCC_PREFIX=aarch64-linux-gnu -t adc-sample
 ```
 
 - After image is built, it can be either uploaded to dockerhub account/some other container registry
