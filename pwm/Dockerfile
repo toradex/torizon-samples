@@ -1,4 +1,3 @@
-ARG IMAGE_ARCH=arm32v7
 ARG CROSS_TC_IMAGE_ARCH=armhf
 ARG ARCH_ARG=linux/arm
 ARG IMAGE_TAG=1-buster
@@ -10,9 +9,10 @@ FROM torizon/debian-cross-toolchain-$CROSS_TC_IMAGE_ARCH:1 AS cross-container
 WORKDIR /project
 COPY pwm/ /project
 
+ARG GCC_PREFIX=arm-linux-gnueabihf
 # compile
 RUN mkdir build && cd build \
-    && arm-linux-gnueabihf-gcc -o pwm ../pwm_utils.c ../pwm.c
+    && $GCC_PREFIX-gcc -o pwm ../pwm_utils.c ../pwm.c
 
 # Second stage, container for target
 FROM --platform=$ARCH_ARG torizon/debian:$IMAGE_TAG AS deploy-container
