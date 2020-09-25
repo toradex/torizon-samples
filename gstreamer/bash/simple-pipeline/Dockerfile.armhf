@@ -13,7 +13,6 @@ RUN apt-get -y update && apt-get install -y \
 	gstreamer1.0-alsa \
 	gstreamer1.0-gl \
 	gstreamer1.0-gtk3 \
-	gstreamer1.0-qt5 \
 	gstreamer1.0-pulseaudio \
 	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
  
