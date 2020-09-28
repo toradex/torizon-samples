@@ -36,3 +36,5 @@ Folders:
   c sample showing how to interact with adc interface exposed through sysfs
 - **opencv**
   python sample showing how to use OpenCV with i.MX8, i.MX8X or i.MX8MM
+- **tflite** 
+  python sample and how to build it for distinct NXP's i.MX SoCs

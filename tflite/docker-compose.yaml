@@ -1,0 +1,8 @@
+version: "2.4"
+services:
+  tflite-example:
+    image: torizonextras/tflite
+    volumes:
+       - /tmp:/tmp
+       - /sys:/sys
+       - /dev:/dev
