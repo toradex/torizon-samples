@@ -1,6 +1,6 @@
 ARG ARCH_ARG=linux/arm64
 # For arm32 use:
-# ARG IMAGE_ARCH=linux/arm
+# ARG ARCH_ARG=linux/arm
 ARG PKG_ARCH=aarch64
 # For arm32v7 use: 
 # ARG PKG_ARCH=armv7l
