@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # detects if we have squid-deb-proxy running and set APT_PROXY_ARG
-LOCAL_IP=$(hostname -I | awk '{print $1}')
+LOCAL_IP=$(hostname -i)
 
 echo "HEAD /" | nc $LOCAL_IP 8000 | grep squid-deb-proxy >> /dev/null
 
@@ -15,4 +15,5 @@ else
     APT_PROXY_ARG=""
 fi
 
-docker build --rm -t dbus-sample-py:latest --build-arg APT_PROXY=$APT_PROXY_ARG .
+set -v
+exec docker build --pull --rm -t dbus-sample-py:latest --build-arg APT_PROXY=$APT_PROXY_ARG .

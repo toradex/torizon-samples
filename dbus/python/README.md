@@ -67,11 +67,11 @@ Please notice that this may not be the best way to reboot your device, because i
 To run it from python interpreter you can type:
 
     ```python
-    execfile("list-system-services.py")
+    exec(open("list-system-services.py").read())
     ```
 
 1. list-ip-addresses.py shows how to interface with org.freedesktop.NetworkManager to list valid IPs for the device (this is the host device, not the container itself)
 
     ```python
-    execfile("list-device-addresses.py")
+    exec(open("list-ip-addresses.py").read())
     ```

@@ -16,4 +16,4 @@ else
 fi
 
 set -v
-exec docker build --rm --pull --no-cache -t dbus-tools:latest --build-arg APT_PROXY=$APT_PROXY_ARG .
+exec docker build --pull --rm -t dbus-tools:latest --build-arg APT_PROXY=$APT_PROXY_ARG .

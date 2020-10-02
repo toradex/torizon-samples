@@ -64,7 +64,7 @@ def main(argv):
     services = dbus_iface.ListNames()
     services.sort()
     for service in services:
-        print service
+        print(service)
 
 
 if __name__ == '__main__':

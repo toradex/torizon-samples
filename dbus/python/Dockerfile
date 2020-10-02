@@ -1,5 +1,4 @@
-FROM arm32v7/debian:buster-slim
-
+FROM --platform=linux/arm torizon/debian:2-bullseye
 ARG APT_PROXY
 
 RUN hostname -I
@@ -14,7 +13,7 @@ RUN if [ "$APT_PROXY" != "" ]; then \
     fi
 
 # install required packages
-RUN apt-get -q -y update && apt-get -q -y install python python-pip python-setuptools python-wheel pkg-config dbus libdbus-1-dev build-essential libglib2.0 libglib2.0-dev &&  rm -rf /var/lib/apt/lists/*
+RUN apt-get -q -y update && apt-get -q -y install python python3-pip python-setuptools python3-wheel pkg-config dbus libdbus-1-dev build-essential libglib2.0 libglib2.0-dev &&  rm -rf /var/lib/apt/lists/*
 
 # remove proxy so container will run on any host
 RUN if [ "$APT_PROXY" != "" ]; then rm /etc/apt/apt.conf.d/30proxy; fi
@@ -29,4 +28,4 @@ COPY list-system-services.py /root/list-system-services.py
 COPY list-ip-addresses.py /root/list-ip-addresses.py
 
 # runs python interpreter as main process
-CMD python
+CMD python3
