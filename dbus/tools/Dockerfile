@@ -1,5 +1,4 @@
-FROM arm32v7/debian:buster-slim
-
+FROM --platform=linux/arm torizon/debian:2-bullseye
 ARG APT_PROXY
 
 #if argument APT_PROXY is configured, it will be used to speed-up download of deb packages
@@ -17,7 +16,10 @@ RUN apt-get -q -y update && apt-get -q -y --no-install-recommends install system
 # remove proxy so container will run on any host
 RUN if [ "$APT_PROXY" != "" ]; then rm /etc/apt/apt.conf.d/30proxy; fi
 
-# remove those two statements if you want to run the tools as root
-# inside the container
-RUN useradd dbususer
+# run the tools as a dedicated user
+# remove if you want to run as root inside the container
+RUN useradd -m dbususer
 USER dbususer
+WORKDIR /home/dbususer
+
+CMD /bin/bash -l
