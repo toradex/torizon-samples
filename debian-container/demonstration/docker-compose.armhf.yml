@@ -1,7 +1,8 @@
 version: "2.4"
 services:
+
   weston:
-    image: torizon/weston:1
+    image: torizon/weston:2
     # Required to get udev events from host udevd via netlink
     network_mode: host
     volumes:
@@ -26,11 +27,21 @@ services:
       - 'c 13:* rmw'
       # ... for /dev/dri devices
       - 'c 226:* rmw'
+    command: --developer weston-launch --tty=/dev/tty7 --user=torizon
+    healthcheck:
+        test: ["CMD", "test", "-S", "/tmp/.X11-unix/X0"]
+        interval: 5s
+        timeout: 4s
+        retries: 6
+        start_period: 10s
 
   portainer:
     image: portainer/portainer:latest
     # default user/password is admin/toradex2019
-    command: -H unix:///var/run/docker.sock --admin-password=$$2y$$05$$wUwPQ6QCd/Y5IB/JLPTYn.RVuyKozg7vlqDCGA6Z7WrL6b5jDLSby
+    command: -H unix:///var/run/docker.sock --admin-password '$$2y$$05$$lYD3omTmZ0c0jMDsNX6k8.GwS2NMHbbDzkMBWcDzBt6/K9EyuMPHi' --logo 'https://developer.toradex.com/images/logo_toradex_header.png'
+    network_mode: host
+    labels: 
+      - owner=acme
     ports:
       - 8840:9000
     volumes:
@@ -42,10 +53,15 @@ services:
         target: /var/run/docker.sock
 
   kiosk:
-    image: torizon/kiosk-mode-browser:1
+    image: torizon/kiosk-mode-browser:2
     security_opt:
       - seccomp:unconfined
     command: --window-mode http://portainer:8840
+    shm_size: '256mb'
+    device_cgroup_rules:
+      # ... for /dev/dri devices
+      - 'c 226:* rmw'
+    network_mode: host
     volumes:
       - type: bind
         source: /tmp
@@ -57,13 +73,10 @@ services:
         source: /dev/dri
         target: /dev/dri
     depends_on:
-      - portainer
-      - weston
-    shm_size: '256mb'
-    device_cgroup_rules:
-      # ... for /dev/dri devices
-      - 'c 226:* rmw'
- 
+      weston:
+        condition: service_healthy
+      portainer:
+        condition: service_started
 
 volumes:
   portainer_data:
