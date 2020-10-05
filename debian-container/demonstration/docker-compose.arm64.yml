@@ -43,8 +43,8 @@ services:
 
   portainer:
     image: portainer/portainer:latest
-    # default user/password is admin/toradex2019
-    command: -H unix:///var/run/docker.sock --admin-password '$$2y$$05$$w402JrBUfwXFzi50W7Rd5ulkiSFjTNZQhNrHCSQUWScRqF1qRU6li0' --logo 'https://developer.toradex.com/images/logo_toradex_header.png'
+    # default user/password is admin/toradex2020
+    command: -H unix:///var/run/docker.sock --admin-password '$$2y$$05$$lYD3omTmZ0c0jMDsNX6k8.GwS2NMHbbDzkMBWcDzBt6/K9EyuMPHi' --logo 'https://developer.toradex.com/images/logo_toradex_header.png'
     labels:
       - owner=acme
     network_mode: host
