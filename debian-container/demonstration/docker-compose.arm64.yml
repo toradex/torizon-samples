@@ -34,6 +34,12 @@ services:
       - 'c 226:* rmw'
     scale: 1
     command: --developer weston-launch --tty=/dev/tty7 --user=torizon
+    healthcheck:
+        test: ["CMD", "test", "-S", "/tmp/.X11-unix/X0"]
+        interval: 5s
+        timeout: 4s
+        retries: 6
+        start_period: 10s
 
   portainer:
     image: portainer/portainer:latest
@@ -75,8 +81,10 @@ services:
         target: /dev/dri
     scale: 1
     depends_on:
-      - weston
-      - portainer
+      weston:
+        condition: service_healthy
+      portainer:
+        condition: service_started
 
 volumes:
   portainer_data:
