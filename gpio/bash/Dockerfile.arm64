@@ -1,4 +1,4 @@
-ARG IMAGE_TAG=1-buster
+ARG IMAGE_TAG=2-bullseye
 FROM --platform=linux/arm64 torizon/debian:$IMAGE_TAG
 
 RUN apt-get -y update && apt-get install -y \
