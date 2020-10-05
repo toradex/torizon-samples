@@ -5,8 +5,8 @@ services:
     image: torizon/weston-vivante:2
     # please uncomment the following two lines to accept the
     # EULA required to run imx8 vivante graphic drivers
-    #environment:
-    # - ACCEPT_FSL_EULA=1
+    environment:
+     - ACCEPT_FSL_EULA=1
     # Required to get udev events from host udevd via netlink
     network_mode: host
     volumes:
