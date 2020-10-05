@@ -4,11 +4,11 @@ GPIO example using libgpiod.
 
 Use the following command to build a container for armhf:
 ```
-docker build -f Dockerfile.armhf -t youruser/arm32v7-gpio-test .
+docker build --pull -f Dockerfile.armhf -t youruser/arm32v7-gpio-test .
 ```
 Use the following for arm64:
 ```
-docker build -f Dockerfile.arm64 -t youruser/arm64v8-gpio-test .
+docker build --pull -f Dockerfile.arm64 -t youruser/arm64v8-gpio-test .
 ```
 
 Transfer the container to the module and use the following command:
