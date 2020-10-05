@@ -1,7 +1,8 @@
 version: "2.4"
 services:
+
   weston:
-    image: torizon/weston-vivante:1
+    image: torizon/weston-vivante:2
     # please uncomment the following two lines to accept the
     # EULA required to run imx8 vivante graphic drivers
     #environment:
@@ -31,10 +32,16 @@ services:
       - 'c 199:* rmw'
       # ... for /dev/dri devices
       - 'c 226:* rmw'
+    scale: 1
+    command: --developer weston-launch --tty=/dev/tty7 --user=torizon
 
   portainer:
     image: portainer/portainer:latest
-    command: -H unix:///var/run/docker.sock --admin-password=$$2y$$05$$wUwPQ6QCd/Y5IB/JLPTYn.RVuyKozg7vlqDCGA6Z7WrL6b5jDLSby
+    # default user/password is admin/toradex2019
+    command: -H unix:///var/run/docker.sock --admin-password '$$2y$$05$$w402JrBUfwXFzi50W7Rd5ulkiSFjTNZQhNrHCSQUWScRqF1qRU6li0' --logo 'https://developer.toradex.com/images/logo_toradex_header.png'
+    labels:
+      - owner=acme
+    network_mode: host
     ports:
       - 8840:9000
     volumes:
@@ -44,13 +51,18 @@ services:
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
+    scale: 1
 
   kiosk:
-    image: torizon/kiosk-mode-browser:1
+    image: torizon/kiosk-mode-browser:2
     security_opt:
       - seccomp:unconfined
     command: --window-mode http://portainer:8840
     shm_size: 256mb
+    device_cgroup_rules:
+      # ... for /dev/dri devices
+      - 'c 226:* rmw'
+    network_mode: host
     volumes:
       - type: bind
         source: /tmp
@@ -58,9 +70,13 @@ services:
       - type: bind
         source: /var/run/dbus
         target: /var/run/dbus
+      - type: bind
+        source: /dev/dri
+        target: /dev/dri
+    scale: 1
     depends_on:
-      - portainer
       - weston
+      - portainer
 
 volumes:
   portainer_data:
