@@ -1,9 +1,9 @@
-ARG IMAGE_TAG=1-buster
+ARG IMAGE_TAG=2-bullseye
 # First stage, x86_64 build container
-FROM torizon/debian-cross-toolchain-arm64:1 AS cross-container
+FROM torizon/debian-cross-toolchain-arm64:2 AS cross-container
 
 # install the libpiod development dependencies
-RUN apt-get -y update && apt-get install -y \
+RUN apt-get -y update && apt-get -y upgrade && apt-get install -y \
     libgpiod-dev:arm64 \
     libgpiod2:arm64 \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
