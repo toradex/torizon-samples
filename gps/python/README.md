@@ -16,12 +16,12 @@ Copy this repository to the board and build the container
 
 For armhf:
 ```
-docker build -t gps .
+docker build --pull -t gps .
 ```
 
 For arm64:
 ```
-docker build --build-arg IMAGE_ARCH=linux/arm64 -t gps .
+docker build --pull --build-arg IMAGE_ARCH=linux/arm64 -t gps .
 ```
 
 Run the container using the following command:
