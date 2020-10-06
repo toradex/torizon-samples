@@ -1,4 +1,4 @@
-FROM torizon/wayland-base-vivante:1
+FROM torizon/wayland-base-vivante:2
  
 RUN apt-get -y update && apt-get install -y \
 	libgstreamer1.0-0 \
