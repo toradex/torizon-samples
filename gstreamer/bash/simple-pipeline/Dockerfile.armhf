@@ -1,4 +1,4 @@
-FROM --platform=linux/arm torizon/wayland-base:1
+FROM --platform=linux/arm torizon/wayland-base:2
  
 RUN apt-get -y update && apt-get install -y \
 	libgstreamer1.0-0 \
