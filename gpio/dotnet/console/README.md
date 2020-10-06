@@ -4,4 +4,4 @@ The goal is to show a simple LED blink using .NET Core Console template and bein
 
 ## Torizon Visual Studio Extension ##
 
-See in this article how to use the sample with the Torizon Visual Studio Code Extension: https://developer1.toradex.com/knowledge-base/net-core-development-and-debug-on-torizoncore-using-visual-studio-code
+See in this article how to use the sample with the Torizon Visual Studio Code Extension: https://developer.toradex.com/knowledge-base/net-core-development-and-debugging-on-torizon-using-visual-studio-code
