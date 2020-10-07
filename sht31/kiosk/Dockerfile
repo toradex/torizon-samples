@@ -1,7 +1,7 @@
 ARG IMAGE_ARCH=linux/arm
 # For Apalis iMX8 use IMAGE_ARCH=linux/arm64
 
-FROM --platform=$IMAGE_ARCH torizon/kiosk-mode-browser:1
+FROM --platform=$IMAGE_ARCH torizon/kiosk-mode-browser:2
 
 # Switch to root user to install additional packages
 USER root

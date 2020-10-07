@@ -14,6 +14,7 @@ Copy this repository to the board and launch the services
 
 For armhf:
 ```
+docker-compose build --pull
 docker-compose up
 ```
 
@@ -28,6 +29,7 @@ kiosk/Dockerfile
 
 and do
 ```
+docker-compose build --pull --build-arg IMAGE_ARCH=linux/arm64
 docker-compose up
 ```
 

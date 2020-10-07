@@ -1,6 +1,6 @@
 ARG IMAGE_ARCH=linux/arm
 # For Apalis iMX8 use IMAGE_ARCH=linux/arm64
-ARG IMAGE_TAG=1-buster
+ARG IMAGE_TAG=2-bullseye
 
 FROM --platform=$IMAGE_ARCH torizon/debian:$IMAGE_TAG
 

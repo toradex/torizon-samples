@@ -15,7 +15,7 @@ services:
     container_name: sht31-influxdb
     devices:
       - "/dev/apalis-i2c1"
-      - "/dev/apalis-tty2"
+      - "/dev/tty2"
     depends_on:
       - influxdb
     networks:
@@ -30,7 +30,7 @@ services:
         "python3",
         "/usr/bin/sht31-influxdb.py",
         "/dev/apalis-i2c1",
-        "/dev/apalis-tty2", 
+        "/dev/tty2",
       ]
 
   flaskapp:
@@ -62,9 +62,9 @@ services:
     environment:
       - ACCEPT_FSL_EULA=1
     container_name: weston
-    image: torizon/weston:1
+    image: torizon/weston:2
     # For Apalis iMX8 use this image
-    # image: torizon/weston-vivante:1
+    # image: torizon/weston-vivante:2
     # Required to get udev events from host udevd via netlink
     network_mode: host
     volumes:
@@ -90,6 +90,13 @@ services:
       - "c 199:* rmw"
       # ... for /dev/dri devices
       - "c 226:* rmw"
+    command: --developer weston-launch --tty=/dev/tty7 --user=torizon
+    healthcheck:
+        test: ["CMD", "test", "-S", "/tmp/.X11-unix/X0"]
+        interval: 5s
+        timeout: 4s
+        retries: 6
+        start_period: 10s
 
   kiosk:
     build:
@@ -122,10 +129,14 @@ services:
     security_opt:
       - seccomp:unconfined      
     depends_on:
-      - weston
-      - influxdb
-      - sht31-influxdb
-      - flaskapp
+      weston:
+        condition: service_healthy
+      influxdb:
+        condition: service_started
+      sht31-influxdb:
+        condition: service_started
+      flaskapp:
+        condition: service_started
     shm_size: "256mb"
     device_cgroup_rules:
       # ... for /dev/dri devices
