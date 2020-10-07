@@ -13,9 +13,10 @@ Image built with this docker file is based on Qt Wayland container. Before
 running it, Weston container is needed to be run which will be the graphics 
 server. Weston container is to be run in a separate terminal.
 ```
-docker run --rm -it --privileged -v /tmp:/tmp -v /dev:/dev -v /run/udev/:/run/
-udev torizon/weston:1 weston-launch --tty=/dev/tty7 --user=
-root
+docker run -d --rm --name=weston-container --net=host \
+    --privileged -v /dev:/dev -v /tmp:/tmp -v /run/udev/:/run/udev/ \
+    torizon/weston:$CT_TAG_WESTON --developer weston-launch \
+    --tty=/dev/tty7 --user=torizon
 ```
 
 Now sample image can be run 

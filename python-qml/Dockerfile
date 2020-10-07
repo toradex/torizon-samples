@@ -4,7 +4,7 @@ ARG IMAGE_ARCH=linux/arm
 ARG IMAGE_NAME=qt5-wayland
 # For arm64 with Vivante use:
 # ARG IMAGE_NAME=qt5-wayland-vivante
-FROM --platform=$IMAGE_ARCH torizon/$IMAGE_NAME:1
+FROM --platform=$IMAGE_ARCH torizon/$IMAGE_NAME:2
 
 ARG APPNAME=show_readings.py
 
