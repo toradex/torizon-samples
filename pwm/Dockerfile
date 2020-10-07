@@ -1,9 +1,9 @@
 ARG CROSS_TC_IMAGE_ARCH=armhf
 ARG ARCH_ARG=linux/arm
-ARG IMAGE_TAG=1-buster
+ARG IMAGE_TAG=2-bullseye
 
 # First stage, x86_64 build container
-FROM torizon/debian-cross-toolchain-$CROSS_TC_IMAGE_ARCH:1 AS cross-container
+FROM torizon/debian-cross-toolchain-$CROSS_TC_IMAGE_ARCH:2 AS cross-container
 
 # copy project source
 WORKDIR /project
