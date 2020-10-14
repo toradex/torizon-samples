@@ -1,4 +1,4 @@
-FROM torizon/wayland-base-vivante:1
+FROM torizon/wayland-base-vivante:2
 
 RUN apt-get -y update && apt-get install -y \
 	git \
@@ -16,7 +16,6 @@ RUN apt-get -y update && apt-get install -y \
 	libopencl-vivante1 \
 	libopencl-vivante1-dev \
 	libclc-vivante1 \
-	libllvm-vivante1 \
 	libgal-vivante1 \
 	libvsc-vivante1 \
 	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
