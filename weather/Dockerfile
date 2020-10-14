@@ -2,8 +2,8 @@
 ARG TOOLCHAIN_ARCH=armhf
 ARG PKG_ARCH=armhf
 ARG IMAGE_ARCH=linux/arm
-ARG IMAGE_TAG=1-buster
-FROM torizon/debian-cross-toolchain-$PKG_ARCH:1 AS build
+ARG IMAGE_TAG=2-bullseye
+FROM torizon/debian-cross-toolchain-$PKG_ARCH:2-bullseye AS build
 
 ARG PKG_ARCH
 ARG TOOLCHAIN_ARCH
@@ -16,10 +16,10 @@ RUN apt-get update
 RUN apt-get install -y git \
     cmake \
     libcurl4-openssl-dev:$PKG_ARCH \
-    libboost1.67-dev:$PKG_ARCH \
-    libboost-system1.67-dev:$PKG_ARCH \
-    libboost-test1.67-dev:$PKG_ARCH \
-    libboost-program-options1.67-dev:$PKG_ARCH \
+    libboost1.71-dev:$PKG_ARCH \
+    libboost-system1.71-dev:$PKG_ARCH \
+    libboost-test1.71-dev:$PKG_ARCH \
+    libboost-program-options1.71-dev:$PKG_ARCH \
     libjsoncpp-dev:$PKG_ARCH \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
@@ -42,7 +42,7 @@ FROM --platform=$IMAGE_ARCH torizon/debian:$IMAGE_TAG
 
 # install runtime libraries
 RUN apt-get update
-RUN apt-get install -y libcurl4 libboost-system1.67.0 libjsoncpp1 \
+RUN apt-get install -y libcurl4 libboost-system1.71.0 libjsoncpp1 \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # take application executable from build container
