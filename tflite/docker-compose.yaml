@@ -1,7 +1,7 @@
 version: "2.4"
 services:
   tflite-example:
-    image: torizonextras/tflite
+      image: torizonextras/tflite:2
     volumes:
        - /tmp:/tmp
        - /sys:/sys
