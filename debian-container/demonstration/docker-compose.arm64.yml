@@ -36,7 +36,7 @@ services:
     image: portainer/portainer:latest
     command: -H unix:///var/run/docker.sock --admin-password=$$2y$$05$$wUwPQ6QCd/Y5IB/JLPTYn.RVuyKozg7vlqDCGA6Z7WrL6b5jDLSby
     ports:
-      - 9000:9000
+      - 8840:9000
     volumes:
       - type: volume
         source: portainer_data
@@ -49,7 +49,7 @@ services:
     image: torizon/kiosk-mode-browser:1
     security_opt:
       - seccomp:unconfined
-    command: --window-mode http://portainer:9000
+    command: --window-mode http://portainer:8840
     shm_size: 256mb
     volumes:
       - type: bind
