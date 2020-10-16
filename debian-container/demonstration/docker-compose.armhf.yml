@@ -37,11 +37,11 @@ services:
 
   portainer:
     image: portainer/portainer:latest
-    # default user/password is admin/toradex2019
+    # default user/password is admin/toradex2020
     command: -H unix:///var/run/docker.sock --admin-password '$$2y$$05$$lYD3omTmZ0c0jMDsNX6k8.GwS2NMHbbDzkMBWcDzBt6/K9EyuMPHi' --logo 'https://developer.toradex.com/images/logo_toradex_header.png'
-    network_mode: host
     labels: 
       - owner=acme
+    # Make portainer web UI externally accessible through port 8840
     ports:
       - 8840:9000
     volumes:
@@ -56,12 +56,11 @@ services:
     image: torizon/kiosk-mode-browser:2
     security_opt:
       - seccomp:unconfined
-    command: --window-mode http://portainer:8840
+    command: --window-mode http://portainer:9000
     shm_size: '256mb'
     device_cgroup_rules:
       # ... for /dev/dri devices
       - 'c 226:* rmw'
-    network_mode: host
     volumes:
       - type: bind
         source: /tmp
