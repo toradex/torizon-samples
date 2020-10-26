@@ -45,7 +45,7 @@ services:
     image: torizon/kiosk-mode-browser:1
     security_opt:
       - seccomp:unconfined
-    command: --window-mode http://portainer:8840
+    command: --window-mode http://portainer:9000
     volumes:
       - type: bind
         source: /tmp
