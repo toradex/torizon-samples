@@ -24,7 +24,7 @@ namespace blazorGoogleMaps
                 {
                     webBuilder.UseStartup<Startup>()
                     // use this for Docker forward
-                    .UseUrls("http://0.0.0.0:5000");
+                    .UseUrls("http://0.0.0.0:8841");
                 });
     }
 }

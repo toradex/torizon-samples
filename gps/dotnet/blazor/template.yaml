@@ -7,6 +7,6 @@ platforms:
 properties:
   ports:
     common:
-      "5000/tcp": "5000"
+      "8841/tcp": "8841"
     debug: {}
     release: {}

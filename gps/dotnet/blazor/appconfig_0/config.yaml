@@ -1,12 +1,12 @@
 devices:
     common:
-    - /dev/apalis-tty4
+        - /dev/apalis-tty4
     debug: []
     release: []
 dockercomposefile:
     common: docker-compose.arm32v7.yml
-    debug: ''
-    release: ''
+    debug: ""
+    release: ""
 extraparms:
     common: {}
     debug: {}
@@ -14,8 +14,8 @@ extraparms:
 id: 00000000-0000-0000-0000-000000000000
 images:
     debug: sha256:a94dedeb3a8d2abe56db374bc6b1dae9e675a8e9a1d71ae97400fc7a1b913d41
-    release: ''
-modificationdate: '2020-05-19T15:32:32.568151'
+    release: ""
+modificationdate: "2020-05-19T15:32:32.568151"
 networks:
     common: []
     debug: []
@@ -23,46 +23,46 @@ networks:
 platformid: arm32v7-debian-aspdotnet_buster
 ports:
     common:
-        5000/tcp: '5000'
+        8841/tcp: "8841"
     debug: {}
     release: {}
-privatekey: ''
+privatekey: ""
 props:
     common:
-        appargs: ''
+        appargs: ""
         appname: blazorGoogleMaps
-        arg: ''
+        arg: ""
         buildcommands: RUN usermod -a -G dialout torizon
-        buildfiles: ''
-        command: ''
-        devpackages: ''
-        env: ''
-        expose: ''
-        extrapackages: ''
+        buildfiles: ""
+        command: ""
+        devpackages: ""
+        env: ""
+        expose: ""
+        extrapackages: ""
         language: dotnet
-        preinstallcommands: ''
+        preinstallcommands: ""
         runtime: aspdotnet
-        sdkpostinstallcommands: ''
-        sdkpreinstallcommands: ''
-        targetfiles: ''
+        sdkpostinstallcommands: ""
+        sdkpreinstallcommands: ""
+        targetfiles: ""
     debug:
-        arg: 'ARG SSHUSERNAME=#%application.username%#
+        arg: "ARG SSHUSERNAME=#%application.username%#
 
-            '
+            "
     release: {}
-publickey: ''
+publickey: ""
 sdkimages:
-    debug: ''
-    release: ''
+    debug: ""
+    release: ""
 sdksshaddress: null
 shutdownscript:
-    common: ''
-    debug: ''
-    release: ''
+    common: ""
+    debug: ""
+    release: ""
 startupscript:
-    common: ''
-    debug: ''
-    release: ''
+    common: ""
+    debug: ""
+    release: ""
 username: torizon
 volumes:
     common: {}

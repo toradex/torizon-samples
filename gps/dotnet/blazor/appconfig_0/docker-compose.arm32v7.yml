@@ -42,13 +42,13 @@ services:
     # wait for the blazor application
     command:
       - wait-for-it
-      - localhost:5000
+      - localhost:8841
       - -t
       - "120"
       - --
-      - bash 
+      - bash
       - -c
-      - sleep 30 && /usr/bin/start-browser http://localhost:5000
+      - sleep 30 && /usr/bin/start-browser http://localhost:8841
     volumes:
       - type: bind
         source: /tmp
@@ -62,7 +62,7 @@ services:
     cap_add:
       - CAP_SYS_ADMIN
     depends_on:
-      - weston 
+      - weston
     shm_size: "256mb"
     device_cgroup_rules:
       # ... for /dev/dri devices
