@@ -1,4 +1,4 @@
-FROM torizon/wayland-base-vivante:1
+FROM torizon/wayland-base-vivante:2
 
 WORKDIR /home/torizon
 
@@ -8,7 +8,6 @@ RUN apt-get -y update && apt-get install -y \
     libopencl-vivante1 \
     libopencl-vivante1-dev \
     libclc-vivante1 \
-    libllvm-vivante1 \
     libgal-vivante1 \
     libvsc-vivante1 \
     && apt-get clean && apt-get autoremove
@@ -29,22 +28,7 @@ RUN apt-get -y update && apt-get install -y \
     && apt-get clean && apt-get autoremove
 
 #### INSTALL OPENCV ####
-RUN apt-get update && apt-get install -y libopencv4.2-java libopencv4.2-jni \
-    libopencv-calib3d4.2 libopencv-calib3d-dev libopencv-contrib4.2 \
-    libopencv-contrib-dev libopencv-core4.2 libopencv-core-dev libopencv-dev \
-    libopencv-dnn4.2 libopencv-dnn-dev libopencv-features2d4.2 \
-    libopencv-features2d-dev libopencv-flann4.2 libopencv-flann-dev \
-    libopencv-gapi4.2 libopencv-gapi-dev \
-    libopencv-highgui4.2 libopencv-highgui-dev libopencv-imgcodecs4.2 \
-    libopencv-imgcodecs-dev libopencv-imgproc4.2 libopencv-imgproc-dev \
-    libopencv-ml4.2 libopencv-ml-dev libopencv-objdetect4.2 \
-    libopencv-objdetect-dev libopencv-photo4.2 libopencv-photo-dev \
-    libopencv-shape4.2 libopencv-shape-dev libopencv-stitching4.2 \
-    libopencv-stitching-dev libopencv-superres4.2 libopencv-superres-dev \
-    libopencv-video4.2 libopencv-video-dev libopencv-videoio4.2 \
-    libopencv-videoio-dev libopencv-videostab4.2 libopencv-videostab-dev \
-    libopencv-viz4.2 libopencv-viz-dev opencv-data opencv-doc python3-opencv \
-    && apt-get clean && apt-get autoremove
+RUN apt-get update && apt-get install -y python3-opencv
 
 ENV NO_AT_BRIDGE 1
 
