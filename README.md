@@ -4,6 +4,8 @@ All sample code related to TorizonCore project.
 
 Folders:
 
+- **adc**
+  sample to show how to use analog-to-digital converter from within a container
 - **dbus**
   samples to show how to use dbus from containers
 - **dlr-gstreamer**
