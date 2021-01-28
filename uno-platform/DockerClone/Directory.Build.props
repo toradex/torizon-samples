@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);NU3037;NU1701;2002</NoWarn>
+  </PropertyGroup>
+</Project>
