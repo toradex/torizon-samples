@@ -1,0 +1,69 @@
+<Page
+    x:Class="DockerClone.NotImplementedView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DockerClone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:chart="using:Syncfusion.UI.Xaml.Charts"
+    mc:Ignorable="d"
+    Loaded="PageLoaded">
+
+    <Page.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
+
+        <Style TargetType="ScrollBar">
+            <Setter Property="MinWidth" Value="80" />
+            <Setter Property="IsTabStop" Value="false"/>
+        </Style>
+
+        <Style TargetType="Thumb">
+            <Setter Property="MinWidth" Value="80" />
+            <Setter Property="IsTabStop" Value="false"/>
+        </Style>
+    </Page.Resources>
+
+    <!-- not implemented -->
+    <StackPanel
+        x:Name="PanelNotImplemented"
+        Visibility="Visible"
+        VerticalAlignment="Center"
+        Orientation="Vertical">
+
+        <Image
+            x:Name="ImageWarningNotImplemented"
+            Width="215"
+            Source="Assets/Images/warning.png"
+            Margin="0,20,0,0"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Opacity="1"
+            RenderTransformOrigin="0.5,0.5">
+        
+            <Image.RenderTransform>
+                <ScaleTransform ScaleX="1.0" ScaleY="1.0" />
+            </Image.RenderTransform>
+        </Image>
+
+        <TextBlock
+            x:Name="TextWarningNotImplemented"
+            HorizontalTextAlignment="Center"
+            HorizontalAlignment="Center"
+            Opacity="1"
+            Text="NOT IMPLEMENTED"
+            Foreground="#ff0000"
+            FontWeight="Bold"
+            FontSize="45" />
+    </StackPanel>
+
+</Page>

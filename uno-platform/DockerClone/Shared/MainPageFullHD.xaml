@@ -1,0 +1,429 @@
+<Page
+    x:Class="DockerClone.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DockerClone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <!-- Header -->
+            <RowDefinition Height="62" />
+            <!-- Content -->
+            <RowDefinition Height="1*" />
+            <!-- Footer -->
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Rectangle
+            Grid.Row="0"
+            Grid.ColumnSpan="4"
+            Fill="#27343b" />
+
+        <Image
+            Width="124"
+            Margin="10"
+            Source="Assets/Images/torizon-logo-min.png"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="4"/>
+
+        <Button
+            Click="UserClick"
+            CornerRadius="150"
+            Margin="10"
+            Height="40"
+            Grid.Row="0"
+            Grid.Column="3"
+            Grid.ColumnSpan="4">
+
+            <StackPanel
+                Orientation="Horizontal">
+                
+                <Image
+                    Height="24"
+                    Margin="10"
+                    Stretch="None"
+                    Source="Assets/Images/profile-user.png"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" />
+            
+                <TextBlock
+                    x:Name="TextUserName"
+                    Margin="5,9,10,0"
+                    Text="UserName"
+                    FontSize="23" />
+
+            </StackPanel>
+        </Button>
+
+        <!-- Footer -->
+        <StackPanel
+            Orientation="Horizontal"
+            Background="#27343b"
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="4">
+            
+            <Ellipse
+                x:Name="EllipseDocker"
+                Fill="#ffe600"
+                Shadow="{StaticResource SharedShadow}"
+                VerticalAlignment="Top"
+                Margin="20,10,0,10"
+                Height="22"
+                Width="22"/>
+        
+            <TextBlock
+                x:Name="TextDocker"
+                Margin="10,10,20,0"
+                Text="Docker"
+                FontSize="20" />
+
+            <TextBlock
+                x:Name="TextDockerRunning"
+                Margin="-10,16,20,0"
+                Text="Loading"
+                Foreground="#747474"
+                FontSize="13"
+                FontStyle="Italic" />
+
+        </StackPanel>
+
+        <!-- Content -->
+        <SplitView
+            x:Name="splitView"
+            IsPaneOpen="True"
+            DisplayMode="CompactInline"
+            Background="#202c33"
+            PaneBackground="#14222b"
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="4">
+
+            <SplitView.Pane>
+                <!-- menu -->
+                <StackPanel
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Padding="20">
+                    
+                    <Button
+                        Content="Containers / Apps"
+                        FontSize="23"
+                        Style="{StaticResource TextBlockButtonStyle}"
+                        Foreground="#ffffff"
+                        Click="ButtonContainersClick"
+                        Margin="0,20"/>
+
+                    <Button
+                        Content="Images"
+                        FontSize="23"
+                        Style="{StaticResource TextBlockButtonStyle}"
+                        Foreground="#ffffff"
+                        Click="ButtonImagesClick"
+                        Margin="0,0"/>
+                </StackPanel>
+            </SplitView.Pane>
+
+            <Grid>
+                <!-- content -->
+                <!-- main -->
+                <StackPanel
+                    x:Name="PanelMain"
+                    Visibility="Collapsed"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Orientation="Vertical">
+                    
+                    <TextBlock
+                        Text="Content Area" />
+                </StackPanel>
+
+                <!-- container data -->
+                <StackPanel
+                    x:Name="PanelContainerData"
+                    Visibility="Collapsed"
+                    VerticalAlignment="Top"
+                    Orientation="Vertical">
+
+                    <TextBlock
+                        Text="Container data" />
+                </StackPanel>
+
+                <!-- images data -->
+                <StackPanel
+                    x:Name="PanelImagesData"
+                    Visibility="Visible"
+                    VerticalAlignment="Top"
+                    Orientation="Vertical">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.5*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <!-- Images info -->
+                            <RowDefinition Height="90" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel
+                            Height="90"
+                            Orientation="Horizontal"
+                            Background="#27343b"
+                            Grid.Row="0"
+                            Grid.ColumnSpan="3"
+                            BorderThickness="0,1,0,0"
+                            BorderBrush="#949494"/>
+
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Text="Images on disk"
+                            FontSize="20"
+                            Margin="20,0,0,0"/>
+
+                        <StackPanel
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Margin="0,0,40,0"
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            BorderThickness="0,1,0,0"
+                            BorderBrush="#949494">
+                    
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Text="xx images"
+                                FontSize="20"
+                                Margin="0,0,40,0"
+                                Foreground="#c0c0c0"/>
+
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Text="Total size: xx.xx GB"
+                                FontSize="20"
+                                Margin="0,0,0,0"
+                                Foreground="#c0c0c0"/>
+
+                            <Grid
+                                Margin="50,15,0,0">
+                                
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*" />
+                                </Grid.RowDefinitions>
+
+                                <ProgressBar
+                                    Grid.Column="0"
+                                    Grid.Row="0"
+                                    Grid.ColumnSpan="2"
+                                    Width="150"
+                                    Value="50"
+                                    Minimum="0"
+                                    Maximum="100"
+                                    Background="#ececec"
+                                    Foreground="#00b881"
+                                    CornerRadius="10"
+                                    Margin="0,0,0,30"/>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    Grid.Row="0"
+                                    Text="IN USE"
+                                    VerticalAlignment="Center"
+                                    FontSize="12"
+                                    FontWeight="Bold"
+                                    Margin="0,0,0,0"
+                                    Foreground="#00b881"/>
+
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Grid.Row="1"
+                                    Text="UNUSED"
+                                    VerticalAlignment="Center"
+                                    FontSize="12"
+                                    FontWeight="Bold"
+                                    Margin="25,0,0,0"
+                                    Foreground="#ececec"/>
+                            </Grid>
+                        </StackPanel>
+                        
+                        <Button
+                            Grid.Row="0"
+                            Grid.Column="3"
+                            HorizontalAlignment="Stretch"
+                            Width="120"
+                            Content="Clean up..."
+                            Margin="0,0,20,0"
+                            CornerRadius="5"
+                            BorderBrush="#ffffff" />
+
+                    </Grid>
+
+                    <!-- <ListView
+                        ItemsSource="{Binding Data}">
+
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="data:Record">
+                                <Grid Height="69">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Ellipse
+                                        Height="48"
+                                        Width="48"
+                                        Fill="{Binding Color}"
+                                        VerticalAlignment="Center"
+                                        Grid.Column="0" />
+
+                                    <StackPanel
+                                        Orientation="Vertical"
+                                        VerticalAlignment="Center"
+                                        Margin="12,0,0,0"
+                                        Grid.Column="1">
+
+                                        <TextBlock
+                                            Text="{Binding CompositionName}"
+                                            Style="{StaticResource MaterialSubtitle2}" />
+                                        
+                                        <TextBlock
+                                            Text="{Binding ArtistName}"
+                                            Style="{ThemeResource MaterialBody2}" />
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView> -->
+                </StackPanel>
+
+                <!-- hardware data -->
+                <StackPanel
+                    x:Name="PanelHardwareData"
+                    Visibility="Collapsed"
+                    VerticalAlignment="Top"
+                    Orientation="Vertical">
+                    
+                    <Image
+                        x:Name="ImageTorizonLogo"
+                        Width="566"
+                        Source="Assets/Images/torizon_logo.png"
+                        Margin="0,50"
+                        RenderTransformOrigin="0.5,0.5">
+                    
+                        <Image.RenderTransform>
+                            <ScaleTransform ScaleX="0.0" ScaleY="0.0" />
+                        </Image.RenderTransform>
+                    </Image>
+
+                    <TextBlock
+                        x:Name="LabelBoard"
+                        HorizontalAlignment="Left"
+                        Margin="20,20,0,0"
+                        Text="Board"
+                        FontSize="43"
+                        FontWeight="Bold"/>
+
+                    <TextBlock
+                        x:Name="TextBoardVersion"
+                        HorizontalAlignment="Left"
+                        Text="Board Version"
+                        FontSize="23"
+                        Opacity="0"
+                        Margin="0,0"
+                        Foreground="#979797"/>
+
+                    <TextBlock
+                        x:Name="LabelTorizon"
+                        HorizontalAlignment="Left"
+                        Margin="20,40,0,0"
+                        Text="Torizon"
+                        FontSize="43"
+                        FontWeight="Bold"/>
+
+                    <TextBlock
+                        x:Name="TextTorizonVersion"
+                        HorizontalAlignment="Left"
+                        Margin="0,0"
+                        Opacity="0"
+                        Text="Torizon Version"
+                        FontSize="23"
+                        Foreground="#979797"/>
+
+                    <TextBlock
+                        x:Name="LabelKernel"
+                        HorizontalAlignment="Left"
+                        Margin="20,40,0,0"
+                        Text="Kernel"
+                        FontSize="43"
+                        FontWeight="Bold"/>
+
+                    <TextBlock
+                        x:Name="TextKernelVersion"
+                        HorizontalAlignment="Left"
+                        Margin="0,0"
+                        Opacity="0"
+                        Text="Kernel Version"
+                        FontSize="23"
+                        Foreground="#979797"/>
+                </StackPanel>
+            </Grid>
+        </SplitView>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="SizeStateGroup">
+            
+                <VisualState x:Name="WideState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger
+                            MinWindowHeight="0"
+                            MinWindowWidth="900" />
+                    </VisualState.StateTriggers>
+                    
+                    <VisualState.Setters>
+                        <Setter
+                            Target="splitView.(SplitView.DisplayMode)"
+                            Value="Inline" />
+                    </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="NarrowState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger
+                            MinWindowHeight="0"
+                            MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
+</Page>

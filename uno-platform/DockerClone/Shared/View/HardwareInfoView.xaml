@@ -1,0 +1,295 @@
+<Page
+    x:Class="DockerClone.HardwareInfoView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DockerClone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:chart="using:Syncfusion.UI.Xaml.Charts"
+    Loaded="PageLoaded"
+    Unloaded="PageUnloaded">
+
+    <Page.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="FontFamily" Value="Arial" />
+        </Style>
+
+        <Style TargetType="ScrollBar">
+            <Setter Property="MinWidth" Value="80" />
+            <Setter Property="IsTabStop" Value="false"/>
+        </Style>
+
+        <Style TargetType="Thumb">
+            <Setter Property="MinWidth" Value="80" />
+            <Setter Property="IsTabStop" Value="false"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid
+        Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+
+        <!-- disk usage -->
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            VerticalAlignment="Center">
+
+            <Grid>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+            
+                <Grid
+                    BorderThickness="0"
+                    BorderBrush="LightGray"
+                    Grid.Row="1">
+                
+                    <chart:SfChart
+                        x:Name="ChartDiskUsage"
+                        AreaBorderThickness="0"
+                        Margin="5,0,5,0"
+                        Width="260"
+                        Height="260">
+
+                        <chart:SfChart.Header>
+                            
+                            <TextBlock
+                                FontSize="14"
+                                Foreground="#ffffff"
+                                Margin="0,5,0,5"
+                                Text="Storage Usage %"/>
+                        </chart:SfChart.Header>
+
+                        <chart:SfChart.Legend>
+                            <chart:ChartLegend
+                                DockPosition="Bottom" />
+                        </chart:SfChart.Legend>
+
+                        <chart:DoughnutSeries
+                            ConnectorType="Bezier"
+                            ExplodeOnMouseClick="False"
+                            PieCoefficient="0.95"
+                            Palette="Custom"
+                            ExplodeRadius="7"
+                            x:Name="pieSeries" 
+                            ItemsSource="{Binding Data}" 
+                            XBindingPath="Name"
+                            YBindingPath="Count"
+                            ListenPropertyChange="True">
+                            
+                            <chart:DoughnutSeries.ColorModel>
+
+                                <chart:ChartColorModel>
+
+                                    <chart:ChartColorModel.CustomBrushes>
+
+                                        <SolidColorBrush
+                                            Color="#bbbbbb"/>
+
+                                        <SolidColorBrush
+                                            Color="#ff2c2c"/>
+                                    </chart:ChartColorModel.CustomBrushes>
+                                </chart:ChartColorModel>
+                            </chart:DoughnutSeries.ColorModel>
+
+                            <chart:DoughnutSeries.AdornmentsInfo>
+                                
+                                <chart:ChartAdornmentInfo
+                                    ShowLabel="False"
+                                    FontSize="12"
+                                    Foreground="White">
+                                </chart:ChartAdornmentInfo>
+                            </chart:DoughnutSeries.AdornmentsInfo>
+                        </chart:DoughnutSeries>
+                    </chart:SfChart>
+                </Grid>
+            </Grid>
+        </StackPanel>
+
+        <!-- cpu usage -->
+        <StackPanel
+            Grid.Row="1"
+            Grid.Column="0"
+            VerticalAlignment="Center">
+        
+            <Grid>
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid
+                    BorderThickness="0"
+                    BorderBrush="LightGray"
+                    Margin="0"
+                    Grid.Row="1">
+                    
+                    <chart:SfChart
+                        x:Name="CPUChart"
+                        AreaBorderThickness="2"
+                        AreaBorderBrush="#818181"
+                        Margin="5,0,5,0"
+                        Width="620"
+                        Height="260">
+
+                        <chart:SfChart.Header>
+                            <TextBlock
+                                FontSize="14"
+                                Foreground="#ffffff"
+                                Margin="0,5,0,5"
+                                Text="CPU Usage %"/>
+                        </chart:SfChart.Header>
+
+                        <chart:SfChart.PrimaryAxis>
+                            <chart:CategoryAxis
+                                ShowGridLines="True"
+                                LabelPlacement="BetweenTicks">
+                            </chart:CategoryAxis>
+                        </chart:SfChart.PrimaryAxis>
+                        
+                        <chart:SfChart.SecondaryAxis>
+                            <chart:NumericalAxis
+                                TickLineSize="0"
+                                Header="%"
+                                EdgeLabelsDrawingMode="Shift" 
+                                ShowGridLines="True"
+                                Maximum="100"
+                                Minimum="0"
+                                Visibility="Visible">
+
+                                <chart:NumericalAxis.AxisLineStyle
+                                    StrokeColor="Transparent"
+                                    StrokeWidth="0">
+                                </chart:NumericalAxis.AxisLineStyle>
+                            </chart:NumericalAxis>
+                        </chart:SfChart.SecondaryAxis>
+
+                        <chart:LineSeries
+                            EnableAnimation="False"
+                            ItemsSource="{Binding CPUData}"
+                            StrokeThickness="2"
+                            Interior="#008cff"
+                            XBindingPath="Point"
+                            YBindingPath="Value"
+                            ShowTooltip="False"
+                            ListenPropertyChange="True">
+
+                            <chart:LineSeries.AdornmentsInfo>
+                                <chart:ChartAdornmentInfo
+                                    ShowLabel="False"
+                                    UseSeriesPalette="True">
+                                </chart:ChartAdornmentInfo>
+                            </chart:LineSeries.AdornmentsInfo>
+                        </chart:LineSeries>
+                        
+                    </chart:SfChart>
+                </Grid>
+            </Grid>
+        </StackPanel>
+
+        <!-- ram usage -->
+        <StackPanel
+            Grid.Row="1"
+            Grid.Column="1"
+            VerticalAlignment="Center">
+        
+            <Grid>
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid
+                    BorderThickness="0"
+                    BorderBrush="LightGray"
+                    Margin="0"
+                    Grid.Row="1">
+                    
+                    <chart:SfChart
+                        x:Name="RAMChart"
+                        AreaBorderThickness="2"
+                        AreaBorderBrush="#818181"
+                        Margin="5,0,5,0"
+                        Width="620"
+                        Height="260">
+
+                        <chart:SfChart.Header>
+                            <TextBlock
+                                FontSize="14"
+                                Foreground="#ffffff"
+                                Margin="0,5,0,5"
+                                Text="RAM Usage %"/>
+                        </chart:SfChart.Header>
+
+                        <chart:SfChart.PrimaryAxis>
+                            <chart:CategoryAxis
+                                ShowGridLines="True"
+                                LabelPlacement="BetweenTicks">
+                            </chart:CategoryAxis>
+                        </chart:SfChart.PrimaryAxis>
+                        
+                        <chart:SfChart.SecondaryAxis>
+                            <chart:NumericalAxis
+                                TickLineSize="0"
+                                Header="%"
+                                EdgeLabelsDrawingMode="Shift" 
+                                ShowGridLines="True"
+                                Maximum="100"
+                                Minimum="0"
+                                Visibility="Visible">
+
+                                <chart:NumericalAxis.AxisLineStyle
+                                    StrokeColor="Transparent"
+                                    StrokeWidth="0">
+                                </chart:NumericalAxis.AxisLineStyle>
+                            </chart:NumericalAxis>
+                        </chart:SfChart.SecondaryAxis>
+
+                        <chart:LineSeries
+                            EnableAnimation="False"
+                            ItemsSource="{Binding RAMData}"
+                            StrokeThickness="2"
+                            Interior="#00ff6a"
+                            XBindingPath="Point"
+                            YBindingPath="Value"
+                            ShowTooltip="False"
+                            ListenPropertyChange="True">
+
+                            <chart:LineSeries.AdornmentsInfo>
+                                <chart:ChartAdornmentInfo
+                                    ShowLabel="False"
+                                    UseSeriesPalette="True">
+                                </chart:ChartAdornmentInfo>
+                            </chart:LineSeries.AdornmentsInfo>
+                        </chart:LineSeries>
+                        
+                    </chart:SfChart>
+                </Grid>
+            </Grid>
+        </StackPanel>
+    </Grid>
+
+</Page>
