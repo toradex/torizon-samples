@@ -6,6 +6,8 @@ Folders:
 
 - **adc**
   sample to show how to use analog-to-digital converter from within a container
+- **alsa**
+  example using Alsa API for a C/C++ CMake based project
 - **dbus**
   samples to show how to use dbus from containers
 - **dlr-gstreamer**
