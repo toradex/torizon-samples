@@ -1,0 +1,7 @@
+label: Python 3 console application
+detail: >-
+  $(terminal) Creates a minimal console application sample, based on a debian
+  container
+tags:
+  - console
+extversion: 1.3.116

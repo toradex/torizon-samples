@@ -1,0 +1,83 @@
+devices:
+    common:
+    - /dev/gpiochip0
+    - /dev/gpiochip1
+    - /dev/gpiochip2
+    - /dev/gpiochip3
+    - /dev/gpiochip4
+    - /dev/gpiochip5
+    debug: []
+    release: []
+dockercomposefile:
+    common: ''
+    debug: ''
+    release: ''
+extraparms:
+    common: {}
+    debug: {}
+    release: {}
+id: 00000000-0000-0000-0000-000000000000
+images:
+    debug: sha256:4aea165a98a6ebc0c7ade48ecda3eb3a40835231a47c28a4d46f0a2d50a88313
+    release: ''
+imagetags:
+    debug: python_arm64v8-debian-python3_bullseye_debug_00000000-0000-0000-0000-000000000000
+    release: python_arm64v8-debian-python3_bullseye_release_00000000-0000-0000-0000-000000000000
+modificationdate: '2021-04-14T13:27:04.578783'
+networks:
+    common: []
+    debug: []
+    release: []
+platformid: arm64v8-debian-python3_bullseye
+ports:
+    common: {}
+    debug: {}
+    release: {}
+privatekey: ''
+props:
+    common:
+        appargs: ''
+        appname: python
+        arg: ''
+        buildcommands: RUN usermod -a -G gpio torizon
+        buildfiles: ''
+        command: ''
+        devpackages: ''
+        env: ''
+        expose: ''
+        extrapackages: ''
+        language: python
+        main: main.py
+        preinstallcommands: ''
+        runtime: python3
+        sdkpostinstallcommands: ''
+        sdkpreinstallcommands: ''
+        targetcommands: ''
+        targetfiles: ''
+    debug:
+        arg: 'ARG SSHUSERNAME=#%application.username%#
+
+            '
+    release: {}
+publickey: ''
+sdkimages:
+    debug: ''
+    release: ''
+sdkimagetags:
+    debug: ''
+    release: ''
+sdksshaddress: null
+shutdownscript:
+    common: ''
+    debug: ''
+    release: ''
+startupscript:
+    common: ''
+    debug: ''
+    release: ''
+username: torizon
+volumes:
+    common: {}
+    debug:
+        /home/torizon/python: /python,rw
+    release: {}
