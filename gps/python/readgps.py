@@ -3,7 +3,7 @@ import sys
 import pynmea2
 import serial
 
-serial_port = "/dev/ttymxc1"
+serial_port = "/dev/apalis-uart2"
 if len(sys.argv) > 1:
     serial_port = sys.argv[1]
 

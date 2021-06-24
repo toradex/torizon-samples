@@ -18,7 +18,7 @@ FROM torizon/$IMAGE_ARCH-debian-dotnet AS deploy
 COPY --from=build /project/bin/Debug/netcoreapp3.1/linux-arm64/publish /project
 
 # set here the serial device that will be used on
-ENV GPS_SERIAL_PORT="/dev/ttyLP2"
+ENV GPS_SERIAL_PORT="/dev/apalis-uart4"
 
 WORKDIR /project/
 

@@ -26,7 +26,7 @@ docker build --pull --build-arg IMAGE_ARCH=linux/arm64 -t gps .
 
 Run the container using the following command:
 ```
-# docker run -it --rm --device=/dev/ttymxc1 readgps
+# docker run -it --rm --device=/dev/apalis-uart2 readgps
 ```
 The --device parameter allows the UART to be accessible from within the container.
 Adjust the device according to your needs. Same needs to be reflected in readgps.py
