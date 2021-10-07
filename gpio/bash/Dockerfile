@@ -1,5 +1,8 @@
+ARG BASE_NAME=debian
+ARG IMAGE_ARCH=linux/arm/v7
 ARG IMAGE_TAG=2-bullseye
-FROM --platform=linux/arm64 torizon/debian:$IMAGE_TAG
+
+FROM --platform=$IMAGE_ARCH torizon/$BASE_NAME:$IMAGE_TAG
 
 RUN apt-get -y update && apt-get install -y \
     gpiod \
