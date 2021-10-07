@@ -206,6 +206,21 @@ docker-build-dbus-python-arm64v8:
     DOCKERFILE_FOLDER: "dbus/python/"
   stage: build-demos
 
+# Only for 64-bit vivante arch
+docker-build-dlr-gstreamer-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
+    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
+    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
+  variables:
+    BASE_NAME: wayland-base-vivante
+    IMAGE_NAME: arm64v8-sample-dlr-gstreamer-vivante
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${WAYLAND_BASE_VIVANTE_MAJOR}
+    DOCKERFILE_FOLDER: "dlr-gstreamer/"
+  stage: build-demos
+
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
     - mkdir -p $HOME/.docker
