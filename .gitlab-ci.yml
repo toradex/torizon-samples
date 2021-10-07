@@ -150,6 +150,34 @@ docker-build-adc-arm64v8:
     DOCKERFILE_FOLDER: "adc/"
   stage: build-demos
 
+docker-build-dbus-tools:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm32v7-sample-dbus-tools
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    DOCKERFILE_FOLDER: "dbus/tools/"
+  stage: build-demos
+
+docker-build-dbus-tools-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm64v8-sample-dbus-tools
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    DOCKERFILE_FOLDER: "dbus/tools"
+  stage: build-demos
+
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
     - mkdir -p $HOME/.docker
@@ -178,10 +206,21 @@ docker-build-adc-multiarch:
     IMAGE_NAME_64: arm64v8-sample-adc
   stage: build-multiarch
 
+docker-build-dbus-tools-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-dbus-tools
+    IMAGE_NAME_32: arm32v7-sample-dbus-tools
+    IMAGE_NAME_64: arm64v8-sample-dbus-tools
+  stage: build-multiarch
+
 # Docker deploy jobs
 #
 # Make sure DOCKER_HUB_USER/DOCKER_HUB_PW is properly set in the project
 # specific Gitlab CI settings.
+
+# Since samples are not currently published, only the adc sample is setup below
+# as a guide, in case we decide to publish those images in the future.
 .docker-deploy-major:
   when: manual
   script:
