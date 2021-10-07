@@ -1,39 +1,26 @@
  # ADC
 
-Sample code to interact with ADC interface exposed through sysfs
+Sample code to interact with ADC interface exposed through sysfs.
 
-- if required, set name of driver and channel in ```adc.c```
- 
-- Use the following command to build an image for arm32v7 on development machine
+## Configure and build
+
+If required, set name of driver and channel in `adc.c`.
+
+Use the following command to build an image for arm32v7 on development machine:
 
 ```
 docker build . -t adc-sample
 ```
 
-- To build an image for arm64v8, execute
-```
-docker build . --build-arg CROSS_TC_IMAGE_ARCH=arm64 --build-arg ARCH_ARG=linux/arm64 --build-arg GCC_PREFIX=aarch64-linux-gnu -t adc-sample
-```
-
-- After image is built, it can be either uploaded to dockerhub account/some other container registry
-or can be moved to target machine in portable tar archive file.
-
-- To move it to the target machine in portable tar archive file, execute
+- To build an image for arm64v8, execute:
 
 ```
-docker save -o adc-image.tar adc-sample
+docker build . --build-arg CROSS_TC_IMAGE_ARCH=arm64 --build-arg IMAGE_ARCH=linux/arm64 --build-arg GCC_PREFIX=aarch64-linux-gnu -t adc-sample
 ```
 
-- Now move it to target machine and load it
+## Deploy
 
-```
-docker load -i adc-image.tar
-```
-
-- Now image can be run by executing
-
-```
-docker run --rm adc-sample
-``` 
-
-- Raw value of input channel and Voltage will be shown on the terminal.
+After the image is built, it can be either uploaded to Dockerhub account/some other container registry
+or can be moved to target machine in portable tar archive file. Learn more on the article
+[Deploying Container Images to TorizonCore](https://developer.toradex.com/knowledge-base/deploying-container-images-to-torizoncore),
+especially on the section _Command-line Interface (CLI)_ that is directly applicable to this sample.
