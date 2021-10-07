@@ -175,7 +175,35 @@ docker-build-dbus-tools-arm64v8:
     IMAGE_NAME: arm64v8-sample-dbus-tools
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
-    DOCKERFILE_FOLDER: "dbus/tools"
+    DOCKERFILE_FOLDER: "dbus/tools/"
+  stage: build-demos
+
+docker-build-dbus-python:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm32v7-sample-dbus-python
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    DOCKERFILE_FOLDER: "dbus/python/"
+  stage: build-demos
+
+docker-build-dbus-python-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm64v8-sample-dbus-python
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    DOCKERFILE_FOLDER: "dbus/python/"
   stage: build-demos
 
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
@@ -212,6 +240,14 @@ docker-build-dbus-tools-multiarch:
     IMAGE_NAME: sample-dbus-tools
     IMAGE_NAME_32: arm32v7-sample-dbus-tools
     IMAGE_NAME_64: arm64v8-sample-dbus-tools
+  stage: build-multiarch
+
+docker-build-dbus-python-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-dbus-python
+    IMAGE_NAME_32: arm32v7-sample-dbus-python
+    IMAGE_NAME_64: arm64v8-sample-dbus-python
   stage: build-multiarch
 
 # Docker deploy jobs
