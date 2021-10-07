@@ -1,0 +1,406 @@
+image: docker:latest
+
+variables:
+  DEBIAN_RELEASE: "bullseye"
+
+  # container version
+  DEBIAN_MAJOR: "2"
+  DEBIAN_MINOR: "3"
+  DEBIAN_PATCH: "1"
+
+  DEBIAN_SHELL_MAJOR: "2"
+  DEBIAN_SHELL_MINOR: "3"
+  DEBIAN_SHELL_PATCH: "1"
+
+  WAYLAND_BASE_MAJOR: "2"
+  WAYLAND_BASE_MINOR: "3"
+  WAYLAND_BASE_PATCH: "1"
+
+  WESTON_MAJOR: "2"
+  WESTON_MINOR: "5"
+  WESTON_PATCH: "1"
+
+  QT5_WAYLAND_MAJOR: "2"
+  QT5_WAYLAND_MINOR: "5"
+  QT5_WAYLAND_PATCH: "1"
+
+  QT5_WAYLAND_EXAMPLES_MAJOR: "2"
+  QT5_WAYLAND_EXAMPLES_MINOR: "5"
+  QT5_WAYLAND_EXAMPLES_PATCH: "1"
+
+  WAYLAND_BASE_VIVANTE_MAJOR: "2"
+  WAYLAND_BASE_VIVANTE_MINOR: "3"
+  WAYLAND_BASE_VIVANTE_PATCH: "1"
+
+  WESTON_VIVANTE_MAJOR: "2"
+  WESTON_VIVANTE_MINOR: "5"
+  WESTON_VIVANTE_PATCH: "1"
+
+  QT5_WAYLAND_VIVANTE_MAJOR: "2"
+  QT5_WAYLAND_VIVANTE_MINOR: "5"
+  QT5_WAYLAND_VIVANTE_PATCH: "1"
+
+  QT5_WAYLAND_EXAMPLES_VIVANTE_MAJOR: "2"
+  QT5_WAYLAND_EXAMPLES_VIVANTE_MINOR: "5"
+  QT5_WAYLAND_EXAMPLES_VIVANTE_PATCH: "1"
+
+  WESTON_TOUCH_CALIBRATOR_MAJOR: "2"
+  WESTON_TOUCH_CALIBRATOR_MINOR: "4"
+  WESTON_TOUCH_CALIBRATOR_PATCH: "1"
+
+  GRAPHICS_TESTS_MAJOR: "2"
+  GRAPHICS_TESTS_MINOR: "3"
+  GRAPHICS_TESTS_PATCH: "1"
+
+  GRAPHICS_TESTS_VIVANTE_MAJOR: "2"
+  GRAPHICS_TESTS_VIVANTE_MINOR: "2"
+  GRAPHICS_TESTS_VIVANTE_PATCH: "1"
+
+  # This should be set by docker image already, just to be sure...
+  DOCKER_HOST: tcp://docker:2375
+  # Use overlayfs driver for better performance
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_DRIVER: overlay2
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  GITLAB_DOCKERREGISTRY_SUFFIX: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
+  GITLAB_DOCKERREGISTRY_SUFFIX_LATEST: ${CI_COMMIT_REF_SLUG}-latest
+
+services:
+  - name: docker:dind
+
+before_script:
+  - docker info
+
+stages:
+  - build-demos
+  - build-multiarch
+  - deploy-major
+  - deploy-minor
+  - deploy-patch
+  - deploy-patch-date
+  - deploy-multiarch-major
+  - deploy-multiarch-minor
+  - deploy-multiarch-patch
+  - deploy-multiarch-patch-date
+
+# Docker image builds
+#
+# Build the Docker images specificd in DOCKERFILE_FOLDER/IMAGE_NAME and push
+# it to Gitlab's internal Docker registry
+.docker-build:
+  variables:
+    IMAGE_TAG: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
+    IMAGE_ARCH: linux/arm
+    ADD_TORADEX_REPOSITORY: 1
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    # Try to download latest image for cache, but don't fail if it does not exist
+    - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} || true
+    - docker pull ${CI_REGISTRY}/rd/torizon-core/samples/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} || true
+    - export DATE=$(date +%Y%m%d)
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    - docker build --build-arg IMAGE_ARCH=${IMAGE_ARCH}
+                     --build-arg DOCKER_REGISTRY=${CI_REGISTRY_IMAGE}
+                     --build-arg BASE_NAME=${BASE_NAME}
+                     --build-arg IMAGE_TAG=${IMAGE_TAG}
+                     --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
+                     --cache-from ${CI_REGISTRY}/rd/torizon-core/samples/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
+                     ${DOCKER_NO_CACHE:+--no-cache}
+                     --label container.name=${IMAGE_NAME} 
+                     --label container.version=${MAJOR}.${MINOR}.${PATCH}-${DATE} 
+                     --label git.branch=${CI_COMMIT_BRANCH}  
+                     --label git.hash=${CI_COMMIT_SHA} 
+                     --label pipeline.id=${CI_PIPELINE_ID} 
+                     -f ${DOCKERFILE_FOLDER}Dockerfile
+                     -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+                     -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
+                     ${DOCKERFILE_FOLDER}
+    - docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+    - docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
+
+docker-build-adc:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm32v7-sample-adc
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    CROSS_TC_IMAGE_ARCH: armhf
+    GCC_PREFIX: arm-linux-gnueabihf
+    DOCKERFILE_FOLDER: "adc/"
+  stage: build-demos
+
+docker-build-adc-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm64v8-sample-adc
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    CROSS_TC_IMAGE_ARCH: arm64
+    GCC_PREFIX: aarch64-linux-gnu
+    DOCKERFILE_FOLDER: "adc/"
+  stage: build-demos
+
+# Enable experimental features in Docker client (experimental feature are needed for manifest)
+.do_docker_experimental: &do_docker_experimental
+    - mkdir -p $HOME/.docker
+    - "echo -e '{\n  \"experimental\": \"enabled\"\n}' | tee $HOME/.docker/config.json"
+    - docker version
+
+.docker-build-multiarch:
+  before_script:
+    - *do_docker_experimental
+    - rm -rf ~/.docker/manifests/*
+  script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+  - docker manifest create ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+  - docker manifest annotate ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX}  --os linux --arch arm
+  - docker manifest annotate ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX}  --os linux --arch arm64
+  - docker manifest inspect -v ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
+  - docker manifest push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
+
+docker-build-adc-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-adc
+    IMAGE_NAME_32: arm32v7-sample-adc
+    IMAGE_NAME_64: arm64v8-sample-adc
+  stage: build-multiarch
+
+# Docker deploy jobs
+#
+# Make sure DOCKER_HUB_USER/DOCKER_HUB_PW is properly set in the project
+# specific Gitlab CI settings.
+.docker-deploy-major:
+  when: manual
+  script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+  - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND}
+  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
+  - docker push --all-tags ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}
+
+docker-deploy-adc-major:
+  extends: .docker-deploy-major
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-adc
+  stage: deploy-major
+  
+docker-deploy-adc-arm64v8-major:
+  extends: .docker-deploy-major
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"    
+  variables:
+    IMAGE_NAME: arm64v8-sample-adc
+  stage: deploy-major
+
+.docker-deploy-minor:
+  when: manual
+  script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+  - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}
+  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
+  - docker push --all-tags ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}
+  
+docker-deploy-adc-minor:
+  extends: .docker-deploy-minor
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-adc
+  stage: deploy-minor    
+
+docker-deploy-adc-arm64v8-minor:
+  extends: .docker-deploy-minor
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"   
+    - export MINOR="${DEBIAN_MINOR}"    
+  variables:
+    IMAGE_NAME: arm64v8-sample-adc
+  stage: deploy-minor
+
+.docker-deploy-patch:
+  when: manual
+  script:
+  - *do_docker_experimental
+  - docker manifest inspect ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} > /dev/null && true; RESULT=$?
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+  - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND}
+  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
+  - (if [ ${RESULT} == 1 ] ; then docker push --all-tags ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME} ; else echo Image with this tag already exists. ; fi)
+
+docker-deploy-adc-patch:
+  extends: .docker-deploy-patch
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-adc
+  stage: deploy-patch
+
+docker-deploy-adc-arm64v8-patch:
+  extends: .docker-deploy-patch
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"   
+    - export MINOR="${DEBIAN_MINOR}"    
+    - export PATCH="${DEBIAN_PATCH}"    
+  variables:
+    IMAGE_NAME: arm64v8-sample-adc
+  stage: deploy-patch
+
+.docker-deploy-patch-date:
+  when: manual
+  script:
+  - *do_docker_experimental
+  - export DATE=$(date +%Y%m%d)
+  - docker manifest inspect ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} > /dev/null && true; RESULT=$?
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+  - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND}
+  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
+  - (if [ ${RESULT} == 1 ] ; then docker push --all-tags ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME} ; else echo Image with this tag already exists. ; fi)
+
+docker-deploy-adc-patch-date:
+  extends: .docker-deploy-patch-date
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-adc
+  stage: deploy-patch-date
+
+docker-deploy-adc-arm64v8-patch-date:
+  extends: .docker-deploy-patch-date
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"   
+    - export MINOR="${DEBIAN_MINOR}"    
+    - export PATCH="${DEBIAN_PATCH}"    
+  variables:
+    IMAGE_NAME: arm64v8-sample-adc
+  stage: deploy-patch-date
+
+.docker-deploy-multiarch-major:
+  when: manual    
+  script:
+  - *do_docker_experimental
+  - rm -rf ~/.docker/manifests/*
+  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
+  - docker manifest create ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}${DEBIAN_RELEASE_APPEND}
+  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}${DEBIAN_RELEASE_APPEND}  --os linux --arch arm
+  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}${DEBIAN_RELEASE_APPEND}  --os linux --arch arm64
+  - docker manifest inspect -v ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND}
+  - docker manifest push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND}
+  
+docker-deploy-adc-multiarch-major:
+  extends: .docker-deploy-multiarch-major
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: sample-adc
+    IMAGE_NAME_32: arm32v7-sample-adc
+    IMAGE_NAME_64: arm64v8-sample-adc
+  stage: deploy-multiarch-major
+
+.docker-deploy-multiarch-minor:
+  when: manual    
+  script:
+  - *do_docker_experimental
+  - rm -rf ~/.docker/manifests/*
+  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
+  - docker manifest create ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}
+  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}  --os linux --arch arm
+  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}  --os linux --arch arm64
+  - docker manifest inspect -v ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}
+  - docker manifest push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}
+  
+docker-deploy-adc-multiarch-minor:
+  extends: .docker-deploy-multiarch-minor
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+  variables:
+    IMAGE_NAME: sample-adc
+    IMAGE_NAME_32: arm32v7-sample-adc
+    IMAGE_NAME_64: arm64v8-sample-adc
+  stage: deploy-multiarch-minor
+
+.docker-deploy-multiarch-patch:
+  when: manual
+  script:
+  - *do_docker_experimental
+  - rm -rf ~/.docker/manifests/*
+  - docker manifest inspect ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} > /dev/null && true; RESULT=$?
+  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
+  - docker manifest create ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND}
+  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} --os linux --arch arm
+  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} --os linux --arch arm64
+  - docker manifest inspect -v ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND}
+  - (if [ ${RESULT} == 1 ] ; then docker manifest push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ; else echo Image with this tag already exists. ; fi)
+
+docker-deploy-adc-multiarch-patch:
+  extends: .docker-deploy-multiarch-patch
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: sample-adc
+    IMAGE_NAME_32: arm32v7-sample-adc
+    IMAGE_NAME_64: arm64v8-sample-adc
+  stage: deploy-multiarch-patch
+
+.docker-deploy-multiarch-patch-date:
+  when: manual
+  script:
+  - *do_docker_experimental
+  - rm -rf ~/.docker/manifests/*
+  - export DATE=$(date +%Y%m%d)
+  - docker manifest inspect ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} > /dev/null && true; RESULT=$?
+  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
+  - docker manifest create ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND}
+  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} --os linux --arch arm
+  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} --os linux --arch arm64
+  - docker manifest inspect -v ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND}
+  - (if [ ${RESULT} == 1 ] ; then docker manifest push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} ; else echo Image with this tag already exists. ; fi)
+
+docker-deploy-adc-multiarch-patch-date:
+  extends: .docker-deploy-multiarch-patch-date
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: sample-adc
+    IMAGE_NAME_32: arm32v7-sample-adc
+    IMAGE_NAME_64: arm64v8-sample-adc
+  stage: deploy-multiarch-patch-date
