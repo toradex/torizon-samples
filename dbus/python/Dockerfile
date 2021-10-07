@@ -1,22 +1,13 @@
 FROM --platform=linux/arm torizon/debian:2-bullseye
-ARG APT_PROXY
-
-RUN hostname -I
-
-#if argument APT_PROXY is configured, it will be used to speed-up download of deb packages
-RUN if [ "$APT_PROXY" != "" ]; then \
-    echo "Acquire::http::Proxy \"http://$APT_PROXY:8000\";" > /etc/apt/apt.conf.d/30proxy ;\
-    echo "Acquire::http::Proxy::ppa.launchpad.net DIRECT;" >> /etc/apt/apt.conf.d/30proxy ; \
-    echo "squid-deb-proxy configured"; \
-    else \
-    echo "no squid-deb-proxy configured"; \
-    fi
 
 # install required packages
-RUN apt-get -q -y update && apt-get -q -y install python python3-pip python-setuptools python3-wheel pkg-config dbus libdbus-1-dev build-essential libglib2.0 libglib2.0-dev &&  rm -rf /var/lib/apt/lists/*
-
-# remove proxy so container will run on any host
-RUN if [ "$APT_PROXY" != "" ]; then rm /etc/apt/apt.conf.d/30proxy; fi
+RUN apt-get -q -y update && apt-get -q -y install \
+    python python3-pip python-setuptools python3-wheel \
+    pkg-config \
+    dbus libdbus-1-dev \
+    build-essential \
+    libglib2.0 libglib2.0-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 # uses pip to install python module (it needs compiler)
 RUN pip install dbus-python
