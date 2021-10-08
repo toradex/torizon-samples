@@ -78,6 +78,7 @@ stages:
   - build-gpio-bash
   - build-gpio-c
   - build-dlr-gstreamer
+  - build-uart-gps-python
   - build-multiarch
   - deploy-major
   - deploy-minor
@@ -286,6 +287,34 @@ docker-build-dlr-gstreamer-arm64v8:
     DOCKERFILE_FOLDER: "dlr-gstreamer/"
   stage: build-dlr-gstreamer
 
+docker-build-uart-gps-python:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm32v7-sample-uart-gps-python
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    DOCKERFILE_FOLDER: "gps/python/"
+  stage: build-uart-gps-python
+
+docker-build-uart-gps-python-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm64v8-sample-uart-gps-python
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    DOCKERFILE_FOLDER: "gps/python/"
+  stage: build-uart-gps-python
+
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
     - mkdir -p $HOME/.docker
@@ -350,6 +379,15 @@ docker-build-gpio-c-multiarch:
     IMAGE_NAME_64: arm64v8-sample-gpio-c
   stage: build-multiarch
   needs: ["build-gpio-c"]
+
+docker-build-uart-gps-python-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-uart-gps-python
+    IMAGE_NAME_32: arm32v7-sample-uart-gps-python
+    IMAGE_NAME_64: arm64v8-sample-uart-gps-python
+  stage: build-multiarch
+  needs: ["build-uart-gps-python"]
 
 # Docker deploy jobs
 #
