@@ -313,6 +313,7 @@ docker-build-adc-multiarch:
     IMAGE_NAME_32: arm32v7-sample-adc
     IMAGE_NAME_64: arm64v8-sample-adc
   stage: build-multiarch
+  needs: ["build-adc"]
 
 docker-build-dbus-tools-multiarch:
   extends: .docker-build-multiarch
@@ -321,6 +322,7 @@ docker-build-dbus-tools-multiarch:
     IMAGE_NAME_32: arm32v7-sample-dbus-tools
     IMAGE_NAME_64: arm64v8-sample-dbus-tools
   stage: build-multiarch
+  needs: ["build-dbus-tools"]
 
 docker-build-dbus-python-multiarch:
   extends: .docker-build-multiarch
@@ -329,6 +331,7 @@ docker-build-dbus-python-multiarch:
     IMAGE_NAME_32: arm32v7-sample-dbus-python
     IMAGE_NAME_64: arm64v8-sample-dbus-python
   stage: build-multiarch
+  needs: ["build-dbus-python"]
 
 docker-build-gpio-bash-multiarch:
   extends: .docker-build-multiarch
@@ -337,6 +340,7 @@ docker-build-gpio-bash-multiarch:
     IMAGE_NAME_32: arm32v7-sample-gpio-bash
     IMAGE_NAME_64: arm64v8-sample-gpio-bash
   stage: build-multiarch
+  needs: ["build-gpio-bash"]
 
 docker-build-gpio-c-multiarch:
   extends: .docker-build-multiarch
@@ -345,6 +349,7 @@ docker-build-gpio-c-multiarch:
     IMAGE_NAME_32: arm32v7-sample-gpio-c
     IMAGE_NAME_64: arm64v8-sample-gpio-c
   stage: build-multiarch
+  needs: ["build-gpio-c"]
 
 # Docker deploy jobs
 #
