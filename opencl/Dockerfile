@@ -1,4 +1,8 @@
-FROM torizon/wayland-base-vivante:2
+ARG BASE_NAME=wayland-base-vivante
+ARG IMAGE_ARCH=linux/arm64/v8
+ARG IMAGE_TAG=2
+
+FROM --platform=$IMAGE_ARCH torizon/$BASE_NAME:$IMAGE_TAG
 
 RUN apt-get -y update && apt-get install -y \
 	git \
