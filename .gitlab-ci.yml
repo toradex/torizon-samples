@@ -56,6 +56,10 @@ variables:
   GRAPHICS_TESTS_VIVANTE_MINOR: "2"
   GRAPHICS_TESTS_VIVANTE_PATCH: "1"
 
+  KIOSK_MODE_BROWSER_MAJOR: "2"
+  KIOSK_MODE_BROWSER_MINOR: "4"
+  KIOSK_MODE_BROWSER_PATCH: "0"
+
   # This should be set by docker image already, just to be sure...
   DOCKER_HOST: tcp://docker:2375
   # Use overlayfs driver for better performance
@@ -86,6 +90,9 @@ stages:
   - build-opencv
   - build-pwm
   - build-qt5-python-qml
+  - build-uart-sht31-flask-app
+  - build-uart-sht31-influxdb
+  - build-uart-sht31-kiosk
   - deploy-major
   - deploy-minor
   - deploy-patch
@@ -485,6 +492,90 @@ docker-build-qt5-python-qml-arm64v8-vivante:
   # See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=974101
   allow_failure: true
 
+docker-build-uart-sht31-flask-app:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm32v7-sample-uart-sht31-flask-app
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    DOCKERFILE_FOLDER: "sht31/flaskapp/"
+  stage: build-uart-sht31-flask-app
+
+docker-build-uart-sht31-flask-app-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm64v8-sample-uart-sht31-flask-app
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    DOCKERFILE_FOLDER: "sht31/flaskapp/"
+  stage: build-uart-sht31-flask-app
+
+docker-build-uart-sht31-influxdb:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm32v7-sample-uart-sht31-influxdb
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    DOCKERFILE_FOLDER: "sht31/sht31-influxdb/"
+  stage: build-uart-sht31-influxdb
+
+docker-build-uart-sht31-influxdb-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm64v8-sample-uart-sht31-influxdb
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    DOCKERFILE_FOLDER: "sht31/sht31-influxdb/"
+  stage: build-uart-sht31-influxdb
+
+docker-build-uart-sht31-kiosk:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${KIOSK_MODE_BROWSER_MAJOR}"
+    - export MINOR="${KIOSK_MODE_BROWSER_MINOR}"
+    - export PATCH="${KIOSK_MODE_BROWSER_PATCH}"
+  variables:
+    BASE_NAME: kiosk-mode-browser
+    IMAGE_NAME: arm32v7-sample-uart-sht31-kiosk
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${KIOSK_MODE_BROWSER_MAJOR}
+    DOCKERFILE_FOLDER: "sht31/kiosk/"
+  stage: build-uart-sht31-kiosk
+
+docker-build-uart-sht31-kiosk-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${KIOSK_MODE_BROWSER_MAJOR}"
+    - export MINOR="${KIOSK_MODE_BROWSER_MINOR}"
+    - export PATCH="${KIOSK_MODE_BROWSER_PATCH}"
+  variables:
+    BASE_NAME: kiosk-mode-browser-vivante
+    IMAGE_NAME: arm64v8-sample-uart-sht31-kiosk-vivante
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${KIOSK_MODE_BROWSER_MAJOR}
+    DOCKERFILE_FOLDER: "sht31/kiosk/"
+  stage: build-uart-sht31-kiosk
+
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
     - mkdir -p $HOME/.docker
@@ -599,6 +690,33 @@ docker-build-qt5-python-qml-multiarch:
     IMAGE_NAME_64: arm64v8-sample-qt5-python-qml
   stage: build-multiarch
   needs: ["build-qt5-python-qml"]
+
+docker-build-uart-sht31-flask-app-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-uart-sht31-flask-app
+    IMAGE_NAME_32: arm32v7-sample-uart-sht31-flask-app
+    IMAGE_NAME_64: arm64v8-sample-uart-sht31-flask-app
+  stage: build-multiarch
+  needs: ["build-uart-sht31-flask-app"]
+
+docker-build-uart-sht31-influxdb-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-uart-sht31-influxdb
+    IMAGE_NAME_32: arm32v7-sample-uart-sht31-influxdb
+    IMAGE_NAME_64: arm64v8-sample-uart-sht31-influxdb
+  stage: build-multiarch
+  needs: ["build-uart-sht31-influxdb"]
+
+docker-build-uart-sht31-kiosk-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-uart-sht31-kiosk
+    IMAGE_NAME_32: arm32v7-sample-uart-sht31-kiosk
+    IMAGE_NAME_64: arm64v8-sample-uart-sht31-kiosk-vivante
+  stage: build-multiarch
+  needs: ["build-uart-sht31-kiosk"]
 
 # Docker deploy jobs
 #
