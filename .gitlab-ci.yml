@@ -81,6 +81,7 @@ stages:
   - build-uart-gps-python
   - build-collectd
   - build-multiarch
+  - build-gstreamer-simple-pipeline
   - deploy-major
   - deploy-minor
   - deploy-patch
@@ -344,6 +345,34 @@ docker-build-collectd-arm64v8:
     DOCKERFILE_FOLDER: "grafana/"
   stage: build-collectd
 
+docker-build-gstreamer-simple-pipeline:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${WAYLAND_BASE_MAJOR}"
+    - export MINOR="${WAYLAND_BASE_MINOR}"
+    - export PATCH="${WAYLAND_BASE_PATCH}"
+  variables:
+    BASE_NAME: wayland-base
+    IMAGE_NAME: arm32v7-sample-gstreamer-simple-pipeline
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${WAYLAND_BASE_MAJOR}
+    DOCKERFILE_FOLDER: "gstreamer/bash/simple-pipeline/"
+  stage: build-gstreamer-simple-pipeline
+
+docker-build-gstreamer-simple-pipeline-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
+    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
+    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
+  variables:
+    BASE_NAME: wayland-base-vivante
+    IMAGE_NAME: arm64v8-sample-gstreamer-simple-pipeline-vivante
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${WAYLAND_BASE_VIVANTE_MAJOR}
+    DOCKERFILE_FOLDER: "gstreamer/bash/simple-pipeline/"
+  stage: build-gstreamer-simple-pipeline
+
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
     - mkdir -p $HOME/.docker
@@ -426,6 +455,15 @@ docker-build-collectd-multiarch:
     IMAGE_NAME_64: arm64v8-sample-collectd
   stage: build-multiarch
   needs: ["build-collectd"]
+
+docker-build-gstreamer-simple-pipeline-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-gstreamer-simple-pipeline
+    IMAGE_NAME_32: arm32v7-sample-gstreamer-simple-pipeline
+    IMAGE_NAME_64: arm64v8-sample-gstreamer-simple-pipeline-vivante
+  stage: build-multiarch
+  needs: ["build-gstreamer-simple-pipeline"]
 
 # Docker deploy jobs
 #
