@@ -79,6 +79,7 @@ stages:
   - build-gpio-c
   - build-dlr-gstreamer
   - build-uart-gps-python
+  - build-collectd
   - build-multiarch
   - deploy-major
   - deploy-minor
@@ -315,6 +316,34 @@ docker-build-uart-gps-python-arm64v8:
     DOCKERFILE_FOLDER: "gps/python/"
   stage: build-uart-gps-python
 
+docker-build-collectd:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm32v7-sample-collectd
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    DOCKERFILE_FOLDER: "grafana/"
+  stage: build-collectd
+
+docker-build-collectd-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm64v8-sample-collectd
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    DOCKERFILE_FOLDER: "grafana/"
+  stage: build-collectd
+
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
     - mkdir -p $HOME/.docker
@@ -388,6 +417,15 @@ docker-build-uart-gps-python-multiarch:
     IMAGE_NAME_64: arm64v8-sample-uart-gps-python
   stage: build-multiarch
   needs: ["build-uart-gps-python"]
+
+docker-build-collectd-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-collectd
+    IMAGE_NAME_32: arm32v7-sample-collectd
+    IMAGE_NAME_64: arm64v8-sample-collectd
+  stage: build-multiarch
+  needs: ["build-collectd"]
 
 # Docker deploy jobs
 #
