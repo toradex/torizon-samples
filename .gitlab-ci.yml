@@ -93,6 +93,7 @@ stages:
   - build-uart-sht31-flask-app
   - build-uart-sht31-influxdb
   - build-uart-sht31-kiosk
+  - build-tflite
   - deploy-major
   - deploy-minor
   - deploy-patch
@@ -576,6 +577,36 @@ docker-build-uart-sht31-kiosk-arm64v8:
     DOCKERFILE_FOLDER: "sht31/kiosk/"
   stage: build-uart-sht31-kiosk
 
+docker-build-tflite:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm32v7-sample-tflite
+    IMAGE_ARCH: linux/arm/v7
+    PKG_ARCH: armv7l
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    DOCKERFILE_FOLDER: "tflite/"
+  stage: build-tflite
+
+docker-build-tflite-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm64v8-sample-tflite
+    IMAGE_ARCH: linux/arm64/v8
+    PKG_ARCH: aarch64
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    DOCKERFILE_FOLDER: "tflite/"
+  stage: build-tflite
+
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
     - mkdir -p $HOME/.docker
@@ -717,6 +748,15 @@ docker-build-uart-sht31-kiosk-multiarch:
     IMAGE_NAME_64: arm64v8-sample-uart-sht31-kiosk-vivante
   stage: build-multiarch
   needs: ["build-uart-sht31-kiosk"]
+
+docker-build-tflite-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-tflite
+    IMAGE_NAME_32: arm32v7-sample-tflite
+    IMAGE_NAME_64: arm64v8-sample-tflite
+  stage: build-multiarch
+  needs: ["build-tflite"]
 
 # Docker deploy jobs
 #

@@ -1,11 +1,13 @@
-ARG ARCH_ARG=linux/arm64
+ARG BASE_NAME=debian
+ARG IMAGE_ARCH=linux/arm64/v8
 # For arm32 use:
-# ARG ARCH_ARG=linux/arm
+# ARG IMAGE_ARCH=linux/arm/v7
+ARG IMAGE_TAG=2-bullseye
 ARG PKG_ARCH=aarch64
 # For arm32v7 use: 
 # ARG PKG_ARCH=armv7l
 
-FROM --platform=$ARCH_ARG torizon/debian:2-bullseye
+FROM --platform=$IMAGE_ARCH torizon/$BASE_NAME:$IMAGE_TAG
 WORKDIR /home/torizon
 
 ARG PKG_ARCH
