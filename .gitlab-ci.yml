@@ -84,6 +84,7 @@ stages:
   - build-gstreamer-simple-pipeline
   - build-opencl
   - build-opencv
+  - build-pwm
   - deploy-major
   - deploy-minor
   - deploy-patch
@@ -405,6 +406,38 @@ docker-build-opencv-arm64v8:
     DOCKERFILE_FOLDER: "opencv/"
   stage: build-opencv
 
+docker-build-pwm:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm32v7-sample-pwm
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    CROSS_TC_IMAGE_ARCH: armhf
+    GCC_PREFIX: arm-linux-gnueabihf
+    DOCKERFILE_FOLDER: "pwm/"
+  stage: build-pwm
+
+docker-build-pwm-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm64v8-sample-pwm
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    CROSS_TC_IMAGE_ARCH: arm64
+    GCC_PREFIX: aarch64-linux-gnu
+    DOCKERFILE_FOLDER: "pwm/"
+  stage: build-pwm
+
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
     - mkdir -p $HOME/.docker
@@ -496,6 +529,15 @@ docker-build-gstreamer-simple-pipeline-multiarch:
     IMAGE_NAME_64: arm64v8-sample-gstreamer-simple-pipeline-vivante
   stage: build-multiarch
   needs: ["build-gstreamer-simple-pipeline"]
+
+docker-build-pwm-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-pwm
+    IMAGE_NAME_32: arm32v7-sample-pwm
+    IMAGE_NAME_64: arm64v8-sample-pwm
+  stage: build-multiarch
+  needs: ["build-pwm"]
 
 # Docker deploy jobs
 #
