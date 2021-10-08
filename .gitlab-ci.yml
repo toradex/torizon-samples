@@ -234,6 +234,38 @@ docker-build-gpio-bash-arm64v8:
     DOCKERFILE_FOLDER: "gpio/bash/"
   stage: build-demos
 
+docker-build-gpio-c:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm32v7-sample-gpio-c
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    CROSS_TC_IMAGE_ARCH: armhf
+    GCC_PREFIX: arm-linux-gnueabihf
+    DOCKERFILE_FOLDER: "gpio/c/"
+  stage: build-demos
+
+docker-build-gpio-c-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm64v8-sample-gpio-c
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    CROSS_TC_IMAGE_ARCH: arm64
+    GCC_PREFIX: aarch64-linux-gnu
+    DOCKERFILE_FOLDER: "gpio/c/"
+  stage: build-demos
+
 # Only for 64-bit vivante arch
 docker-build-dlr-gstreamer-arm64v8:
   extends: .docker-build
@@ -299,6 +331,14 @@ docker-build-gpio-bash-multiarch:
     IMAGE_NAME: sample-gpio-bash
     IMAGE_NAME_32: arm32v7-sample-gpio-bash
     IMAGE_NAME_64: arm64v8-sample-gpio-bash
+  stage: build-multiarch
+
+docker-build-gpio-c-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-gpio-c
+    IMAGE_NAME_32: arm32v7-sample-gpio-c
+    IMAGE_NAME_64: arm64v8-sample-gpio-c
   stage: build-multiarch
 
 # Docker deploy jobs

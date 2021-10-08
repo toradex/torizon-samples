@@ -1,11 +1,17 @@
+ARG CROSS_TC_IMAGE_ARCH=armhf
+ARG BASE_NAME=debian
+ARG IMAGE_ARCH=linux/arm/v7
 ARG IMAGE_TAG=2-bullseye
+
 # First stage, x86_64 build container
-FROM torizon/debian-cross-toolchain-arm64:2 AS cross-container
+FROM torizon/debian-cross-toolchain-$CROSS_TC_IMAGE_ARCH:$IMAGE_TAG AS cross-container
+ARG GCC_PREFIX=arm-linux-gnueabihf
+ARG CROSS_TC_IMAGE_ARCH
 
 # install the libpiod development dependencies
 RUN apt-get -y update && apt-get -y upgrade && apt-get install -y \
-    libgpiod-dev:arm64 \
-    libgpiod2:arm64 \
+    libgpiod-dev:$CROSS_TC_IMAGE_ARCH \
+    libgpiod2:$CROSS_TC_IMAGE_ARCH \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # copy project source
@@ -14,11 +20,11 @@ COPY . /project
 
 # compile
 RUN mkdir build && cd build \
-    && aarch64-linux-gnu-gcc -o gpio-toggle ../gpio-toggle.c -lgpiod \
-    && aarch64-linux-gnu-gcc -o gpio-event ../gpio-event.c -lgpiod
+    && $GCC_PREFIX-gcc -o gpio-toggle ../gpio-toggle.c -lgpiod \
+    && $GCC_PREFIX-gcc -o gpio-event ../gpio-event.c -lgpiod
 
-# Second stage, arm64v8 container for target
-FROM --platform=linux/arm64 torizon/debian:$IMAGE_TAG AS deploy-container
+# Second stage, container for target
+FROM --platform=$IMAGE_ARCH torizon/$BASE_NAME:$IMAGE_TAG AS deploy-container
 
 # To run examples we only need the libgpiod2 library. The gpiod package can
 # be helpful for debugging.
@@ -32,4 +38,5 @@ COPY --from=cross-container /project/build/* /usr/local/bin/
 
 # Use CMD to pass the GPIO bank line arguments
 # Apalis iMX8 MXM3 pin 5 (Apalis GPIO3) is LSIO.GPIO0.IO12
+# Apalis iMX6 MXM3 pin 5 (Apalis GPIO3) is GPIO2_IO6
 CMD [ "/bin/bash" ]
