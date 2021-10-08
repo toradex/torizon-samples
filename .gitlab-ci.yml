@@ -94,6 +94,7 @@ stages:
   - build-uart-sht31-influxdb
   - build-uart-sht31-kiosk
   - build-tflite
+  - build-weather
   - deploy-major
   - deploy-minor
   - deploy-patch
@@ -607,6 +608,38 @@ docker-build-tflite-arm64v8:
     DOCKERFILE_FOLDER: "tflite/"
   stage: build-tflite
 
+docker-build-weather:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm32v7-sample-weather
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    CROSS_TC_IMAGE_ARCH: armhf
+    TOOLCHAIN_ARCH: armhf
+    DOCKERFILE_FOLDER: "weather/"
+  stage: build-weather
+
+docker-build-weather-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: debian
+    IMAGE_NAME: arm64v8-sample-weather
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    CROSS_TC_IMAGE_ARCH: arm64
+    TOOLCHAIN_ARCH: aarch64
+    DOCKERFILE_FOLDER: "weather/"
+  stage: build-weather
+
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
     - mkdir -p $HOME/.docker
@@ -757,6 +790,15 @@ docker-build-tflite-multiarch:
     IMAGE_NAME_64: arm64v8-sample-tflite
   stage: build-multiarch
   needs: ["build-tflite"]
+
+docker-build-weather-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-weather
+    IMAGE_NAME_32: arm32v7-sample-weather
+    IMAGE_NAME_64: arm64v8-sample-weather
+  stage: build-multiarch
+  needs: ["build-weather"]
 
 # Docker deploy jobs
 #
