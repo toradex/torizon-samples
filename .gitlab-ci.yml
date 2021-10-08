@@ -124,6 +124,10 @@ stages:
                      --build-arg DOCKER_REGISTRY=${CI_REGISTRY_IMAGE}
                      --build-arg BASE_NAME=${BASE_NAME}
                      --build-arg IMAGE_TAG=${IMAGE_TAG}
+                     --build-arg GCC_PREFIX=${GCC_PREFIX}
+                     --build-arg CROSS_TC_IMAGE_ARCH=${CROSS_TC_IMAGE_ARCH}
+                     --build-arg TOOLCHAIN_ARCH=${TOOLCHAIN_ARCH}
+                     --build-arg PKG_ARCH=${PKG_ARCH}
                      --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
                      --cache-from ${CI_REGISTRY}/rd/torizon-core/samples/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
                      ${DOCKER_NO_CACHE:+--no-cache}
