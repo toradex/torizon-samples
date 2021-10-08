@@ -1,4 +1,4 @@
-    ## Python QML Integration 
+## Python QML Integration
 
 In this sample code, UI is designed in QML and integrated with python project
 using PySide2. When user click on the button, humidity and temperature is read 

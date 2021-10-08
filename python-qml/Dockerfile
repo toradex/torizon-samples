@@ -1,17 +1,18 @@
-ARG IMAGE_ARCH=linux/arm
-# For arm64 use:
-# ARG IMAGE_ARCH=linux/arm64
-ARG IMAGE_NAME=qt5-wayland
+ARG BASE_NAME=qt5-wayland
 # For arm64 without Vivante use:
-# ARG IMAGE_NAME=qt5-wayland
-# arm64 with Vivante(ARG IMAGE_NAME=qt5-wayland-vivante) is currently not
+# ARG BASE_NAME=qt5-wayland
+# arm64 with Vivante(ARG BASE_NAME=qt5-wayland-vivante) is currently not
 # supported as python3-pyside2.qtgui is not co-installable with libqt5qui5-gles
 # See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=974101
+ARG IMAGE_ARCH=linux/arm/v7
+# For arm64 use:
+# ARG IMAGE_ARCH=linux/arm64
+ARG IMAGE_TAG=2
 
 ARG APPNAME=show_readings.py
 
 # Build the sample python-qml container.
-FROM --platform=$IMAGE_ARCH torizon/$IMAGE_NAME:2
+FROM --platform=$IMAGE_ARCH torizon/$BASE_NAME:$IMAGE_TAG
 
 ARG APPNAME
 

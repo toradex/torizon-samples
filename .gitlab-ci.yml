@@ -85,6 +85,7 @@ stages:
   - build-opencl
   - build-opencv
   - build-pwm
+  - build-qt5-python-qml
   - deploy-major
   - deploy-minor
   - deploy-patch
@@ -438,6 +439,52 @@ docker-build-pwm-arm64v8:
     DOCKERFILE_FOLDER: "pwm/"
   stage: build-pwm
 
+docker-build-qt5-python-qml:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${QT5_WAYLAND_MAJOR}"
+    - export MINOR="${QT5_WAYLAND_MINOR}"
+    - export PATCH="${QT5_WAYLAND_PATCH}"
+  variables:
+    BASE_NAME: qt5-wayland
+    IMAGE_NAME: arm32v7-sample-qt5-python-qml
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${QT5_WAYLAND_MAJOR}
+    DOCKERFILE_FOLDER: "python-qml/"
+  stage: build-qt5-python-qml
+
+docker-build-qt5-python-qml-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${QT5_WAYLAND_MAJOR}"
+    - export MINOR="${QT5_WAYLAND_MINOR}"
+    - export PATCH="${QT5_WAYLAND_PATCH}"
+  variables:
+    BASE_NAME: qt5-wayland
+    IMAGE_NAME: arm64v8-sample-qt5-python-qml
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${QT5_WAYLAND_MAJOR}
+    DOCKERFILE_FOLDER: "python-qml/"
+  stage: build-qt5-python-qml
+
+docker-build-qt5-python-qml-arm64v8-vivante:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${QT5_WAYLAND_VIVANTE_MAJOR}"
+    - export MINOR="${QT5_WAYLAND_VIVANTE_MINOR}"
+    - export PATCH="${QT5_WAYLAND_VIVANTE_PATCH}"
+  variables:
+    BASE_NAME: qt5-wayland-vivante
+    IMAGE_NAME: arm64v8-sample-qt5-python-qml-vivante
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${QT5_WAYLAND_VIVANTE_MAJOR}
+    DOCKERFILE_FOLDER: "python-qml/"
+  stage: build-qt5-python-qml
+  # arm64 with Vivante(ARG BASE_NAME=qt5-wayland-vivante) is currently not
+  # supported as python3-pyside2.qtgui is not co-installable with libqt5qui5-gles
+  # See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=974101
+  allow_failure: true
+
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
     - mkdir -p $HOME/.docker
@@ -538,6 +585,20 @@ docker-build-pwm-multiarch:
     IMAGE_NAME_64: arm64v8-sample-pwm
   stage: build-multiarch
   needs: ["build-pwm"]
+
+docker-build-qt5-python-qml-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-qt5-python-qml
+    IMAGE_NAME_32: arm32v7-sample-qt5-python-qml
+    # IMAGE_NAME_64: arm64v8-sample-qt5-python-qml-vivante
+    # Use the non-vivante package until it's working
+    # arm64 with Vivante(ARG BASE_NAME=qt5-wayland-vivante) is currently not
+    # supported as python3-pyside2.qtgui is not co-installable with libqt5qui5-gles
+    # See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=974101
+    IMAGE_NAME_64: arm64v8-sample-qt5-python-qml
+  stage: build-multiarch
+  needs: ["build-qt5-python-qml"]
 
 # Docker deploy jobs
 #
