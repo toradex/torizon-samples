@@ -72,7 +72,12 @@ before_script:
   - docker info
 
 stages:
-  - build-demos
+  - build-adc
+  - build-dbus-tools
+  - build-dbus-python
+  - build-gpio-bash
+  - build-gpio-c
+  - build-dlr-gstreamer
   - build-multiarch
   - deploy-major
   - deploy-minor
@@ -132,7 +137,7 @@ docker-build-adc:
     CROSS_TC_IMAGE_ARCH: armhf
     GCC_PREFIX: arm-linux-gnueabihf
     DOCKERFILE_FOLDER: "adc/"
-  stage: build-demos
+  stage: build-adc
 
 docker-build-adc-arm64v8:
   extends: .docker-build
@@ -148,7 +153,7 @@ docker-build-adc-arm64v8:
     CROSS_TC_IMAGE_ARCH: arm64
     GCC_PREFIX: aarch64-linux-gnu
     DOCKERFILE_FOLDER: "adc/"
-  stage: build-demos
+  stage: build-adc
 
 docker-build-dbus-tools:
   extends: .docker-build
@@ -162,7 +167,7 @@ docker-build-dbus-tools:
     IMAGE_ARCH: linux/arm/v7
     IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
     DOCKERFILE_FOLDER: "dbus/tools/"
-  stage: build-demos
+  stage: build-dbus-tools
 
 docker-build-dbus-tools-arm64v8:
   extends: .docker-build
@@ -176,7 +181,7 @@ docker-build-dbus-tools-arm64v8:
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
     DOCKERFILE_FOLDER: "dbus/tools/"
-  stage: build-demos
+  stage: build-dbus-tools
 
 docker-build-dbus-python:
   extends: .docker-build
@@ -190,7 +195,7 @@ docker-build-dbus-python:
     IMAGE_ARCH: linux/arm/v7
     IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
     DOCKERFILE_FOLDER: "dbus/python/"
-  stage: build-demos
+  stage: build-dbus-python
 
 docker-build-dbus-python-arm64v8:
   extends: .docker-build
@@ -204,7 +209,7 @@ docker-build-dbus-python-arm64v8:
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
     DOCKERFILE_FOLDER: "dbus/python/"
-  stage: build-demos
+  stage: build-dbus-python
 
 docker-build-gpio-bash:
   extends: .docker-build
@@ -218,7 +223,7 @@ docker-build-gpio-bash:
     IMAGE_ARCH: linux/arm/v7
     IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
     DOCKERFILE_FOLDER: "gpio/bash/"
-  stage: build-demos
+  stage: build-gpio-bash
 
 docker-build-gpio-bash-arm64v8:
   extends: .docker-build
@@ -232,7 +237,7 @@ docker-build-gpio-bash-arm64v8:
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
     DOCKERFILE_FOLDER: "gpio/bash/"
-  stage: build-demos
+  stage: build-gpio-bash
 
 docker-build-gpio-c:
   extends: .docker-build
@@ -248,7 +253,7 @@ docker-build-gpio-c:
     CROSS_TC_IMAGE_ARCH: armhf
     GCC_PREFIX: arm-linux-gnueabihf
     DOCKERFILE_FOLDER: "gpio/c/"
-  stage: build-demos
+  stage: build-gpio-c
 
 docker-build-gpio-c-arm64v8:
   extends: .docker-build
@@ -264,7 +269,7 @@ docker-build-gpio-c-arm64v8:
     CROSS_TC_IMAGE_ARCH: arm64
     GCC_PREFIX: aarch64-linux-gnu
     DOCKERFILE_FOLDER: "gpio/c/"
-  stage: build-demos
+  stage: build-gpio-c
 
 # Only for 64-bit vivante arch
 docker-build-dlr-gstreamer-arm64v8:
@@ -279,7 +284,7 @@ docker-build-dlr-gstreamer-arm64v8:
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_TAG: ${WAYLAND_BASE_VIVANTE_MAJOR}
     DOCKERFILE_FOLDER: "dlr-gstreamer/"
-  stage: build-demos
+  stage: build-dlr-gstreamer
 
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
