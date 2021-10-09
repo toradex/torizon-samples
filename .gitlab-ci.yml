@@ -69,6 +69,10 @@ variables:
   GITLAB_DOCKERREGISTRY_SUFFIX: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
   GITLAB_DOCKERREGISTRY_SUFFIX_LATEST: ${CI_COMMIT_REF_SLUG}-latest
 
+  DEBIAN_DOCKER_REGISTRY: ${CI_REGISTRY}/rd/torizon-core-containers/debian-docker-images
+  CROSS_TC_DOCKER_REGISTRY: ${CI_REGISTRY}/rd/torizon-core-containers/debian-cross-toolchains
+  KIOSK_DOCKER_REGISTRY: ${CI_REGISTRY}/rd/torizon-core-containers/kiosk-mode-browser
+
 services:
   - name: docker:dind
 
@@ -122,7 +126,9 @@ stages:
     # Ignore error "sh: write error: File exists" when installing qemu-user-static
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || true
     - docker build --build-arg IMAGE_ARCH=${IMAGE_ARCH}
-                     --build-arg DOCKER_REGISTRY=${CI_REGISTRY_IMAGE}
+                     --build-arg DOCKER_REGISTRY=${DEBIAN_DOCKER_REGISTRY}
+                     --build-arg KIOSK_DOCKER_REGISTRY=${KIOSK_DOCKER_REGISTRY}
+                     --build-arg CROSS_TC_DOCKER_REGISTRY=${CROSS_TC_DOCKER_REGISTRY}
                      --build-arg BASE_NAME=${BASE_NAME}
                      --build-arg IMAGE_TAG=${IMAGE_TAG}
                      --build-arg GCC_PREFIX=${GCC_PREFIX}

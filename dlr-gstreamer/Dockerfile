@@ -1,8 +1,9 @@
 ARG BASE_NAME=wayland-base-vivante
 ARG IMAGE_ARCH=linux/arm64/v8
 ARG IMAGE_TAG=2
+ARG DOCKER_REGISTRY=torizon
 
-FROM --platform=$IMAGE_ARCH torizon/$BASE_NAME:$IMAGE_TAG
+FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG
 
 WORKDIR /home/torizon
 

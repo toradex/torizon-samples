@@ -6,8 +6,9 @@ ARG IMAGE_TAG=2-bullseye
 ARG PKG_ARCH=aarch64
 # For arm32v7 use: 
 # ARG PKG_ARCH=armv7l
+ARG DOCKER_REGISTRY=torizon
 
-FROM --platform=$IMAGE_ARCH torizon/$BASE_NAME:$IMAGE_TAG
+FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG
 WORKDIR /home/torizon
 
 ARG PKG_ARCH

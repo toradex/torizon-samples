@@ -8,11 +8,12 @@ ARG IMAGE_ARCH=linux/arm/v7
 # For arm64 use:
 # ARG IMAGE_ARCH=linux/arm64
 ARG IMAGE_TAG=2
+ARG DOCKER_REGISTRY=torizon
 
 ARG APPNAME=show_readings.py
 
 # Build the sample python-qml container.
-FROM --platform=$IMAGE_ARCH torizon/$BASE_NAME:$IMAGE_TAG
+FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG
 
 ARG APPNAME
 
