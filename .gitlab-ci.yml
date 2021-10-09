@@ -157,10 +157,10 @@ docker-build-adc:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm32v7-sample-adc
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     CROSS_TC_IMAGE_ARCH: armhf
     GCC_PREFIX: arm-linux-gnueabihf
     DOCKERFILE_FOLDER: "adc/"
@@ -173,10 +173,10 @@ docker-build-adc-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm64v8-sample-adc
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     CROSS_TC_IMAGE_ARCH: arm64
     GCC_PREFIX: aarch64-linux-gnu
     DOCKERFILE_FOLDER: "adc/"
@@ -189,10 +189,10 @@ docker-build-dbus-tools:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm32v7-sample-dbus-tools
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "dbus/tools/"
   stage: build-dbus-tools
 
@@ -203,10 +203,10 @@ docker-build-dbus-tools-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm64v8-sample-dbus-tools
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "dbus/tools/"
   stage: build-dbus-tools
 
@@ -217,10 +217,10 @@ docker-build-dbus-python:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm32v7-sample-dbus-python
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "dbus/python/"
   stage: build-dbus-python
 
@@ -231,10 +231,10 @@ docker-build-dbus-python-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm64v8-sample-dbus-python
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "dbus/python/"
   stage: build-dbus-python
 
@@ -245,10 +245,10 @@ docker-build-gpio-bash:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm32v7-sample-gpio-bash
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "gpio/bash/"
   stage: build-gpio-bash
 
@@ -259,10 +259,10 @@ docker-build-gpio-bash-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm64v8-sample-gpio-bash
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "gpio/bash/"
   stage: build-gpio-bash
 
@@ -273,10 +273,10 @@ docker-build-gpio-c:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm32v7-sample-gpio-c
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     CROSS_TC_IMAGE_ARCH: armhf
     GCC_PREFIX: arm-linux-gnueabihf
     DOCKERFILE_FOLDER: "gpio/c/"
@@ -289,10 +289,10 @@ docker-build-gpio-c-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm64v8-sample-gpio-c
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     CROSS_TC_IMAGE_ARCH: arm64
     GCC_PREFIX: aarch64-linux-gnu
     DOCKERFILE_FOLDER: "gpio/c/"
@@ -309,7 +309,7 @@ docker-build-dlr-gstreamer-arm64v8:
     BASE_NAME: wayland-base-vivante
     IMAGE_NAME: arm64v8-sample-dlr-gstreamer-vivante
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${WAYLAND_BASE_VIVANTE_MAJOR}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "dlr-gstreamer/"
   stage: build-dlr-gstreamer
 
@@ -320,10 +320,10 @@ docker-build-uart-gps-python:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm32v7-sample-uart-gps-python
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "gps/python/"
   stage: build-uart-gps-python
 
@@ -334,10 +334,10 @@ docker-build-uart-gps-python-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm64v8-sample-uart-gps-python
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "gps/python/"
   stage: build-uart-gps-python
 
@@ -348,10 +348,10 @@ docker-build-collectd:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm32v7-sample-collectd
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "grafana/"
   stage: build-collectd
 
@@ -362,10 +362,10 @@ docker-build-collectd-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm64v8-sample-collectd
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "grafana/"
   stage: build-collectd
 
@@ -379,7 +379,7 @@ docker-build-gstreamer-simple-pipeline:
     BASE_NAME: wayland-base
     IMAGE_NAME: arm32v7-sample-gstreamer-simple-pipeline
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${WAYLAND_BASE_MAJOR}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "gstreamer/bash/simple-pipeline/"
   stage: build-gstreamer-simple-pipeline
 
@@ -393,7 +393,7 @@ docker-build-gstreamer-simple-pipeline-arm64v8:
     BASE_NAME: wayland-base-vivante
     IMAGE_NAME: arm64v8-sample-gstreamer-simple-pipeline-vivante
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${WAYLAND_BASE_VIVANTE_MAJOR}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "gstreamer/bash/simple-pipeline/"
   stage: build-gstreamer-simple-pipeline
 
@@ -408,7 +408,7 @@ docker-build-opencl-arm64v8:
     BASE_NAME: wayland-base-vivante
     IMAGE_NAME: arm64v8-sample-opencl-vivante
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${WAYLAND_BASE_VIVANTE_MAJOR}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "opencl/"
   stage: build-opencl
 
@@ -423,7 +423,7 @@ docker-build-opencv-arm64v8:
     BASE_NAME: wayland-base-vivante
     IMAGE_NAME: arm64v8-sample-opencv-vivante
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${WAYLAND_BASE_VIVANTE_MAJOR}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "opencv/"
   stage: build-opencv
 
@@ -434,10 +434,10 @@ docker-build-pwm:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm32v7-sample-pwm
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     CROSS_TC_IMAGE_ARCH: armhf
     GCC_PREFIX: arm-linux-gnueabihf
     DOCKERFILE_FOLDER: "pwm/"
@@ -450,10 +450,10 @@ docker-build-pwm-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm64v8-sample-pwm
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     CROSS_TC_IMAGE_ARCH: arm64
     GCC_PREFIX: aarch64-linux-gnu
     DOCKERFILE_FOLDER: "pwm/"
@@ -469,7 +469,7 @@ docker-build-qt5-python-qml:
     BASE_NAME: qt5-wayland
     IMAGE_NAME: arm32v7-sample-qt5-python-qml
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${QT5_WAYLAND_MAJOR}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "python-qml/"
   stage: build-qt5-python-qml
 
@@ -483,7 +483,7 @@ docker-build-qt5-python-qml-arm64v8:
     BASE_NAME: qt5-wayland
     IMAGE_NAME: arm64v8-sample-qt5-python-qml
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${QT5_WAYLAND_MAJOR}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "python-qml/"
   stage: build-qt5-python-qml
 
@@ -497,7 +497,7 @@ docker-build-qt5-python-qml-arm64v8-vivante:
     BASE_NAME: qt5-wayland-vivante
     IMAGE_NAME: arm64v8-sample-qt5-python-qml-vivante
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${QT5_WAYLAND_VIVANTE_MAJOR}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "python-qml/"
   stage: build-qt5-python-qml
   # arm64 with Vivante(ARG BASE_NAME=qt5-wayland-vivante) is currently not
@@ -512,10 +512,10 @@ docker-build-uart-sht31-flask-app:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm32v7-sample-uart-sht31-flask-app
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "sht31/flaskapp/"
   stage: build-uart-sht31-flask-app
 
@@ -526,10 +526,10 @@ docker-build-uart-sht31-flask-app-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm64v8-sample-uart-sht31-flask-app
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "sht31/flaskapp/"
   stage: build-uart-sht31-flask-app
 
@@ -540,10 +540,10 @@ docker-build-uart-sht31-influxdb:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm32v7-sample-uart-sht31-influxdb
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "sht31/sht31-influxdb/"
   stage: build-uart-sht31-influxdb
 
@@ -554,10 +554,10 @@ docker-build-uart-sht31-influxdb-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm64v8-sample-uart-sht31-influxdb
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "sht31/sht31-influxdb/"
   stage: build-uart-sht31-influxdb
 
@@ -571,7 +571,7 @@ docker-build-uart-sht31-kiosk:
     BASE_NAME: kiosk-mode-browser
     IMAGE_NAME: arm32v7-sample-uart-sht31-kiosk
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${KIOSK_MODE_BROWSER_MAJOR}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "sht31/kiosk/"
   stage: build-uart-sht31-kiosk
 
@@ -585,7 +585,7 @@ docker-build-uart-sht31-kiosk-arm64v8:
     BASE_NAME: kiosk-mode-browser-vivante
     IMAGE_NAME: arm64v8-sample-uart-sht31-kiosk-vivante
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${KIOSK_MODE_BROWSER_MAJOR}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "sht31/kiosk/"
   stage: build-uart-sht31-kiosk
 
@@ -596,11 +596,11 @@ docker-build-tflite:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm32v7-sample-tflite
     IMAGE_ARCH: linux/arm/v7
     PKG_ARCH: armv7l
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "tflite/"
   stage: build-tflite
 
@@ -611,11 +611,11 @@ docker-build-tflite-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm64v8-sample-tflite
     IMAGE_ARCH: linux/arm64/v8
     PKG_ARCH: aarch64
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     DOCKERFILE_FOLDER: "tflite/"
   stage: build-tflite
 
@@ -626,10 +626,10 @@ docker-build-weather:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm32v7-sample-weather
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     CROSS_TC_IMAGE_ARCH: armhf
     TOOLCHAIN_ARCH: armhf
     DOCKERFILE_FOLDER: "weather/"
@@ -642,10 +642,10 @@ docker-build-weather-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: debian
+    BASE_NAME: base
     IMAGE_NAME: arm64v8-sample-weather
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     CROSS_TC_IMAGE_ARCH: arm64
     TOOLCHAIN_ARCH: aarch64
     DOCKERFILE_FOLDER: "weather/"
