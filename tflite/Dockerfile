@@ -12,28 +12,32 @@ WORKDIR /home/torizon
 
 ARG PKG_ARCH
 
-## Install Python
+# Install utils, app dependencies and TensorFlow Lite with APT
+# https://www.tensorflow.org/lite/guide/python#install_tensorflow_lite_for_python
 RUN apt-get -y update && apt-get install -y \
-  python3 \
-  python3-dev \
-  python3-numpy \
-  python3-pil \
-  python3-pip \
-  python3-setuptools \
-  python3-wheel \
+  curl unzip gnupg \
+  && echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | \
+    tee /etc/apt/sources.list.d/coral-edgetpu.list \
+  && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - \
+  && apt-get -y update && apt-get install -y \
+    python3-tflite-runtime \
+    python3-pil \
+  && apt-get remove gnupg \
   && apt-get clean && apt-get autoremove
 
-## Install utils
-RUN apt-get -y update && apt-get install -y \
-  wget unzip \
-  && apt-get clean && apt-get autoremove
-
-# Install Tensorflow Lite
-RUN wget https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp38-cp38-linux_${PKG_ARCH}.whl && pip3 install tflite_runtime-* && rm tflite_runtime-*
+# Anternative: Install utils and app dependencies with APT, Tensorflow Lite with PIP
+# https://www.tensorflow.org/lite/guide/python#install_tensorflow_lite_for_python
+#RUN apt-get -y update && apt-get install -y \
+#  curl unzip \
+#  python3-numpy \
+#  python3-pil \
+#  python3-pip \
+#  && pip3 install --index-url https://google-coral.github.io/py-repo/ tflite_runtime \
+#  && apt-get clean && apt-get autoremove
 
 # Download the model
 ENV MODEL_LINK https://storage.googleapis.com/download.tensorflow.org/models/tflite/mobilenet_v1_1.0_224_quant_and_labels.zip
-RUN wget -O model.zip $MODEL_LINK && unzip model.zip && rm -rf __MACOSX model.zip
+RUN curl -o model.zip $MODEL_LINK && unzip model.zip && rm -rf __MACOSX model.zip
 
 # Copy files
 COPY image.jpg .
