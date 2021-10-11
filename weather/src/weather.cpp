@@ -17,7 +17,6 @@ int main()
     std::time_t timeTmp;
     std::stringstream ts;
     GetOWMStruct serverResponse;
-    Json::Reader jsonReader;
     Json::Value jsonObject;
     WeatherStruct data;
 
@@ -61,7 +60,8 @@ int main()
         return EXIT_FAILURE;
     }
 
-    jsonReader.parse(serverResponse.message, jsonObject);
+    std::istringstream response(serverResponse.message);
+    response >> jsonObject;
 
     std::cout << "Upload forecast to influxdb";
     for (int dpoint = 0; dpoint < 40; dpoint++)
@@ -112,7 +112,8 @@ int main()
             return EXIT_FAILURE;
         }
 
-        jsonReader.parse(serverResponse.message, jsonObject);
+        std::istringstream response(serverResponse.message);
+        response >> jsonObject;
         data.temperature.temperature = jsonObject["main"]["temp"].asFloat();
         data.temperature.feels_like = jsonObject["main"]["feels_like"].asFloat();
         data.temperature.min = jsonObject["main"]["temp_min"].asFloat();

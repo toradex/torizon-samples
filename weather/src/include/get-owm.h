@@ -20,7 +20,7 @@ struct GetOWMStruct
 };
 
 const std::string GETOWM_CORE_VERSION = "1.1";
-const signed long GETOWM_CURL_TIMEOUT = 5000L;
+const signed long GETOWM_CURL_TIMEOUT = 10000L;
 const std::string GETOWM_USER_AGENT = "GetOWM-agent/" + GETOWM_CORE_VERSION;
 
 class GetOWM

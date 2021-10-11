@@ -1,12 +1,13 @@
-# current weather and forecast app for influxdb/grafana using openweathermap api
+# Multi-container C++ app with a DB and a chart plot tool
 
-**Deprecation Notice**
+This sample showcases how to use multiple containers on Torizon, being one of
+them a C++ based app with an external library. The openweathermap API was
+selected for the C++ sample because it may be a good template for you to
+use your own APIs.
 
-The influxdb-c++ library is not being maintained anymore.
-As of 2020-10-14, https://github.com/awegrzyn/influxdb-cxx shows the following warning:
-"This repository has been archived by the owner. It is now read-only.".
-
-Building this container currently fails under Debian Bullseye.
+Using InfluxDB and Grafana as database and visualization containers are meant
+to showcase that you can leverage the Docker ecosystem by using existing
+containers.
 
 ====
 
