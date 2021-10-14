@@ -32,7 +32,7 @@ services:
   opencv-example:
     depends_on:
       - weston
-    image: torizonextras/opencv-example-arm64
+    image: torizonextras/arm64v8-sample-opencv-vivante:2
     # Uncomment the line above if you want to grant access to a peripheral, ex: a USB Cam
     # devices:
     #   - /dev/video2:/dev/video2

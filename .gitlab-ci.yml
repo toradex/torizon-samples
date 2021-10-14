@@ -880,6 +880,14 @@ docker-deploy-dlr-gstreamer-arm64v8-major:
     IMAGE_NAME: arm64v8-sample-dlr-gstreamer-vivante
   stage: deploy-major
 
+docker-deploy-opencv-arm64v8-major:
+  extends: .docker-deploy-major
+  before_script:
+    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-opencv-vivante
+  stage: deploy-major
+
 .docker-deploy-minor:
   when: manual
   script:
@@ -936,6 +944,15 @@ docker-deploy-dlr-gstreamer-arm64v8-minor:
     - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
   variables:
     IMAGE_NAME: arm64v8-sample-dlr-gstreamer-vivante
+  stage: deploy-minor
+
+docker-deploy-opencv-arm64v8-minor:
+  extends: .docker-deploy-minor
+  before_script:
+    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
+    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-opencv-vivante
   stage: deploy-minor
 
 .docker-deploy-patch:
@@ -1003,6 +1020,16 @@ docker-deploy-dlr-gstreamer-arm64v8-patch:
     IMAGE_NAME: arm64v8-sample-dlr-gstreamer-vivante
   stage: deploy-patch
 
+docker-deploy-opencv-arm64v8-patch:
+  extends: .docker-deploy-patch
+  before_script:
+    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
+    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
+    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-opencv-vivante
+  stage: deploy-patch
+
 .docker-deploy-patch-date:
   when: manual
   script:
@@ -1067,6 +1094,16 @@ docker-deploy-dlr-gstreamer-arm64v8-patch-date:
     - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
   variables:
     IMAGE_NAME: arm64v8-sample-dlr-gstreamer-vivante
+  stage: deploy-patch-date
+
+docker-deploy-opencv-arm64v8-patch-date:
+  extends: .docker-deploy-patch-date
+  before_script:
+    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
+    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
+    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-opencv-vivante
   stage: deploy-patch-date
 
 .docker-deploy-multiarch-major:
