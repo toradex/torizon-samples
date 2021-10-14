@@ -24,7 +24,7 @@ docker run -d --rm --name=weston-container --net=host \
 
 Now the sample image can be run 
 ```
-docker run --rm --privileged -v /dev:/dev -v /tmp:/tmp <image name:tag>
+docker run --rm -d --privileged -v /dev:/dev -v /tmp:/tmp <image name:tag>
 ```
 A window should pop up with a button and two text fields. Now temperature and 
 humidity can be read by clicking on the button. 
