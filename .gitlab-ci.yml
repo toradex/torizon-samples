@@ -825,8 +825,8 @@ docker-build-weather-multiarch:
 # Make sure DOCKER_HUB_USER/DOCKER_HUB_PW is properly set in the project
 # specific Gitlab CI settings.
 
-# Since samples are not currently published, only the adc sample is setup below
-# as a guide, in case we decide to publish those images in the future.
+# Only a few samples are published to Docker Hub, therefore not every container
+# built internally has a deploy stage.
 .docker-deploy-major:
   when: manual
   script:
@@ -844,7 +844,7 @@ docker-deploy-adc-major:
   variables:
     IMAGE_NAME: arm32v7-sample-adc
   stage: deploy-major
-  
+
 docker-deploy-adc-arm64v8-major:
   extends: .docker-deploy-major
   before_script:
@@ -886,6 +886,24 @@ docker-deploy-opencv-arm64v8-major:
     - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
   variables:
     IMAGE_NAME: arm64v8-sample-opencv-vivante
+  stage: deploy-major
+
+docker-deploy-tflite-major:
+  extends: .docker-deploy-major
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-tflite
+  stage: deploy-major
+
+docker-deploy-tflite-arm64v8-major:
+  extends: .docker-deploy-major
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-tflite
   stage: deploy-major
 
 .docker-deploy-minor:
@@ -953,6 +971,26 @@ docker-deploy-opencv-arm64v8-minor:
     - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
   variables:
     IMAGE_NAME: arm64v8-sample-opencv-vivante
+  stage: deploy-minor
+
+docker-deploy-tflite-minor:
+  extends: .docker-deploy-minor
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-tflite
+  stage: deploy-minor
+
+docker-deploy-tflite-arm64v8-minor:
+  extends: .docker-deploy-minor
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-tflite
   stage: deploy-minor
 
 .docker-deploy-patch:
@@ -1028,6 +1066,28 @@ docker-deploy-opencv-arm64v8-patch:
     - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
   variables:
     IMAGE_NAME: arm64v8-sample-opencv-vivante
+  stage: deploy-patch
+
+docker-deploy-tflite-patch:
+  extends: .docker-deploy-patch
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-tflite
+  stage: deploy-patch
+
+docker-deploy-tflite-arm64v8-patch:
+  extends: .docker-deploy-patch
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-tflite
   stage: deploy-patch
 
 .docker-deploy-patch-date:
@@ -1106,6 +1166,28 @@ docker-deploy-opencv-arm64v8-patch-date:
     IMAGE_NAME: arm64v8-sample-opencv-vivante
   stage: deploy-patch-date
 
+docker-deploy-tflite-patch-date:
+  extends: .docker-deploy-patch-date
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-tflite
+  stage: deploy-patch-date
+
+docker-deploy-tflite-arm64v8-patch-date:
+  extends: .docker-deploy-patch-date
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-tflite
+  stage: deploy-patch-date
+
 .docker-deploy-multiarch-major:
   when: manual    
   script:
@@ -1138,6 +1220,17 @@ docker-deploy-gpio-bash-multiarch-major:
     IMAGE_NAME: sample-gpio-bash
     IMAGE_NAME_32: arm32v7-sample-gpio-bash
     IMAGE_NAME_64: arm64v8-sample-gpio-bash
+  stage: deploy-multiarch-major
+
+docker-deploy-tflite-multiarch-major:
+  extends: .docker-deploy-multiarch-major
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: sample-tflite
+    IMAGE_NAME_32: arm32v7-sample-tflite
+    IMAGE_NAME_64: arm64v8-sample-tflite
   stage: deploy-multiarch-major
 
 .docker-deploy-multiarch-minor:
@@ -1174,6 +1267,18 @@ docker-deploy-gpio-bash-multiarch-minor:
     IMAGE_NAME: sample-gpio-bash
     IMAGE_NAME_32: arm32v7-sample-gpio-bash
     IMAGE_NAME_64: arm64v8-sample-gpio-bash
+  stage: deploy-multiarch-minor
+
+docker-deploy-tflite-multiarch-minor:
+  extends: .docker-deploy-multiarch-minor
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+  variables:
+    IMAGE_NAME: sample-tflite
+    IMAGE_NAME_32: arm32v7-sample-tflite
+    IMAGE_NAME_64: arm64v8-sample-tflite
   stage: deploy-multiarch-minor
 
 .docker-deploy-multiarch-patch:
@@ -1215,6 +1320,19 @@ docker-deploy-gpio-bash-multiarch-patch:
     IMAGE_NAME_64: arm64v8-sample-gpio-bash
   stage: deploy-multiarch-patch
 
+docker-deploy-tflite-multiarch-patch:
+  extends: .docker-deploy-multiarch-patch
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: sample-tflite
+    IMAGE_NAME_32: arm32v7-sample-tflite
+    IMAGE_NAME_64: arm64v8-sample-tflite
+  stage: deploy-multiarch-patch
+
 .docker-deploy-multiarch-patch-date:
   when: manual
   script:
@@ -1253,4 +1371,17 @@ docker-deploy-gpio-bash-multiarch-patch-date:
     IMAGE_NAME: sample-gpio-bash
     IMAGE_NAME_32: arm32v7-sample-gpio-bash
     IMAGE_NAME_64: arm64v8-sample-gpio-bash
+  stage: deploy-multiarch-patch-date
+
+docker-deploy-tflite-multiarch-patch-date:
+  extends: .docker-deploy-multiarch-patch-date
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: sample-tflite
+    IMAGE_NAME_32: arm32v7-sample-tflite
+    IMAGE_NAME_64: arm64v8-sample-tflite
   stage: deploy-multiarch-patch-date
