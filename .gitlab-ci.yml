@@ -849,9 +849,27 @@ docker-deploy-adc-arm64v8-major:
   extends: .docker-deploy-major
   before_script:
     - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"    
+    - export MAJOR="${DEBIAN_MAJOR}"
   variables:
     IMAGE_NAME: arm64v8-sample-adc
+  stage: deploy-major
+
+docker-deploy-gpio-bash-major:
+  extends: .docker-deploy-major
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-gpio-bash
+  stage: deploy-major
+
+docker-deploy-gpio-bash-arm64v8-major:
+  extends: .docker-deploy-major
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-gpio-bash
   stage: deploy-major
 
 docker-deploy-dlr-gstreamer-arm64v8-major:
@@ -879,16 +897,36 @@ docker-deploy-adc-minor:
     - export MINOR="${DEBIAN_MINOR}"
   variables:
     IMAGE_NAME: arm32v7-sample-adc
-  stage: deploy-minor    
+  stage: deploy-minor
 
 docker-deploy-adc-arm64v8-minor:
   extends: .docker-deploy-minor
   before_script:
     - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"   
-    - export MINOR="${DEBIAN_MINOR}"    
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
   variables:
     IMAGE_NAME: arm64v8-sample-adc
+  stage: deploy-minor
+
+docker-deploy-gpio-bash-minor:
+  extends: .docker-deploy-minor
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-gpio-bash
+  stage: deploy-minor
+
+docker-deploy-gpio-bash-arm64v8-minor:
+  extends: .docker-deploy-minor
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-gpio-bash
   stage: deploy-minor
 
 docker-deploy-dlr-gstreamer-arm64v8-minor:
@@ -926,11 +964,33 @@ docker-deploy-adc-arm64v8-patch:
   extends: .docker-deploy-patch
   before_script:
     - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"   
-    - export MINOR="${DEBIAN_MINOR}"    
-    - export PATCH="${DEBIAN_PATCH}"    
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
   variables:
     IMAGE_NAME: arm64v8-sample-adc
+  stage: deploy-patch
+
+docker-deploy-gpio-bash-patch:
+  extends: .docker-deploy-patch
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-gpio-bash
+  stage: deploy-patch
+
+docker-deploy-gpio-bash-arm64v8-patch:
+  extends: .docker-deploy-patch
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-gpio-bash
   stage: deploy-patch
 
 docker-deploy-dlr-gstreamer-arm64v8-patch:
@@ -970,11 +1030,33 @@ docker-deploy-adc-arm64v8-patch-date:
   extends: .docker-deploy-patch-date
   before_script:
     - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"   
-    - export MINOR="${DEBIAN_MINOR}"    
-    - export PATCH="${DEBIAN_PATCH}"    
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
   variables:
     IMAGE_NAME: arm64v8-sample-adc
+  stage: deploy-patch-date
+
+docker-deploy-gpio-bash-patch-date:
+  extends: .docker-deploy-patch-date
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-gpio-bash
+  stage: deploy-patch-date
+
+docker-deploy-gpio-bash-arm64v8-patch-date:
+  extends: .docker-deploy-patch-date
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-gpio-bash
   stage: deploy-patch-date
 
 docker-deploy-dlr-gstreamer-arm64v8-patch-date:
@@ -1010,6 +1092,17 @@ docker-deploy-adc-multiarch-major:
     IMAGE_NAME_64: arm64v8-sample-adc
   stage: deploy-multiarch-major
 
+docker-deploy-gpio-bash-multiarch-major:
+  extends: .docker-deploy-multiarch-major
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: sample-gpio-bash
+    IMAGE_NAME_32: arm32v7-sample-gpio-bash
+    IMAGE_NAME_64: arm64v8-sample-gpio-bash
+  stage: deploy-multiarch-major
+
 .docker-deploy-multiarch-minor:
   when: manual    
   script:
@@ -1032,6 +1125,18 @@ docker-deploy-adc-multiarch-minor:
     IMAGE_NAME: sample-adc
     IMAGE_NAME_32: arm32v7-sample-adc
     IMAGE_NAME_64: arm64v8-sample-adc
+  stage: deploy-multiarch-minor
+
+docker-deploy-gpio-bash-multiarch-minor:
+  extends: .docker-deploy-multiarch-minor
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+  variables:
+    IMAGE_NAME: sample-gpio-bash
+    IMAGE_NAME_32: arm32v7-sample-gpio-bash
+    IMAGE_NAME_64: arm64v8-sample-gpio-bash
   stage: deploy-multiarch-minor
 
 .docker-deploy-multiarch-patch:
@@ -1060,6 +1165,19 @@ docker-deploy-adc-multiarch-patch:
     IMAGE_NAME_64: arm64v8-sample-adc
   stage: deploy-multiarch-patch
 
+docker-deploy-gpio-bash-multiarch-patch:
+  extends: .docker-deploy-multiarch-patch
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: sample-gpio-bash
+    IMAGE_NAME_32: arm32v7-sample-gpio-bash
+    IMAGE_NAME_64: arm64v8-sample-gpio-bash
+  stage: deploy-multiarch-patch
+
 .docker-deploy-multiarch-patch-date:
   when: manual
   script:
@@ -1085,4 +1203,17 @@ docker-deploy-adc-multiarch-patch-date:
     IMAGE_NAME: sample-adc
     IMAGE_NAME_32: arm32v7-sample-adc
     IMAGE_NAME_64: arm64v8-sample-adc
+  stage: deploy-multiarch-patch-date
+
+docker-deploy-gpio-bash-multiarch-patch-date:
+  extends: .docker-deploy-multiarch-patch-date
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: sample-gpio-bash
+    IMAGE_NAME_32: arm32v7-sample-gpio-bash
+    IMAGE_NAME_64: arm64v8-sample-gpio-bash
   stage: deploy-multiarch-patch-date
