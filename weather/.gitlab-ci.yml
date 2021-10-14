@@ -1,0 +1,50 @@
+# Stages
+stages:
+  - build
+  - build-multiarch
+
+# Scripts
+include:
+  - /.gitlab-ci-scripts.yml
+
+# Jobs
+docker-build-weather:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: base
+    IMAGE_NAME: arm32v7-sample-weather
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    CROSS_TC_IMAGE_ARCH: armhf
+    TOOLCHAIN_ARCH: armhf
+    DOCKERFILE_FOLDER: "weather/"
+  stage: build
+
+docker-build-weather-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: base
+    IMAGE_NAME: arm64v8-sample-weather
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    CROSS_TC_IMAGE_ARCH: arm64
+    TOOLCHAIN_ARCH: aarch64
+    DOCKERFILE_FOLDER: "weather/"
+  stage: build
+
+docker-build-weather-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-weather
+    IMAGE_NAME_32: arm32v7-sample-weather
+    IMAGE_NAME_64: arm64v8-sample-weather
+  stage: build-multiarch
+  needs: ["docker-build-weather", "docker-build-weather-arm64v8"]

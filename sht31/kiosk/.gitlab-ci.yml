@@ -1,0 +1,46 @@
+# Stages
+stages:
+  - build
+  - build-multiarch
+
+# Scripts
+include:
+  - /.gitlab-ci-scripts.yml
+
+# Jobs
+docker-build-uart-sht31-kiosk:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${KIOSK_MODE_BROWSER_MAJOR}"
+    - export MINOR="${KIOSK_MODE_BROWSER_MINOR}"
+    - export PATCH="${KIOSK_MODE_BROWSER_PATCH}"
+  variables:
+    BASE_NAME: kiosk-mode-browser
+    IMAGE_NAME: arm32v7-sample-uart-sht31-kiosk
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    DOCKERFILE_FOLDER: "sht31/kiosk/"
+  stage: build
+
+docker-build-uart-sht31-kiosk-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${KIOSK_MODE_BROWSER_MAJOR}"
+    - export MINOR="${KIOSK_MODE_BROWSER_MINOR}"
+    - export PATCH="${KIOSK_MODE_BROWSER_PATCH}"
+  variables:
+    BASE_NAME: kiosk-mode-browser-vivante
+    IMAGE_NAME: arm64v8-sample-uart-sht31-kiosk-vivante
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    DOCKERFILE_FOLDER: "sht31/kiosk/"
+  stage: build
+
+docker-build-uart-sht31-kiosk-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-uart-sht31-kiosk
+    IMAGE_NAME_32: arm32v7-sample-uart-sht31-kiosk
+    IMAGE_NAME_64: arm64v8-sample-uart-sht31-kiosk-vivante
+  stage: build-multiarch
+  needs: ["docker-build-uart-sht31-kiosk", "docker-build-uart-sht31-kiosk-arm64v8"]

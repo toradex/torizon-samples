@@ -1,0 +1,46 @@
+# Stages
+stages:
+  - build
+  - build-multiarch
+
+# Scripts
+include:
+  - /.gitlab-ci-scripts.yml
+
+# Jobs
+docker-build-dbus-tools:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: base
+    IMAGE_NAME: arm32v7-sample-dbus-tools
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    DOCKERFILE_FOLDER: "dbus/tools/"
+  stage: build
+
+docker-build-dbus-tools-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: base
+    IMAGE_NAME: arm64v8-sample-dbus-tools
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    DOCKERFILE_FOLDER: "dbus/tools/"
+  stage: build
+
+docker-build-dbus-tools-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-dbus-tools
+    IMAGE_NAME_32: arm32v7-sample-dbus-tools
+    IMAGE_NAME_64: arm64v8-sample-dbus-tools
+  stage: build-multiarch
+  needs: ["docker-build-dbus-tools", "docker-build-dbus-tools-arm64v8"]

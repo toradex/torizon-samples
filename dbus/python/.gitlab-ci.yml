@@ -1,0 +1,46 @@
+# Stages
+stages:
+  - build
+  - build-multiarch
+
+# Scripts
+include:
+  - /.gitlab-ci-scripts.yml
+
+# Jobs
+docker-build-dbus-python:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: base
+    IMAGE_NAME: arm32v7-sample-dbus-python
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    DOCKERFILE_FOLDER: "dbus/python/"
+  stage: build
+
+docker-build-dbus-python-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: base
+    IMAGE_NAME: arm64v8-sample-dbus-python
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    DOCKERFILE_FOLDER: "dbus/python/"
+  stage: build
+
+docker-build-dbus-python-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-dbus-python
+    IMAGE_NAME_32: arm32v7-sample-dbus-python
+    IMAGE_NAME_64: arm64v8-sample-dbus-python
+  stage: build-multiarch
+  needs: ["docker-build-dbus-python", "docker-build-dbus-python-arm64v8"]

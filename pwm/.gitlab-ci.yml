@@ -1,0 +1,50 @@
+# Stages
+stages:
+  - build
+  - build-multiarch
+
+# Scripts
+include:
+  - /.gitlab-ci-scripts.yml
+
+# Jobs
+docker-build-pwm:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: base
+    IMAGE_NAME: arm32v7-sample-pwm
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    CROSS_TC_IMAGE_ARCH: armhf
+    GCC_PREFIX: arm-linux-gnueabihf
+    DOCKERFILE_FOLDER: "pwm/"
+  stage: build
+
+docker-build-pwm-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: base
+    IMAGE_NAME: arm64v8-sample-pwm
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    CROSS_TC_IMAGE_ARCH: arm64
+    GCC_PREFIX: aarch64-linux-gnu
+    DOCKERFILE_FOLDER: "pwm/"
+  stage: build
+
+docker-build-pwm-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-pwm
+    IMAGE_NAME_32: arm32v7-sample-pwm
+    IMAGE_NAME_64: arm64v8-sample-pwm
+  stage: build-multiarch
+  needs: ["docker-build-pwm", "docker-build-pwm-arm64v8"]

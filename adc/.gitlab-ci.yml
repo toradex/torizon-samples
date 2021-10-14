@@ -1,0 +1,88 @@
+# Stages
+stages:
+  - build
+  - build-multiarch
+  - deploy
+  - deploy-multiarch
+
+# Scripts
+include:
+  - /.gitlab-ci-scripts.yml
+
+# Jobs
+docker-build-adc:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: base
+    IMAGE_NAME: arm32v7-sample-adc
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    CROSS_TC_IMAGE_ARCH: armhf
+    GCC_PREFIX: arm-linux-gnueabihf
+    DOCKERFILE_FOLDER: "adc/"
+  stage: build
+
+docker-build-adc-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: base
+    IMAGE_NAME: arm64v8-sample-adc
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    CROSS_TC_IMAGE_ARCH: arm64
+    GCC_PREFIX: aarch64-linux-gnu
+    DOCKERFILE_FOLDER: "adc/"
+  stage: build
+
+docker-build-adc-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-adc
+    IMAGE_NAME_32: arm32v7-sample-adc
+    IMAGE_NAME_64: arm64v8-sample-adc
+  stage: build-multiarch
+  needs: ["docker-build-adc", "docker-build-adc-arm64v8"]
+
+docker-deploy-adc:
+  extends: .docker-deploy
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-adc
+  stage: deploy
+
+docker-deploy-adc-arm64v8:
+  extends: .docker-deploy
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-adc
+  stage: deploy
+
+docker-deploy-adc-multiarch:
+  extends: .docker-deploy-multiarch
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: sample-adc
+    IMAGE_NAME_32: arm32v7-sample-adc
+    IMAGE_NAME_64: arm64v8-sample-adc
+  stage: deploy-multiarch
+  needs: ["docker-deploy-adc", "docker-deploy-adc-arm64v8"]

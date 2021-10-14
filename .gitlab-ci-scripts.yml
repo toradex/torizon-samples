@@ -1,0 +1,197 @@
+image: docker:latest
+
+services:
+  - name: docker:dind
+
+before_script:
+  - docker info
+
+variables:
+  DEBIAN_RELEASE: "bullseye"
+
+  # container version
+  DEBIAN_MAJOR: "2"
+  DEBIAN_MINOR: "3"
+  DEBIAN_PATCH: "1"
+
+  DEBIAN_SHELL_MAJOR: "2"
+  DEBIAN_SHELL_MINOR: "3"
+  DEBIAN_SHELL_PATCH: "1"
+
+  WAYLAND_BASE_MAJOR: "2"
+  WAYLAND_BASE_MINOR: "3"
+  WAYLAND_BASE_PATCH: "1"
+
+  WESTON_MAJOR: "2"
+  WESTON_MINOR: "5"
+  WESTON_PATCH: "1"
+
+  QT5_WAYLAND_MAJOR: "2"
+  QT5_WAYLAND_MINOR: "5"
+  QT5_WAYLAND_PATCH: "1"
+
+  QT5_WAYLAND_EXAMPLES_MAJOR: "2"
+  QT5_WAYLAND_EXAMPLES_MINOR: "5"
+  QT5_WAYLAND_EXAMPLES_PATCH: "1"
+
+  WAYLAND_BASE_VIVANTE_MAJOR: "2"
+  WAYLAND_BASE_VIVANTE_MINOR: "3"
+  WAYLAND_BASE_VIVANTE_PATCH: "1"
+
+  WESTON_VIVANTE_MAJOR: "2"
+  WESTON_VIVANTE_MINOR: "5"
+  WESTON_VIVANTE_PATCH: "1"
+
+  QT5_WAYLAND_VIVANTE_MAJOR: "2"
+  QT5_WAYLAND_VIVANTE_MINOR: "5"
+  QT5_WAYLAND_VIVANTE_PATCH: "1"
+
+  QT5_WAYLAND_EXAMPLES_VIVANTE_MAJOR: "2"
+  QT5_WAYLAND_EXAMPLES_VIVANTE_MINOR: "5"
+  QT5_WAYLAND_EXAMPLES_VIVANTE_PATCH: "1"
+
+  WESTON_TOUCH_CALIBRATOR_MAJOR: "2"
+  WESTON_TOUCH_CALIBRATOR_MINOR: "4"
+  WESTON_TOUCH_CALIBRATOR_PATCH: "1"
+
+  GRAPHICS_TESTS_MAJOR: "2"
+  GRAPHICS_TESTS_MINOR: "3"
+  GRAPHICS_TESTS_PATCH: "1"
+
+  GRAPHICS_TESTS_VIVANTE_MAJOR: "2"
+  GRAPHICS_TESTS_VIVANTE_MINOR: "2"
+  GRAPHICS_TESTS_VIVANTE_PATCH: "1"
+
+  KIOSK_MODE_BROWSER_MAJOR: "2"
+  KIOSK_MODE_BROWSER_MINOR: "4"
+  KIOSK_MODE_BROWSER_PATCH: "0"
+
+  # This should be set by docker image already, just to be sure...
+  DOCKER_HOST: tcp://docker:2375
+  # Use overlayfs driver for better performance
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_DRIVER: overlay2
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  GITLAB_DOCKERREGISTRY_SUFFIX: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
+  GITLAB_DOCKERREGISTRY_SUFFIX_LATEST: ${CI_COMMIT_REF_SLUG}-latest
+
+  DEBIAN_DOCKER_REGISTRY: ${CI_REGISTRY}/rd/torizon-core-containers/debian-docker-images
+  CROSS_TC_DOCKER_REGISTRY: ${CI_REGISTRY}/rd/torizon-core-containers/debian-cross-toolchains
+  KIOSK_DOCKER_REGISTRY: ${CI_REGISTRY}/rd/torizon-core-containers/kiosk-mode-browser
+
+# Scripts
+
+# Docker image build scripts
+#
+# Build the Docker images specificd in DOCKERFILE_FOLDER/IMAGE_NAME and push
+# it to Gitlab's internal Docker registry
+.docker-build:
+  variables:
+    IMAGE_TAG: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
+    IMAGE_ARCH: linux/arm
+    ADD_TORADEX_REPOSITORY: 1
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    # Try to download latest image for cache, but don't fail if it does not exist
+    - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} || true
+    - docker pull ${CI_REGISTRY}/rd/torizon-core/samples/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} || true
+    - export DATE=$(date +%Y%m%d)
+    # Ignore error "sh: write error: File exists" when installing qemu-user-static
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || true
+    - docker build --build-arg IMAGE_ARCH=${IMAGE_ARCH}
+                     --build-arg DOCKER_REGISTRY=${DEBIAN_DOCKER_REGISTRY}
+                     --build-arg KIOSK_DOCKER_REGISTRY=${KIOSK_DOCKER_REGISTRY}
+                     --build-arg CROSS_TC_DOCKER_REGISTRY=${CROSS_TC_DOCKER_REGISTRY}
+                     --build-arg BASE_NAME=${BASE_NAME}
+                     --build-arg IMAGE_TAG=${IMAGE_TAG}
+                     --build-arg GCC_PREFIX=${GCC_PREFIX}
+                     --build-arg CROSS_TC_IMAGE_ARCH=${CROSS_TC_IMAGE_ARCH}
+                     --build-arg TOOLCHAIN_ARCH=${TOOLCHAIN_ARCH}
+                     --build-arg PKG_ARCH=${PKG_ARCH}
+                     --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
+                     --cache-from ${CI_REGISTRY}/rd/torizon-core/samples/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
+                     ${DOCKER_NO_CACHE:+--no-cache}
+                     --label container.name=${IMAGE_NAME} 
+                     --label container.version=${MAJOR}.${MINOR}.${PATCH}-${DATE} 
+                     --label git.branch=${CI_COMMIT_BRANCH}  
+                     --label git.hash=${CI_COMMIT_SHA} 
+                     --label pipeline.id=${CI_PIPELINE_ID} 
+                     -f ${DOCKERFILE_FOLDER}Dockerfile
+                     -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+                     -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
+                     ${DOCKERFILE_FOLDER}
+    - docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+    - docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
+
+.do_docker_experimental: &do_docker_experimental
+  # Enable experimental features in Docker client (experimental feature are needed for manifest)
+    - mkdir -p $HOME/.docker
+    - "echo -e '{\n  \"experimental\": \"enabled\"\n}' | tee $HOME/.docker/config.json"
+    - docker version
+
+.docker-build-multiarch:
+  before_script:
+    - *do_docker_experimental
+    - rm -rf ~/.docker/manifests/*
+  script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+  - docker manifest create ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+  - docker manifest annotate ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX}  --os linux --arch arm
+  - docker manifest annotate ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX}  --os linux --arch arm64
+  - docker manifest inspect -v ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
+  - docker manifest push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
+
+# Docker deploy scripts
+#
+# Make sure DOCKER_HUB_USER/DOCKER_HUB_PW is properly set in the project
+# specific Gitlab CI settings.
+
+# Only a few samples are published to Docker Hub, therefore not every container
+# built internally has a deploy stage.
+.docker-deploy:
+  when: manual
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+    - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND}
+    - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}
+    - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND}
+    - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND}
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
+    - docker push --all-tags ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}
+
+.docker-deploy-multiarch:
+  when: manual    
+  script:
+    - mkdir -p $HOME/.docker
+    - "echo -e '{\n  \"experimental\": \"enabled\"\n}' | tee $HOME/.docker/config.json"
+    - docker version
+    - rm -rf ~/.docker/manifests/*
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
+    # docker manifest push does not have "--all-tags" option, must push one-by-one
+    # Major
+    - docker manifest create ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}${DEBIAN_RELEASE_APPEND}
+    - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}${DEBIAN_RELEASE_APPEND}  --os linux --arch arm
+    - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}${DEBIAN_RELEASE_APPEND}  --os linux --arch arm64
+    - docker manifest inspect -v ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND}
+    - docker manifest push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND}
+    # Minor
+    - docker manifest create ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}
+    - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}  --os linux --arch arm
+    - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}  --os linux --arch arm64
+    - docker manifest inspect -v ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}
+    - docker manifest push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}
+    # Patch
+    - docker manifest create ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND}
+    - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} --os linux --arch arm
+    - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} --os linux --arch arm64
+    - docker manifest inspect -v ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND}
+    - docker manifest push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND}
+    # Patch date
+    - docker manifest create ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND}
+    - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} --os linux --arch arm
+    - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} --os linux --arch arm64
+    - docker manifest inspect -v ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND}
+    - docker manifest push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND}

@@ -1,0 +1,84 @@
+# Stages
+stages:
+  - build
+  - build-multiarch
+  - deploy
+  - deploy-multiarch
+
+# Scripts
+include:
+  - /.gitlab-ci-scripts.yml
+
+# Jobs
+docker-build-gpio-bash:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: base
+    IMAGE_NAME: arm32v7-sample-gpio-bash
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    DOCKERFILE_FOLDER: "gpio/bash/"
+  stage: build
+
+docker-build-gpio-bash-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: base
+    IMAGE_NAME: arm64v8-sample-gpio-bash
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    DOCKERFILE_FOLDER: "gpio/bash/"
+  stage: build
+
+docker-build-gpio-bash-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-gpio-bash
+    IMAGE_NAME_32: arm32v7-sample-gpio-bash
+    IMAGE_NAME_64: arm64v8-sample-gpio-bash
+  stage: build-multiarch
+  needs: ["docker-build-gpio-bash", "docker-build-gpio-bash-arm64v8"]
+
+docker-deploy-gpio-bash:
+  extends: .docker-deploy
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-gpio-bash
+  stage: deploy
+
+docker-deploy-gpio-bash-arm64v8:
+  extends: .docker-deploy
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-gpio-bash
+  stage: deploy
+
+docker-deploy-gpio-bash-multiarch:
+  extends: .docker-deploy-multiarch
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: sample-gpio-bash
+    IMAGE_NAME_32: arm32v7-sample-gpio-bash
+    IMAGE_NAME_64: arm64v8-sample-gpio-bash
+  stage: deploy-multiarch
+  needs: ["docker-deploy-gpio-bash", "docker-deploy-gpio-bash-arm64v8"]

@@ -1,1387 +1,183 @@
-image: docker:latest
-
-variables:
-  DEBIAN_RELEASE: "bullseye"
-
-  # container version
-  DEBIAN_MAJOR: "2"
-  DEBIAN_MINOR: "3"
-  DEBIAN_PATCH: "1"
-
-  DEBIAN_SHELL_MAJOR: "2"
-  DEBIAN_SHELL_MINOR: "3"
-  DEBIAN_SHELL_PATCH: "1"
-
-  WAYLAND_BASE_MAJOR: "2"
-  WAYLAND_BASE_MINOR: "3"
-  WAYLAND_BASE_PATCH: "1"
-
-  WESTON_MAJOR: "2"
-  WESTON_MINOR: "5"
-  WESTON_PATCH: "1"
-
-  QT5_WAYLAND_MAJOR: "2"
-  QT5_WAYLAND_MINOR: "5"
-  QT5_WAYLAND_PATCH: "1"
-
-  QT5_WAYLAND_EXAMPLES_MAJOR: "2"
-  QT5_WAYLAND_EXAMPLES_MINOR: "5"
-  QT5_WAYLAND_EXAMPLES_PATCH: "1"
-
-  WAYLAND_BASE_VIVANTE_MAJOR: "2"
-  WAYLAND_BASE_VIVANTE_MINOR: "3"
-  WAYLAND_BASE_VIVANTE_PATCH: "1"
-
-  WESTON_VIVANTE_MAJOR: "2"
-  WESTON_VIVANTE_MINOR: "5"
-  WESTON_VIVANTE_PATCH: "1"
-
-  QT5_WAYLAND_VIVANTE_MAJOR: "2"
-  QT5_WAYLAND_VIVANTE_MINOR: "5"
-  QT5_WAYLAND_VIVANTE_PATCH: "1"
-
-  QT5_WAYLAND_EXAMPLES_VIVANTE_MAJOR: "2"
-  QT5_WAYLAND_EXAMPLES_VIVANTE_MINOR: "5"
-  QT5_WAYLAND_EXAMPLES_VIVANTE_PATCH: "1"
-
-  WESTON_TOUCH_CALIBRATOR_MAJOR: "2"
-  WESTON_TOUCH_CALIBRATOR_MINOR: "4"
-  WESTON_TOUCH_CALIBRATOR_PATCH: "1"
-
-  GRAPHICS_TESTS_MAJOR: "2"
-  GRAPHICS_TESTS_MINOR: "3"
-  GRAPHICS_TESTS_PATCH: "1"
-
-  GRAPHICS_TESTS_VIVANTE_MAJOR: "2"
-  GRAPHICS_TESTS_VIVANTE_MINOR: "2"
-  GRAPHICS_TESTS_VIVANTE_PATCH: "1"
-
-  KIOSK_MODE_BROWSER_MAJOR: "2"
-  KIOSK_MODE_BROWSER_MINOR: "4"
-  KIOSK_MODE_BROWSER_PATCH: "0"
-
-  # This should be set by docker image already, just to be sure...
-  DOCKER_HOST: tcp://docker:2375
-  # Use overlayfs driver for better performance
-  DOCKER_TLS_CERTDIR: ""
-  DOCKER_DRIVER: overlay2
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-  GITLAB_DOCKERREGISTRY_SUFFIX: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
-  GITLAB_DOCKERREGISTRY_SUFFIX_LATEST: ${CI_COMMIT_REF_SLUG}-latest
-
-  DEBIAN_DOCKER_REGISTRY: ${CI_REGISTRY}/rd/torizon-core-containers/debian-docker-images
-  CROSS_TC_DOCKER_REGISTRY: ${CI_REGISTRY}/rd/torizon-core-containers/debian-cross-toolchains
-  KIOSK_DOCKER_REGISTRY: ${CI_REGISTRY}/rd/torizon-core-containers/kiosk-mode-browser
-
-services:
-  - name: docker:dind
-
-before_script:
-  - docker info
+# This file calls one sub-pipeline for each sample
+# Each sample has one .gitlab-ci.yml on its own sub-directory
+#   those samples are included from here
+# Shared scripts are in .gitlab-ci-scripts.yml and included in each sample
 
 stages:
-  - build-adc
-  - build-dbus-tools
-  - build-dbus-python
-  - build-gpio-bash
-  - build-gpio-c
-  - build-dlr-gstreamer
-  - build-uart-gps-python
-  - build-collectd
-  - build-gstreamer-simple-pipeline
-  - build-opencl
-  - build-opencv
-  - build-pwm
-  - build-qt5-python-qml
-  - build-uart-sht31-flask-app
-  - build-uart-sht31-influxdb
-  - build-uart-sht31-kiosk
-  - build-tflite
-  - build-weather
-  - build-multiarch
-  - deploy-major
-  - deploy-minor
-  - deploy-patch
-  - deploy-patch-date
-  - deploy-multiarch-major
-  - deploy-multiarch-minor
-  - deploy-multiarch-patch
-  - deploy-multiarch-patch-date
-
-# Docker image builds
-#
-# Build the Docker images specificd in DOCKERFILE_FOLDER/IMAGE_NAME and push
-# it to Gitlab's internal Docker registry
-.docker-build:
-  variables:
-    IMAGE_TAG: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
-    IMAGE_ARCH: linux/arm
-    ADD_TORADEX_REPOSITORY: 1
-  script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    # Try to download latest image for cache, but don't fail if it does not exist
-    - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} || true
-    - docker pull ${CI_REGISTRY}/rd/torizon-core/samples/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} || true
-    - export DATE=$(date +%Y%m%d)
-    # Ignore error "sh: write error: File exists" when installing qemu-user-static
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || true
-    - docker build --build-arg IMAGE_ARCH=${IMAGE_ARCH}
-                     --build-arg DOCKER_REGISTRY=${DEBIAN_DOCKER_REGISTRY}
-                     --build-arg KIOSK_DOCKER_REGISTRY=${KIOSK_DOCKER_REGISTRY}
-                     --build-arg CROSS_TC_DOCKER_REGISTRY=${CROSS_TC_DOCKER_REGISTRY}
-                     --build-arg BASE_NAME=${BASE_NAME}
-                     --build-arg IMAGE_TAG=${IMAGE_TAG}
-                     --build-arg GCC_PREFIX=${GCC_PREFIX}
-                     --build-arg CROSS_TC_IMAGE_ARCH=${CROSS_TC_IMAGE_ARCH}
-                     --build-arg TOOLCHAIN_ARCH=${TOOLCHAIN_ARCH}
-                     --build-arg PKG_ARCH=${PKG_ARCH}
-                     --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
-                     --cache-from ${CI_REGISTRY}/rd/torizon-core/samples/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
-                     ${DOCKER_NO_CACHE:+--no-cache}
-                     --label container.name=${IMAGE_NAME} 
-                     --label container.version=${MAJOR}.${MINOR}.${PATCH}-${DATE} 
-                     --label git.branch=${CI_COMMIT_BRANCH}  
-                     --label git.hash=${CI_COMMIT_SHA} 
-                     --label pipeline.id=${CI_PIPELINE_ID} 
-                     -f ${DOCKERFILE_FOLDER}Dockerfile
-                     -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-                     -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
-                     ${DOCKERFILE_FOLDER}
-    - docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-    - docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
-
-docker-build-adc:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm32v7-sample-adc
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    CROSS_TC_IMAGE_ARCH: armhf
-    GCC_PREFIX: arm-linux-gnueabihf
-    DOCKERFILE_FOLDER: "adc/"
-  stage: build-adc
-
-docker-build-adc-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm64v8-sample-adc
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    CROSS_TC_IMAGE_ARCH: arm64
-    GCC_PREFIX: aarch64-linux-gnu
-    DOCKERFILE_FOLDER: "adc/"
-  stage: build-adc
-
-docker-build-dbus-tools:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm32v7-sample-dbus-tools
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "dbus/tools/"
-  stage: build-dbus-tools
-
-docker-build-dbus-tools-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm64v8-sample-dbus-tools
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "dbus/tools/"
-  stage: build-dbus-tools
-
-docker-build-dbus-python:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm32v7-sample-dbus-python
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "dbus/python/"
-  stage: build-dbus-python
-
-docker-build-dbus-python-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm64v8-sample-dbus-python
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "dbus/python/"
-  stage: build-dbus-python
-
-docker-build-gpio-bash:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm32v7-sample-gpio-bash
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "gpio/bash/"
-  stage: build-gpio-bash
-
-docker-build-gpio-bash-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm64v8-sample-gpio-bash
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "gpio/bash/"
-  stage: build-gpio-bash
-
-docker-build-gpio-c:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm32v7-sample-gpio-c
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    CROSS_TC_IMAGE_ARCH: armhf
-    GCC_PREFIX: arm-linux-gnueabihf
-    DOCKERFILE_FOLDER: "gpio/c/"
-  stage: build-gpio-c
-
-docker-build-gpio-c-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm64v8-sample-gpio-c
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    CROSS_TC_IMAGE_ARCH: arm64
-    GCC_PREFIX: aarch64-linux-gnu
-    DOCKERFILE_FOLDER: "gpio/c/"
-  stage: build-gpio-c
-
-# Only for 64-bit vivante arch
-docker-build-dlr-gstreamer-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
-    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
-    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
-  variables:
-    BASE_NAME: wayland-base-vivante
-    IMAGE_NAME: arm64v8-sample-dlr-gstreamer-vivante
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "dlr-gstreamer/"
-  stage: build-dlr-gstreamer
-
-docker-build-uart-gps-python:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm32v7-sample-uart-gps-python
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "gps/python/"
-  stage: build-uart-gps-python
-
-docker-build-uart-gps-python-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm64v8-sample-uart-gps-python
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "gps/python/"
-  stage: build-uart-gps-python
-
-docker-build-collectd:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm32v7-sample-collectd
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "grafana/"
-  stage: build-collectd
-
-docker-build-collectd-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm64v8-sample-collectd
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "grafana/"
-  stage: build-collectd
-
-docker-build-gstreamer-simple-pipeline:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${WAYLAND_BASE_MAJOR}"
-    - export MINOR="${WAYLAND_BASE_MINOR}"
-    - export PATCH="${WAYLAND_BASE_PATCH}"
-  variables:
-    BASE_NAME: wayland-base
-    IMAGE_NAME: arm32v7-sample-gstreamer-simple-pipeline
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "gstreamer/bash/simple-pipeline/"
-  stage: build-gstreamer-simple-pipeline
-
-docker-build-gstreamer-simple-pipeline-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
-    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
-    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
-  variables:
-    BASE_NAME: wayland-base-vivante
-    IMAGE_NAME: arm64v8-sample-gstreamer-simple-pipeline-vivante
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "gstreamer/bash/simple-pipeline/"
-  stage: build-gstreamer-simple-pipeline
-
-# Only for 64-bit vivante arch
-docker-build-opencl-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
-    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
-    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
-  variables:
-    BASE_NAME: wayland-base-vivante
-    IMAGE_NAME: arm64v8-sample-opencl-vivante
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "opencl/"
-  stage: build-opencl
-
-# Only for 64-bit vivante arch
-docker-build-opencv-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
-    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
-    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
-  variables:
-    BASE_NAME: wayland-base-vivante
-    IMAGE_NAME: arm64v8-sample-opencv-vivante
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "opencv/"
-  stage: build-opencv
-
-docker-build-pwm:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm32v7-sample-pwm
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    CROSS_TC_IMAGE_ARCH: armhf
-    GCC_PREFIX: arm-linux-gnueabihf
-    DOCKERFILE_FOLDER: "pwm/"
-  stage: build-pwm
-
-docker-build-pwm-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm64v8-sample-pwm
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    CROSS_TC_IMAGE_ARCH: arm64
-    GCC_PREFIX: aarch64-linux-gnu
-    DOCKERFILE_FOLDER: "pwm/"
-  stage: build-pwm
-
-docker-build-qt5-python-qml:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${QT5_WAYLAND_MAJOR}"
-    - export MINOR="${QT5_WAYLAND_MINOR}"
-    - export PATCH="${QT5_WAYLAND_PATCH}"
-  variables:
-    BASE_NAME: qt5-wayland
-    IMAGE_NAME: arm32v7-sample-qt5-python-qml
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "python-qml/"
-  stage: build-qt5-python-qml
-
-docker-build-qt5-python-qml-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${QT5_WAYLAND_MAJOR}"
-    - export MINOR="${QT5_WAYLAND_MINOR}"
-    - export PATCH="${QT5_WAYLAND_PATCH}"
-  variables:
-    BASE_NAME: qt5-wayland
-    IMAGE_NAME: arm64v8-sample-qt5-python-qml
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "python-qml/"
-  stage: build-qt5-python-qml
-
-docker-build-qt5-python-qml-arm64v8-vivante:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${QT5_WAYLAND_VIVANTE_MAJOR}"
-    - export MINOR="${QT5_WAYLAND_VIVANTE_MINOR}"
-    - export PATCH="${QT5_WAYLAND_VIVANTE_PATCH}"
-  variables:
-    BASE_NAME: qt5-wayland-vivante
-    IMAGE_NAME: arm64v8-sample-qt5-python-qml-vivante
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "python-qml/"
-  stage: build-qt5-python-qml
-  # arm64 with Vivante(ARG BASE_NAME=qt5-wayland-vivante) is currently not
-  # supported as python3-pyside2.qtgui is not co-installable with libqt5qui5-gles
-  # See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=974101
-  allow_failure: true
-
-docker-build-uart-sht31-flask-app:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm32v7-sample-uart-sht31-flask-app
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "sht31/flaskapp/"
-  stage: build-uart-sht31-flask-app
-
-docker-build-uart-sht31-flask-app-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm64v8-sample-uart-sht31-flask-app
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "sht31/flaskapp/"
-  stage: build-uart-sht31-flask-app
-
-docker-build-uart-sht31-influxdb:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm32v7-sample-uart-sht31-influxdb
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "sht31/sht31-influxdb/"
-  stage: build-uart-sht31-influxdb
-
-docker-build-uart-sht31-influxdb-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm64v8-sample-uart-sht31-influxdb
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "sht31/sht31-influxdb/"
-  stage: build-uart-sht31-influxdb
-
-docker-build-uart-sht31-kiosk:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${KIOSK_MODE_BROWSER_MAJOR}"
-    - export MINOR="${KIOSK_MODE_BROWSER_MINOR}"
-    - export PATCH="${KIOSK_MODE_BROWSER_PATCH}"
-  variables:
-    BASE_NAME: kiosk-mode-browser
-    IMAGE_NAME: arm32v7-sample-uart-sht31-kiosk
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "sht31/kiosk/"
-  stage: build-uart-sht31-kiosk
-
-docker-build-uart-sht31-kiosk-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${KIOSK_MODE_BROWSER_MAJOR}"
-    - export MINOR="${KIOSK_MODE_BROWSER_MINOR}"
-    - export PATCH="${KIOSK_MODE_BROWSER_PATCH}"
-  variables:
-    BASE_NAME: kiosk-mode-browser-vivante
-    IMAGE_NAME: arm64v8-sample-uart-sht31-kiosk-vivante
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "sht31/kiosk/"
-  stage: build-uart-sht31-kiosk
-
-docker-build-tflite:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm32v7-sample-tflite
-    IMAGE_ARCH: linux/arm/v7
-    PKG_ARCH: armv7l
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "tflite/"
-  stage: build-tflite
-
-docker-build-tflite-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm64v8-sample-tflite
-    IMAGE_ARCH: linux/arm64/v8
-    PKG_ARCH: aarch64
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "tflite/"
-  stage: build-tflite
-
-docker-build-weather:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm32v7-sample-weather
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    CROSS_TC_IMAGE_ARCH: armhf
-    TOOLCHAIN_ARCH: armhf
-    DOCKERFILE_FOLDER: "weather/"
-  stage: build-weather
-
-docker-build-weather-arm64v8:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    BASE_NAME: base
-    IMAGE_NAME: arm64v8-sample-weather
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    CROSS_TC_IMAGE_ARCH: arm64
-    TOOLCHAIN_ARCH: aarch64
-    DOCKERFILE_FOLDER: "weather/"
-  stage: build-weather
-
-# Enable experimental features in Docker client (experimental feature are needed for manifest)
-.do_docker_experimental: &do_docker_experimental
-    - mkdir -p $HOME/.docker
-    - "echo -e '{\n  \"experimental\": \"enabled\"\n}' | tee $HOME/.docker/config.json"
-    - docker version
-
-.docker-build-multiarch:
-  before_script:
-    - *do_docker_experimental
-    - rm -rf ~/.docker/manifests/*
-  script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker manifest create ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker manifest annotate ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX}  --os linux --arch arm
-  - docker manifest annotate ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX}  --os linux --arch arm64
-  - docker manifest inspect -v ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
-  - docker manifest push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
-
-docker-build-adc-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-adc
-    IMAGE_NAME_32: arm32v7-sample-adc
-    IMAGE_NAME_64: arm64v8-sample-adc
-  stage: build-multiarch
-  needs: ["docker-build-adc", "docker-build-adc-arm64v8"]
-
-docker-build-dbus-tools-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-dbus-tools
-    IMAGE_NAME_32: arm32v7-sample-dbus-tools
-    IMAGE_NAME_64: arm64v8-sample-dbus-tools
-  stage: build-multiarch
-  needs: ["docker-build-dbus-tools", "docker-build-dbus-tools-arm64v8"]
-
-docker-build-dbus-python-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-dbus-python
-    IMAGE_NAME_32: arm32v7-sample-dbus-python
-    IMAGE_NAME_64: arm64v8-sample-dbus-python
-  stage: build-multiarch
-  needs: ["docker-build-dbus-python", "docker-build-dbus-python-arm64v8"]
-
-docker-build-gpio-bash-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-gpio-bash
-    IMAGE_NAME_32: arm32v7-sample-gpio-bash
-    IMAGE_NAME_64: arm64v8-sample-gpio-bash
-  stage: build-multiarch
-  needs: ["docker-build-gpio-bash", "docker-build-gpio-bash-arm64v8"]
-
-docker-build-gpio-c-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-gpio-c
-    IMAGE_NAME_32: arm32v7-sample-gpio-c
-    IMAGE_NAME_64: arm64v8-sample-gpio-c
-  stage: build-multiarch
-  needs: ["docker-build-gpio-c", "docker-build-gpio-c-arm64v8"]
-
-docker-build-uart-gps-python-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-uart-gps-python
-    IMAGE_NAME_32: arm32v7-sample-uart-gps-python
-    IMAGE_NAME_64: arm64v8-sample-uart-gps-python
-  stage: build-multiarch
-  needs: ["docker-build-uart-gps-python", "docker-build-uart-gps-python-arm64v8"]
-
-docker-build-collectd-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-collectd
-    IMAGE_NAME_32: arm32v7-sample-collectd
-    IMAGE_NAME_64: arm64v8-sample-collectd
-  stage: build-multiarch
-  needs: ["docker-build-collectd", "docker-build-collectd-arm64v8"]
-
-docker-build-gstreamer-simple-pipeline-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-gstreamer-simple-pipeline
-    IMAGE_NAME_32: arm32v7-sample-gstreamer-simple-pipeline
-    IMAGE_NAME_64: arm64v8-sample-gstreamer-simple-pipeline-vivante
-  stage: build-multiarch
-  needs: [
-    "docker-build-gstreamer-simple-pipeline",
-    "docker-build-gstreamer-simple-pipeline-arm64v8"
-    ]
-
-docker-build-pwm-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-pwm
-    IMAGE_NAME_32: arm32v7-sample-pwm
-    IMAGE_NAME_64: arm64v8-sample-pwm
-  stage: build-multiarch
-  needs: ["docker-build-pwm", "docker-build-pwm-arm64v8"]
-
-docker-build-qt5-python-qml-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-qt5-python-qml
-    IMAGE_NAME_32: arm32v7-sample-qt5-python-qml
-    # IMAGE_NAME_64: arm64v8-sample-qt5-python-qml-vivante
-    # Use the non-vivante package until it's working
-    # arm64 with Vivante(ARG BASE_NAME=qt5-wayland-vivante) is currently not
-    # supported as python3-pyside2.qtgui is not co-installable with libqt5qui5-gles
-    # See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=974101
-    IMAGE_NAME_64: arm64v8-sample-qt5-python-qml
-  stage: build-multiarch
-  needs: ["docker-build-qt5-python-qml", "docker-build-qt5-python-qml-arm64v8"]
-
-docker-build-uart-sht31-flask-app-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-uart-sht31-flask-app
-    IMAGE_NAME_32: arm32v7-sample-uart-sht31-flask-app
-    IMAGE_NAME_64: arm64v8-sample-uart-sht31-flask-app
-  stage: build-multiarch
-  needs: [
-    "docker-build-uart-sht31-flask-app",
-    "docker-build-uart-sht31-flask-app-arm64v8"
-    ]
-
-docker-build-uart-sht31-influxdb-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-uart-sht31-influxdb
-    IMAGE_NAME_32: arm32v7-sample-uart-sht31-influxdb
-    IMAGE_NAME_64: arm64v8-sample-uart-sht31-influxdb
-  stage: build-multiarch
-  needs: [
-    "docker-build-uart-sht31-influxdb",
-    "docker-build-uart-sht31-influxdb-arm64v8"
-    ]
-
-docker-build-uart-sht31-kiosk-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-uart-sht31-kiosk
-    IMAGE_NAME_32: arm32v7-sample-uart-sht31-kiosk
-    IMAGE_NAME_64: arm64v8-sample-uart-sht31-kiosk-vivante
-  stage: build-multiarch
-  needs: ["docker-build-uart-sht31-kiosk", "docker-build-uart-sht31-kiosk-arm64v8"]
-
-docker-build-tflite-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-tflite
-    IMAGE_NAME_32: arm32v7-sample-tflite
-    IMAGE_NAME_64: arm64v8-sample-tflite
-  stage: build-multiarch
-  needs: ["docker-build-tflite", "docker-build-tflite-arm64v8"]
-
-docker-build-weather-multiarch:
-  extends: .docker-build-multiarch
-  variables:
-    IMAGE_NAME: sample-weather
-    IMAGE_NAME_32: arm32v7-sample-weather
-    IMAGE_NAME_64: arm64v8-sample-weather
-  stage: build-multiarch
-  needs: ["docker-build-weather", "docker-build-weather-arm64v8"]
-
-# Docker deploy jobs
-#
-# Make sure DOCKER_HUB_USER/DOCKER_HUB_PW is properly set in the project
-# specific Gitlab CI settings.
-
-# Only a few samples are published to Docker Hub, therefore not every container
-# built internally has a deploy stage.
-.docker-deploy-major:
-  when: manual
-  script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND}
-  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
-  - docker push --all-tags ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}
-
-docker-deploy-adc-major:
-  extends: .docker-deploy-major
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-  variables:
-    IMAGE_NAME: arm32v7-sample-adc
-  stage: deploy-major
-
-docker-deploy-adc-arm64v8-major:
-  extends: .docker-deploy-major
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-adc
-  stage: deploy-major
-
-docker-deploy-gpio-bash-major:
-  extends: .docker-deploy-major
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-  variables:
-    IMAGE_NAME: arm32v7-sample-gpio-bash
-  stage: deploy-major
-
-docker-deploy-gpio-bash-arm64v8-major:
-  extends: .docker-deploy-major
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-gpio-bash
-  stage: deploy-major
-
-docker-deploy-dlr-gstreamer-arm64v8-major:
-  extends: .docker-deploy-major
-  before_script:
-    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-dlr-gstreamer-vivante
-  stage: deploy-major
-
-docker-deploy-opencv-arm64v8-major:
-  extends: .docker-deploy-major
-  before_script:
-    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-opencv-vivante
-  stage: deploy-major
-
-docker-deploy-tflite-major:
-  extends: .docker-deploy-major
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-  variables:
-    IMAGE_NAME: arm32v7-sample-tflite
-  stage: deploy-major
-
-docker-deploy-tflite-arm64v8-major:
-  extends: .docker-deploy-major
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-tflite
-  stage: deploy-major
-
-.docker-deploy-minor:
-  when: manual
-  script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}
-  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
-  - docker push --all-tags ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}
-  
-docker-deploy-adc-minor:
-  extends: .docker-deploy-minor
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-  variables:
-    IMAGE_NAME: arm32v7-sample-adc
-  stage: deploy-minor
-
-docker-deploy-adc-arm64v8-minor:
-  extends: .docker-deploy-minor
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-adc
-  stage: deploy-minor
-
-docker-deploy-gpio-bash-minor:
-  extends: .docker-deploy-minor
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-  variables:
-    IMAGE_NAME: arm32v7-sample-gpio-bash
-  stage: deploy-minor
-
-docker-deploy-gpio-bash-arm64v8-minor:
-  extends: .docker-deploy-minor
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-gpio-bash
-  stage: deploy-minor
-
-docker-deploy-dlr-gstreamer-arm64v8-minor:
-  extends: .docker-deploy-minor
-  before_script:
-    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
-    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-dlr-gstreamer-vivante
-  stage: deploy-minor
-
-docker-deploy-opencv-arm64v8-minor:
-  extends: .docker-deploy-minor
-  before_script:
-    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
-    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-opencv-vivante
-  stage: deploy-minor
-
-docker-deploy-tflite-minor:
-  extends: .docker-deploy-minor
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-  variables:
-    IMAGE_NAME: arm32v7-sample-tflite
-  stage: deploy-minor
-
-docker-deploy-tflite-arm64v8-minor:
-  extends: .docker-deploy-minor
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-tflite
-  stage: deploy-minor
-
-.docker-deploy-patch:
-  when: manual
-  script:
-  - *do_docker_experimental
-  - docker manifest inspect ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} > /dev/null && true; RESULT=$?
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND}
-  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
-  - (if [ ${RESULT} == 1 ] ; then docker push --all-tags ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME} ; else echo Image with this tag already exists. ; fi)
-
-docker-deploy-adc-patch:
-  extends: .docker-deploy-patch
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: arm32v7-sample-adc
-  stage: deploy-patch
-
-docker-deploy-adc-arm64v8-patch:
-  extends: .docker-deploy-patch
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-adc
-  stage: deploy-patch
-
-docker-deploy-gpio-bash-patch:
-  extends: .docker-deploy-patch
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: arm32v7-sample-gpio-bash
-  stage: deploy-patch
-
-docker-deploy-gpio-bash-arm64v8-patch:
-  extends: .docker-deploy-patch
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-gpio-bash
-  stage: deploy-patch
-
-docker-deploy-dlr-gstreamer-arm64v8-patch:
-  extends: .docker-deploy-patch
-  before_script:
-    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
-    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
-    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-dlr-gstreamer-vivante
-  stage: deploy-patch
-
-docker-deploy-opencv-arm64v8-patch:
-  extends: .docker-deploy-patch
-  before_script:
-    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
-    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
-    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-opencv-vivante
-  stage: deploy-patch
-
-docker-deploy-tflite-patch:
-  extends: .docker-deploy-patch
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: arm32v7-sample-tflite
-  stage: deploy-patch
-
-docker-deploy-tflite-arm64v8-patch:
-  extends: .docker-deploy-patch
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-tflite
-  stage: deploy-patch
-
-.docker-deploy-patch-date:
-  when: manual
-  script:
-  - *do_docker_experimental
-  - export DATE=$(date +%Y%m%d)
-  - docker manifest inspect ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} > /dev/null && true; RESULT=$?
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND}
-  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
-  - (if [ ${RESULT} == 1 ] ; then docker push --all-tags ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME} ; else echo Image with this tag already exists. ; fi)
-
-docker-deploy-adc-patch-date:
-  extends: .docker-deploy-patch-date
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: arm32v7-sample-adc
-  stage: deploy-patch-date
-
-docker-deploy-adc-arm64v8-patch-date:
-  extends: .docker-deploy-patch-date
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-adc
-  stage: deploy-patch-date
-
-docker-deploy-gpio-bash-patch-date:
-  extends: .docker-deploy-patch-date
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: arm32v7-sample-gpio-bash
-  stage: deploy-patch-date
-
-docker-deploy-gpio-bash-arm64v8-patch-date:
-  extends: .docker-deploy-patch-date
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-gpio-bash
-  stage: deploy-patch-date
-
-docker-deploy-dlr-gstreamer-arm64v8-patch-date:
-  extends: .docker-deploy-patch-date
-  before_script:
-    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
-    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
-    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-dlr-gstreamer-vivante
-  stage: deploy-patch-date
-
-docker-deploy-opencv-arm64v8-patch-date:
-  extends: .docker-deploy-patch-date
-  before_script:
-    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
-    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
-    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-opencv-vivante
-  stage: deploy-patch-date
-
-docker-deploy-tflite-patch-date:
-  extends: .docker-deploy-patch-date
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: arm32v7-sample-tflite
-  stage: deploy-patch-date
-
-docker-deploy-tflite-arm64v8-patch-date:
-  extends: .docker-deploy-patch-date
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: arm64v8-sample-tflite
-  stage: deploy-patch-date
-
-.docker-deploy-multiarch-major:
-  when: manual    
-  script:
-  - *do_docker_experimental
-  - rm -rf ~/.docker/manifests/*
-  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
-  - docker manifest create ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}${DEBIAN_RELEASE_APPEND}
-  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}${DEBIAN_RELEASE_APPEND}  --os linux --arch arm
-  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}${DEBIAN_RELEASE_APPEND}  --os linux --arch arm64
-  - docker manifest inspect -v ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND}
-  - docker manifest push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND}
-  
-docker-deploy-adc-multiarch-major:
-  extends: .docker-deploy-multiarch-major
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-  variables:
-    IMAGE_NAME: sample-adc
-    IMAGE_NAME_32: arm32v7-sample-adc
-    IMAGE_NAME_64: arm64v8-sample-adc
-  stage: deploy-multiarch-major
-
-docker-deploy-gpio-bash-multiarch-major:
-  extends: .docker-deploy-multiarch-major
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-  variables:
-    IMAGE_NAME: sample-gpio-bash
-    IMAGE_NAME_32: arm32v7-sample-gpio-bash
-    IMAGE_NAME_64: arm64v8-sample-gpio-bash
-  stage: deploy-multiarch-major
-
-docker-deploy-tflite-multiarch-major:
-  extends: .docker-deploy-multiarch-major
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-  variables:
-    IMAGE_NAME: sample-tflite
-    IMAGE_NAME_32: arm32v7-sample-tflite
-    IMAGE_NAME_64: arm64v8-sample-tflite
-  stage: deploy-multiarch-major
-
-.docker-deploy-multiarch-minor:
-  when: manual    
-  script:
-  - *do_docker_experimental
-  - rm -rf ~/.docker/manifests/*
-  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
-  - docker manifest create ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}
-  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}  --os linux --arch arm
-  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}  --os linux --arch arm64
-  - docker manifest inspect -v ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}
-  - docker manifest push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}
-  
-docker-deploy-adc-multiarch-minor:
-  extends: .docker-deploy-multiarch-minor
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-  variables:
-    IMAGE_NAME: sample-adc
-    IMAGE_NAME_32: arm32v7-sample-adc
-    IMAGE_NAME_64: arm64v8-sample-adc
-  stage: deploy-multiarch-minor
-
-docker-deploy-gpio-bash-multiarch-minor:
-  extends: .docker-deploy-multiarch-minor
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-  variables:
-    IMAGE_NAME: sample-gpio-bash
-    IMAGE_NAME_32: arm32v7-sample-gpio-bash
-    IMAGE_NAME_64: arm64v8-sample-gpio-bash
-  stage: deploy-multiarch-minor
-
-docker-deploy-tflite-multiarch-minor:
-  extends: .docker-deploy-multiarch-minor
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-  variables:
-    IMAGE_NAME: sample-tflite
-    IMAGE_NAME_32: arm32v7-sample-tflite
-    IMAGE_NAME_64: arm64v8-sample-tflite
-  stage: deploy-multiarch-minor
-
-.docker-deploy-multiarch-patch:
-  when: manual
-  script:
-  - *do_docker_experimental
-  - rm -rf ~/.docker/manifests/*
-  - docker manifest inspect ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} > /dev/null && true; RESULT=$?
-  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
-  - docker manifest create ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND}
-  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} --os linux --arch arm
-  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} --os linux --arch arm64
-  - docker manifest inspect -v ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND}
-  - (if [ ${RESULT} == 1 ] ; then docker manifest push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ; else echo Image with this tag already exists. ; fi)
-
-docker-deploy-adc-multiarch-patch:
-  extends: .docker-deploy-multiarch-patch
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: sample-adc
-    IMAGE_NAME_32: arm32v7-sample-adc
-    IMAGE_NAME_64: arm64v8-sample-adc
-  stage: deploy-multiarch-patch
-
-docker-deploy-gpio-bash-multiarch-patch:
-  extends: .docker-deploy-multiarch-patch
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: sample-gpio-bash
-    IMAGE_NAME_32: arm32v7-sample-gpio-bash
-    IMAGE_NAME_64: arm64v8-sample-gpio-bash
-  stage: deploy-multiarch-patch
-
-docker-deploy-tflite-multiarch-patch:
-  extends: .docker-deploy-multiarch-patch
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: sample-tflite
-    IMAGE_NAME_32: arm32v7-sample-tflite
-    IMAGE_NAME_64: arm64v8-sample-tflite
-  stage: deploy-multiarch-patch
-
-.docker-deploy-multiarch-patch-date:
-  when: manual
-  script:
-  - *do_docker_experimental
-  - rm -rf ~/.docker/manifests/*
-  - export DATE=$(date +%Y%m%d)
-  - docker manifest inspect ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} > /dev/null && true; RESULT=$?
-  - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
-  - docker manifest create ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND}
-  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} --os linux --arch arm
-  - docker manifest annotate ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} --os linux --arch arm64
-  - docker manifest inspect -v ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND}
-  - (if [ ${RESULT} == 1 ] ; then docker manifest push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND} ; else echo Image with this tag already exists. ; fi)
-
-docker-deploy-adc-multiarch-patch-date:
-  extends: .docker-deploy-multiarch-patch-date
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: sample-adc
-    IMAGE_NAME_32: arm32v7-sample-adc
-    IMAGE_NAME_64: arm64v8-sample-adc
-  stage: deploy-multiarch-patch-date
-
-docker-deploy-gpio-bash-multiarch-patch-date:
-  extends: .docker-deploy-multiarch-patch-date
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: sample-gpio-bash
-    IMAGE_NAME_32: arm32v7-sample-gpio-bash
-    IMAGE_NAME_64: arm64v8-sample-gpio-bash
-  stage: deploy-multiarch-patch-date
-
-docker-deploy-tflite-multiarch-patch-date:
-  extends: .docker-deploy-multiarch-patch-date
-  before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_NAME: sample-tflite
-    IMAGE_NAME_32: arm32v7-sample-tflite
-    IMAGE_NAME_64: arm64v8-sample-tflite
-  stage: deploy-multiarch-patch-date
+  - adc
+  - dbus-tools
+  - dbus-python
+  - gpio-bash
+  - gpio-c
+  - dlr-gstreamer
+  - uart-gps-python
+  - collectd
+  - gstreamer-simple-pipeline
+  - opencl
+  - opencv
+  - pwm
+  - qt5-python-qml
+  - uart-sht31-flask-app
+  - uart-sht31-influxdb
+  - uart-sht31-kiosk
+  - tflite
+  - weather
+
+adc-jobs:
+  stage: adc
+  trigger:
+    include: adc/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - adc/*
+
+dbus-tools-jobs:
+  stage: dbus-tools
+  trigger:
+    include: dbus/tools/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - dbus/tools/*
+
+dbus-python-jobs:
+  stage: dbus-python
+  trigger:
+    include: dbus/python/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - dbus/python/*
+
+gpio-bash-jobs:
+  stage: gpio-bash
+  trigger:
+    include: gpio/bash/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - gpio/bash/*
+
+gpio-c-jobs:
+  stage: gpio-c
+  trigger:
+    include: gpio/c/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - gpio/c/*
+
+dlr-gstreamer-jobs:
+  stage: dlr-gstreamer
+  trigger:
+    include: dlr-gstreamer/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - dlr-gstreamer/*
+
+uart-gps-python-jobs:
+  stage: uart-gps-python
+  trigger:
+    include: gps/python/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - gps/python/*
+
+collectd-jobs:
+  stage: collectd
+  trigger:
+    include: grafana/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - grafana/*
+
+gstreamer-simple-pipeline-jobs:
+  stage: gstreamer-simple-pipeline
+  trigger:
+    include: gstreamer/bash/simple-pipeline/.gitlab-ci.yml
+  rules:
+    - changes:
+      - gstreamer/bash/simple-pipeline/*
+
+opencl-jobs:
+  stage: opencl
+  trigger:
+    include: opencl/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - opencl/*
+
+opencv-jobs:
+  stage: opencv
+  trigger:
+    include: opencv/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - opencv/*
+
+pwm-jobs:
+  stage: pwm
+  trigger:
+    include: pwm/.gitlab-ci.yml
+  rules:
+    - changes:
+      - pwm/*
+
+qt5-python-qml-jobs:
+  stage: qt5-python-qml
+  trigger:
+    include: python-qml/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - python-qml/*
+
+uart-sht31-flask-app-jobs:
+  stage: uart-sht31-flask-app
+  trigger:
+    include: sht31/flaskapp/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - sht31/flaskapp/*
+
+uart-sht31-influxdb-jobs:
+  stage: uart-sht31-influxdb
+  trigger:
+    include: sht31/sht31-influxdb/.gitlab-ci.yml
+  rules:
+    - changes:
+      - sht31/sht31-influxdb/*
+
+uart-sht31-kiosk-jobs:
+  stage: uart-sht31-kiosk
+  trigger:
+    include: sht31/kiosk/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - sht31/kiosk/*
+
+tflite-jobs:
+  stage: tflite
+  trigger:
+    include: tflite/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - tflite/*
+
+weather-jobs:
+  stage: weather
+  trigger:
+    include: weather/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - weather/*
