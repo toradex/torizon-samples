@@ -3,6 +3,10 @@
 #   those samples are included from here
 # Shared scripts are in .gitlab-ci-scripts.yml and included in each sample
 
+# Only run branch pipelines
+include:
+  - template: 'Workflows/Branch-Pipelines.gitlab-ci.yml'
+
 stages:
   - adc
   - dbus-tools
