@@ -26,6 +26,7 @@ stages:
   - uart-sht31-kiosk
   - tflite
   - weather
+  - end
 
 adc-jobs:
   stage: adc
@@ -185,3 +186,10 @@ weather-jobs:
   rules:
     - changes:
       - weather/*
+
+# Run this job even if no other job is added to the pipeline
+# It prevents commits without a job
+final-job:
+  stage: end
+  script:
+    - echo "All jobs were run"
