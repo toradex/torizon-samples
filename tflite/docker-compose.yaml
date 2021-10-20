@@ -1,7 +1,11 @@
 version: "2.4"
 services:
   tflite-example:
-      image: torizonextras/sample-tflite:2
+      # The environment variable CT_TAG_DEBIAN is set in TorizonCore
+      # as explained on https://developer.toradex.com/knowledge-base/container-tags-and-versioning
+      # Check the available tags for this sample on
+      # https://hub.docker.com/r/torizonextras/sample-tflite/tags
+      image: torizonextras/sample-tflite:${CT_TAG_DEBIAN}
     volumes:
        - /tmp:/tmp
        - /sys:/sys
