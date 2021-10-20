@@ -1,7 +1,9 @@
 version: "2.4"
 services:
   weston:
-    image: torizon/weston-vivante:2
+    # The environment variable CT_TAG_DEBIAN is set in TorizonCore
+    # as explained on https://developer.toradex.com/knowledge-base/container-tags-and-versioning
+    image: torizon/weston-vivante:${CT_TAG_WESTON_VIVANTE}
     network_mode: host
     environment:
       - ACCEPT_FSL_EULA=1
@@ -32,7 +34,11 @@ services:
   opencv-example:
     depends_on:
       - weston
-    image: torizonextras/arm64v8-sample-opencv-vivante:2
+    # The environment variable CT_TAG_WAYLAND_BASE_VIVANTE is set in TorizonCore
+    # as explained on https://developer.toradex.com/knowledge-base/container-tags-and-versioning
+    # Check the available tags for this sample on
+    # https://hub.docker.com/r/torizonextras/arm64v8-sample-opencv-vivante/tags
+    image: torizonextras/arm64v8-sample-opencv-vivante:${CT_TAG_WAYLAND_BASE_VIVANTE}
     # Uncomment the line above if you want to grant access to a peripheral, ex: a USB Cam
     # devices:
     #   - /dev/video2:/dev/video2
