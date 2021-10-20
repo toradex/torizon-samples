@@ -43,4 +43,3 @@ docker-build-uart-sht31-kiosk-multiarch:
     IMAGE_NAME_32: arm32v7-sample-uart-sht31-kiosk
     IMAGE_NAME_64: arm64v8-sample-uart-sht31-kiosk-vivante
   stage: build-multiarch
-  needs: ["docker-build-uart-sht31-kiosk", "docker-build-uart-sht31-kiosk-arm64v8"]

@@ -47,4 +47,3 @@ docker-build-weather-multiarch:
     IMAGE_NAME_32: arm32v7-sample-weather
     IMAGE_NAME_64: arm64v8-sample-weather
   stage: build-multiarch
-  needs: ["docker-build-weather", "docker-build-weather-arm64v8"]

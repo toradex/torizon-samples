@@ -43,4 +43,3 @@ docker-build-collectd-multiarch:
     IMAGE_NAME_32: arm32v7-sample-collectd
     IMAGE_NAME_64: arm64v8-sample-collectd
   stage: build-multiarch
-  needs: ["docker-build-collectd", "docker-build-collectd-arm64v8"]

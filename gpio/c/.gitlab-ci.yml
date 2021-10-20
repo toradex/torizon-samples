@@ -47,4 +47,3 @@ docker-build-gpio-c-multiarch:
     IMAGE_NAME_32: arm32v7-sample-gpio-c
     IMAGE_NAME_64: arm64v8-sample-gpio-c
   stage: build-multiarch
-  needs: ["docker-build-gpio-c", "docker-build-gpio-c-arm64v8"]

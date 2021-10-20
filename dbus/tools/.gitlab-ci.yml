@@ -43,4 +43,3 @@ docker-build-dbus-tools-multiarch:
     IMAGE_NAME_32: arm32v7-sample-dbus-tools
     IMAGE_NAME_64: arm64v8-sample-dbus-tools
   stage: build-multiarch
-  needs: ["docker-build-dbus-tools", "docker-build-dbus-tools-arm64v8"]

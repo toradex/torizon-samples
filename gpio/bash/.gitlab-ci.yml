@@ -45,7 +45,6 @@ docker-build-gpio-bash-multiarch:
     IMAGE_NAME_32: arm32v7-sample-gpio-bash
     IMAGE_NAME_64: arm64v8-sample-gpio-bash
   stage: build-multiarch
-  needs: ["docker-build-gpio-bash", "docker-build-gpio-bash-arm64v8"]
 
 docker-deploy-gpio-bash:
   extends: .docker-deploy
@@ -81,4 +80,3 @@ docker-deploy-gpio-bash-multiarch:
     IMAGE_NAME_32: arm32v7-sample-gpio-bash
     IMAGE_NAME_64: arm64v8-sample-gpio-bash
   stage: deploy-multiarch
-  needs: ["docker-deploy-gpio-bash", "docker-deploy-gpio-bash-arm64v8"]

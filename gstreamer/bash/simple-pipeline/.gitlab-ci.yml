@@ -43,7 +43,3 @@ docker-build-gstreamer-simple-pipeline-multiarch:
     IMAGE_NAME_32: arm32v7-sample-gstreamer-simple-pipeline
     IMAGE_NAME_64: arm64v8-sample-gstreamer-simple-pipeline-vivante
   stage: build-multiarch
-  needs: [
-    "docker-build-gstreamer-simple-pipeline",
-    "docker-build-gstreamer-simple-pipeline-arm64v8"
-    ]

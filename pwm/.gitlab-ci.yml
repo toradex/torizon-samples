@@ -47,4 +47,3 @@ docker-build-pwm-multiarch:
     IMAGE_NAME_32: arm32v7-sample-pwm
     IMAGE_NAME_64: arm64v8-sample-pwm
   stage: build-multiarch
-  needs: ["docker-build-pwm", "docker-build-pwm-arm64v8"]

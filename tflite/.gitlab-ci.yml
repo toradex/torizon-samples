@@ -47,7 +47,6 @@ docker-build-tflite-multiarch:
     IMAGE_NAME_32: arm32v7-sample-tflite
     IMAGE_NAME_64: arm64v8-sample-tflite
   stage: build-multiarch
-  needs: ["docker-build-tflite", "docker-build-tflite-arm64v8"]
 
 docker-deploy-tflite:
   extends: .docker-deploy
@@ -83,4 +82,3 @@ docker-deploy-tflite-multiarch:
     IMAGE_NAME_32: arm32v7-sample-tflite
     IMAGE_NAME_64: arm64v8-sample-tflite
   stage: deploy-multiarch
-  needs: ["docker-deploy-tflite", "docker-deploy-tflite-arm64v8"]

@@ -43,7 +43,3 @@ docker-build-uart-sht31-flask-app-multiarch:
     IMAGE_NAME_32: arm32v7-sample-uart-sht31-flask-app
     IMAGE_NAME_64: arm64v8-sample-uart-sht31-flask-app
   stage: build-multiarch
-  needs: [
-    "docker-build-uart-sht31-flask-app",
-    "docker-build-uart-sht31-flask-app-arm64v8"
-    ]

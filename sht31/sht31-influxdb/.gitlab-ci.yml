@@ -43,7 +43,3 @@ docker-build-uart-sht31-influxdb-multiarch:
     IMAGE_NAME_32: arm32v7-sample-uart-sht31-influxdb
     IMAGE_NAME_64: arm64v8-sample-uart-sht31-influxdb
   stage: build-multiarch
-  needs: [
-    "docker-build-uart-sht31-influxdb",
-    "docker-build-uart-sht31-influxdb-arm64v8"
-    ]

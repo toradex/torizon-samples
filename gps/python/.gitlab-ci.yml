@@ -43,4 +43,3 @@ docker-build-uart-gps-python-multiarch:
     IMAGE_NAME_32: arm32v7-sample-uart-gps-python
     IMAGE_NAME_64: arm64v8-sample-uart-gps-python
   stage: build-multiarch
-  needs: ["docker-build-uart-gps-python", "docker-build-uart-gps-python-arm64v8"]

@@ -66,4 +66,3 @@ docker-build-qt5-python-qml-multiarch:
     # See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=974101
     IMAGE_NAME_64: arm64v8-sample-qt5-python-qml
   stage: build-multiarch
-  needs: ["docker-build-qt5-python-qml", "docker-build-qt5-python-qml-arm64v8"]

@@ -49,7 +49,6 @@ docker-build-adc-multiarch:
     IMAGE_NAME_32: arm32v7-sample-adc
     IMAGE_NAME_64: arm64v8-sample-adc
   stage: build-multiarch
-  needs: ["docker-build-adc", "docker-build-adc-arm64v8"]
 
 docker-deploy-adc:
   extends: .docker-deploy
@@ -85,4 +84,3 @@ docker-deploy-adc-multiarch:
     IMAGE_NAME_32: arm32v7-sample-adc
     IMAGE_NAME_64: arm64v8-sample-adc
   stage: deploy-multiarch
-  needs: ["docker-deploy-adc", "docker-deploy-adc-arm64v8"]
