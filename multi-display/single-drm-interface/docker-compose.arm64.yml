@@ -1,0 +1,64 @@
+version: "2.4"
+services:
+  weston:
+    image: torizon/weston-vivante:2
+    # EULA required to run imx8 vivante graphic drivers
+    # Pre-accept as we ask the user accept the EULA already.
+    environment:
+      - ACCEPT_FSL_EULA=1
+    # Required to get udev events from host udevd via netlink
+    network_mode: host
+    command: --developer weston-launch --tty=/dev/tty7 --user=torizon -- --shell=kiosk-shell.so
+    volumes:
+      - type: bind
+        source: /tmp
+        target: /tmp
+      - type: bind
+        source: /dev
+        target: /dev
+      - type: bind
+        source: /run/udev
+        target: /run/udev
+      - type: bind
+        source: /home/torizon/
+        target: /etc/xdg/weston-dev/
+    cap_add:
+      - CAP_SYS_TTY_CONFIG
+    # Add device access rights through cgroup...
+    device_cgroup_rules:
+      # ... for tty0
+      - 'c 4:0 rmw'
+      # ... for tty7
+      - 'c 4:7 rmw'
+      # ... for /dev/input devices
+      - 'c 13:* rmw'
+      - 'c 199:* rmw'
+      # ... for /dev/dri devices
+      - 'c 226:* rmw'
+
+  tic-tac-toe:
+    depends_on:
+    - weston
+    device_cgroup_rules:
+    - c 199:* rmw
+    - c 226:* rmw
+    image: leograba/tic-tac-toe:0.1.0-vivante-arm64v8
+    volumes:
+    - /tmp:/tmp:rw
+    - /dev/dri:/dev/dri:rw
+    - /dev/galcore:/dev/galcore
+
+  qt5:
+    depends_on:
+    - weston
+    command: "/usr/lib/aarch64-linux-gnu/qt5/examples/quick/animation/animation"
+    environment:
+      - ACCEPT_FSL_EULA=1
+    device_cgroup_rules:
+    - c 199:* rmw
+    - c 226:* rmw
+    image: torizon/qt5-wayland-examples-vivante:2
+    volumes:
+    - /tmp:/tmp
+    - /dev/dri:/dev/dri
+    - /dev/galcore:/dev/galcore
