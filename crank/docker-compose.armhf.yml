@@ -1,0 +1,54 @@
+version: "2.4"
+services:
+
+  weston:
+    image: torizon/weston:2
+    # Required to get udev events from host udevd via netlink
+    network_mode: host
+    volumes:
+      - type: bind
+        source: /tmp
+        target: /tmp
+      - type: bind
+        source: /dev
+        target: /dev
+      - type: bind
+        source: /run/udev
+        target: /run/udev
+    cap_add:
+      - CAP_SYS_TTY_CONFIG
+    # Add device access rights through cgroup...
+    device_cgroup_rules:
+      # ... for tty0
+      - 'c 4:0 rmw'
+      # ... for tty7
+      - 'c 4:7 rmw'
+      # ... for /dev/input devices
+      - 'c 13:* rmw'
+      # ... for /dev/dri devices
+      - 'c 226:* rmw'
+    command: --developer weston-launch --tty=/dev/tty7 --user=torizon
+    healthcheck:
+        test: ["CMD", "test", "-S", "/tmp/.X11-unix/X0"]
+        interval: 5s
+        timeout: 4s
+        retries: 6
+        start_period: 10s
+
+  crank:
+    image: cranksoftware/torizon_imx6:6_2
+    ports:
+      - "55555:55555"
+    device_cgroup_rules:
+      # ... for /dev/dri devices
+      - 'c 226:* rmw'
+    volumes:
+      - type: bind
+        source: /tmp
+        target: /tmp
+      - type: bind
+        source: /dev/dri
+        target: /dev/dri
+    depends_on:
+      weston:
+        condition: service_healthy
