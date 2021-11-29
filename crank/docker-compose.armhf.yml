@@ -36,7 +36,7 @@ services:
         start_period: 10s
 
   crank:
-    image: cranksoftware/torizon_imx6:6_2
+    image: cranksoftware/torizon_imx6:7_1
     ports:
       - "55555:55555"
     device_cgroup_rules:

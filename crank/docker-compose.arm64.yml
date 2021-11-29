@@ -41,7 +41,7 @@ services:
         start_period: 10s
 
   crank:
-    image: cranksoftware/torizon_imx8:7_0_1
+    image: cranksoftware/torizon_imx8:7_1
     # Accept the EULA required to run imx8 vivante graphic drivers
     environment:
      - ACCEPT_FSL_EULA=1
