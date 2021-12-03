@@ -1,11 +1,11 @@
 version: "2.4"
 services:
-
   weston:
     image: torizon/weston-vivante:2
-    # Accept the EULA required to run imx8 vivante graphic drivers
+    # EULA required to run imx8 vivante graphic drivers
+    # Pre-accept as we ask the user accept the EULA already.
     environment:
-     - ACCEPT_FSL_EULA=1
+      - ACCEPT_FSL_EULA=1
     # Required to get udev events from host udevd via netlink
     network_mode: host
     volumes:
@@ -31,22 +31,11 @@ services:
       - 'c 199:* rmw'
       # ... for /dev/dri devices
       - 'c 226:* rmw'
-    scale: 1
-    command: --developer weston-launch --tty=/dev/tty7 --user=torizon
-    healthcheck:
-        test: ["CMD", "test", "-S", "/tmp/.X11-unix/X0"]
-        interval: 5s
-        timeout: 4s
-        retries: 6
-        start_period: 10s
 
   portainer:
-    image: portainer/portainer:latest
-    # default user/password is admin/toradex2020
-    command: -H unix:///var/run/docker.sock --admin-password '$$2y$$05$$lYD3omTmZ0c0jMDsNX6k8.GwS2NMHbbDzkMBWcDzBt6/K9EyuMPHi' --logo 'https://developer.toradex.com/images/logo_toradex_header.png'
-    labels:
-      - owner=acme
-    # Make portainer web UI externally accessible through port 8840
+    image: portainer/portainer-ce:2.9.3
+    command: --templates https://feeds.toradex.com/portainer/4/@@MACHINE@@/templates.json --logo https://docs.toradex.com/109812-torizon-logo-portainer.svg -H unix:///var/run/docker.sock
+    restart: always    
     ports:
       - 8840:9000
     volumes:
@@ -56,17 +45,14 @@ services:
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
-    scale: 1
 
   kiosk:
     image: torizon/kiosk-mode-browser:2
+    platform: linux/arm64
     security_opt:
       - seccomp:unconfined
-    command: --window-mode http://portainer:9000
+    command: http://portainer:9000
     shm_size: 256mb
-    device_cgroup_rules:
-      # ... for /dev/dri devices
-      - 'c 226:* rmw'
     volumes:
       - type: bind
         source: /tmp
@@ -74,15 +60,9 @@ services:
       - type: bind
         source: /var/run/dbus
         target: /var/run/dbus
-      - type: bind
-        source: /dev/dri
-        target: /dev/dri
-    scale: 1
     depends_on:
-      weston:
-        condition: service_healthy
-      portainer:
-        condition: service_started
+      - portainer
+      - weston
 
 volumes:
   portainer_data:
