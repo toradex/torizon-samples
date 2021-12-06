@@ -8,6 +8,7 @@ include:
   - template: 'Workflows/Branch-Pipelines.gitlab-ci.yml'
 
 stages:
+  # Dockerfile-base samples --> re-build and manual (optional) push to Docker Hub
   - adc
   - dbus-tools
   - dbus-python
@@ -26,7 +27,14 @@ stages:
   - uart-sht31-kiosk
   - tflite
   - weather
+  # Docker Compose only samples --> push to OTA
+  - crank
+  - portainer
+  # Final job, always run
   - end
+
+
+#### Dockerfile-base samples ####
 
 adc-jobs:
   stage: adc
@@ -186,6 +194,26 @@ weather-jobs:
   rules:
     - changes:
       - weather/*
+
+#### Docker Compose only samples ####
+
+crank-jobs:
+  stage: crank
+  trigger:
+    include: crank/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - crank/*
+
+portainer-jobs:
+  stage: portainer
+  trigger:
+    include: debian-container/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - debian-container/*
 
 # Run this job even if no other job is added to the pipeline
 # It prevents commits without a job

@@ -1,0 +1,32 @@
+# Stages
+# The server does not accept well pushing multiple packages in parallel
+stages:
+  - push-platform-arm32v7
+  - push-platform-vivante-arm64v8
+
+# Scripts
+include:
+  - /.gitlab-ci-tcb.yml
+
+# Global variables
+variables:
+  APP_NAME: "crank-storyboard"
+
+# Jobs
+push-arm32v7:
+  extends: .tcb-push-to-platform-services
+  before_script:
+    - export APP_VERSION=$(awk '/image:.cranksoftware/{print}' ${DOCKER_COMPOSE_FILE} | cut -d ':' -f3 | sed 's/_/\./')
+  variables:
+    APP_ARCH: "arm32v7"
+    DOCKER_COMPOSE_FILE: "crank/docker-compose.armhf.yml"
+  stage: push-platform-arm32v7
+
+push-vivante-arm64v8:
+  extends: .tcb-push-to-platform-services
+  before_script:
+    - export APP_VERSION=$(awk '/image:.cranksoftware/{print}' ${DOCKER_COMPOSE_FILE} | cut -d ':' -f3 | sed 's/_/\./')
+  variables:
+    APP_ARCH: "vivante-arm64v8"
+    DOCKER_COMPOSE_FILE: "crank/docker-compose.arm64.yml"
+  stage: push-platform-vivante-arm64v8

@@ -1,0 +1,24 @@
+image: ${CI_REGISTRY}/rd/torizon-core-containers/torizoncore-builder/torizoncore-builder:bullseye-latest
+
+variables:
+  # This should be set by docker image already, just to be sure...
+  DOCKER_HOST: tcp://docker:2375
+  # Use overlayfs driver for better performance
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_DRIVER: overlay2
+
+services:
+  - name: docker:dind
+
+# Scripts
+
+# Push application to the Torizon Platform Services
+.tcb-push-to-platform-services:
+  image:
+    name: ${CI_REGISTRY}/rd/torizon-core-containers/torizoncore-builder/torizoncore-builder:bullseye-latest
+    entrypoint: [ "" ]
+  script:
+    - echo "${APP_NAME}:${APP_VERSION}-${APP_ARCH} ${DOCKER_COMPOSE_FILE}"
+    - echo $CREDENTIALS_BASE64 | base64 -d > credentials.zip
+    - torizoncore-builder --version
+    - torizoncore-builder push --credentials credentials.zip --package-name ${APP_NAME} --package-version "${APP_VERSION}-${APP_ARCH}" ${DOCKER_COMPOSE_FILE}

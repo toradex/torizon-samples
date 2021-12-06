@@ -1,2 +1,8 @@
 .vs/
 out/
+
+# Torizon Platform Services credentials file
+credentials.zip
+
+# TorizonCore Builder setup script
+tcb-env-setup.sh
