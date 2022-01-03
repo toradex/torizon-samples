@@ -145,7 +145,7 @@ variables:
 
 # Docker deploy scripts
 #
-# Make sure DOCKER_HUB_USER/DOCKER_HUB_PW is properly set in the project
+# Make sure DOCKER_HUB_USER/DOCKER_HUB_TOKEN is properly set in the project
 # specific Gitlab CI settings.
 
 # Only a few samples are published to Docker Hub, therefore not every container
@@ -159,7 +159,7 @@ variables:
     - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}
     - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND}
     - docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND}
-    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN
     - docker push --all-tags ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}
 
 .docker-deploy-multiarch:
@@ -169,7 +169,7 @@ variables:
     - "echo -e '{\n  \"experimental\": \"enabled\"\n}' | tee $HOME/.docker/config.json"
     - docker version
     - rm -rf ~/.docker/manifests/*
-    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN
     # docker manifest push does not have "--all-tags" option, must push one-by-one
     # Major
     - docker manifest create ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${MAJOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_32}:${MAJOR}${DEBIAN_RELEASE_APPEND} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME_64}:${MAJOR}${DEBIAN_RELEASE_APPEND}
