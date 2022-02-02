@@ -14,4 +14,4 @@ RUN useradd -m dbususer
 USER dbususer
 WORKDIR /home/dbususer
 
-CMD /bin/bash -l
+CMD ["/bin/bash", "-l"]

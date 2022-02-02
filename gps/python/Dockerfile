@@ -11,11 +11,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-setuptools && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --upgrade pip
+RUN pip3 install --no-cache-dir --upgrade pip
 
 COPY requirements.txt /requirements.txt
 
-RUN pip install -r /requirements.txt
+RUN pip install --no-cache-dir -r /requirements.txt
 
 COPY readgps.py /usr/bin
 

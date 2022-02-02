@@ -11,7 +11,7 @@ ARG GCC_PREFIX=arm-linux-gnueabihf
 ARG CROSS_TC_IMAGE_ARCH
 
 # install the libpiod development dependencies
-RUN apt-get -y update && apt-get -y upgrade && apt-get install -y \
+RUN apt-get -y update && apt-get -y upgrade && apt-get install -y --no-install-recommends \
     libgpiod-dev:$CROSS_TC_IMAGE_ARCH \
     libgpiod2:$CROSS_TC_IMAGE_ARCH \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
@@ -30,7 +30,7 @@ FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG AS deploy-con
 
 # To run examples we only need the libgpiod2 library. The gpiod package can
 # be helpful for debugging.
-RUN apt-get -y update && apt-get install -y \
+RUN apt-get -y update && apt-get install -y --no-install-recommends \
     libgpiod2 \
     gpiod \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*

@@ -15,7 +15,7 @@ ARG TOOLCHAIN_ARCH
 # install all required development packages
 
 RUN dpkg --add-architecture "$CROSS_TC_IMAGE_ARCH" \
-    && apt-get update && apt-get install -y \
+    && apt-get update && apt-get install -y --no-install-recommends \
     git \
     cmake \
     libcurl4-openssl-dev:$CROSS_TC_IMAGE_ARCH \
@@ -34,7 +34,7 @@ RUN git clone https://github.com/offa/influxdb-cxx.git \
     && make install
 
 # build weather app
-COPY src src
+COPY src /src
 RUN mkdir /src/build \
     && cd src/build \
     && cmake .. -DCMAKE_TOOLCHAIN_FILE=/$TOOLCHAIN_ARCH-toolchain.cmake \
@@ -44,7 +44,7 @@ RUN mkdir /src/build \
 FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG
 
 # install runtime libraries
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4 \
     libjsoncpp24 \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*

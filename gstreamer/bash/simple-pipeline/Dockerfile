@@ -7,7 +7,7 @@ ARG DOCKER_REGISTRY=torizon
 FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG
 ARG IMAGE_ARCH
  
-RUN apt-get -y update && apt-get install -y \
+RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	libgstreamer1.0-0 \
 	gstreamer1.0-plugins-base \
 	gstreamer1.0-plugins-good \
@@ -22,7 +22,7 @@ RUN apt-get -y update && apt-get install -y \
 	gstreamer1.0-gtk3 \
 	gstreamer1.0-pulseaudio \
 	&& if [ "${IMAGE_ARCH}" = "linux/arm64/v8" ]; then \
-		apt-get install -y \
+		apt-get install -y --no-install-recommends \
 		gstreamer1.0-qt5; fi \
 	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 	

@@ -20,8 +20,8 @@ ARG APPNAME
 # Remove libqt5gui5-gles in favor of libqt5gui5. On armhf both libqt5gui5 and
 # libqt5gui5-gles are built with -opengl es2, so technically there is no change
 # for armhf
-RUN apt-get remove libqt5opengl5 --allow-change-held-packages
-RUN apt-get remove libqt5gui5-gles
+RUN apt-get remove libqt5opengl5 --allow-change-held-packages \
+    && apt-get remove libqt5gui5-gles
 
 # Install libqt5gui5 and also reinstall libqt5opengl5 and the packages dependent
 # on libqt5gui5-gles that got removed as a result of removing libqt5gui5-gles
@@ -57,4 +57,4 @@ COPY ./app /app
 
 WORKDIR /app
 
-CMD python3 $ENVAPPNAME
+CMD ["sh", "-c", "python3 $ENVAPPNAME"]

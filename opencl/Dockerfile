@@ -5,7 +5,7 @@ ARG DOCKER_REGISTRY=torizon
 
 FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG
 
-RUN apt-get -y update && apt-get install -y \
+RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	git \
 	build-essential \
 	cmake \
@@ -17,7 +17,7 @@ RUN git config --global user.email "you@example.com" && \
 
 WORKDIR /home/torizon
 
-RUN apt-get -y update && apt-get install -y \
+RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	libopencl-vivante1 \
 	libopencl-vivante1-dev \
 	libclc-vivante1 \
@@ -34,4 +34,4 @@ RUN mkdir -p clpeak/buid &&\
 	cmake .. && \
 	cmake --build .
 
-ENTRYPOINT clpeak/buid/clpeak
+ENTRYPOINT ["clpeak/buid/clpeak"]

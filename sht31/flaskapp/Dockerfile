@@ -15,6 +15,6 @@ RUN apt-get update \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir flaskapp
-COPY flaskapp.py flaskapp/
-COPY templates/ flaskapp/templates/
-COPY static/ flaskapp/static/
+COPY flaskapp.py /flaskapp/
+COPY templates/ /flaskapp/templates/
+COPY static/ /flaskapp/static/

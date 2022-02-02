@@ -15,16 +15,16 @@ ARG PKG_ARCH
 
 # Install utils, app dependencies and TensorFlow Lite with APT
 # https://www.tensorflow.org/lite/guide/python#install_tensorflow_lite_for_python
-RUN apt-get -y update && apt-get install -y \
+RUN apt-get -y update && apt-get install -y --no-install-recommends \
   curl unzip gnupg \
   && echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | \
     tee /etc/apt/sources.list.d/coral-edgetpu.list \
-  && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - \
-  && apt-get -y update && apt-get install -y \
+  && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
+  && apt-get -y update && apt-get install -y --no-install-recommends \
     python3-tflite-runtime \
     python3-pil \
   && apt-get remove gnupg \
-  && apt-get clean && apt-get autoremove
+  && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # Anternative: Install utils and app dependencies with APT, Tensorflow Lite with PIP
 # https://www.tensorflow.org/lite/guide/python#install_tensorflow_lite_for_python
@@ -45,4 +45,5 @@ COPY image.jpg .
 COPY main.py .
 
 # Run script
-ENTRYPOINT python3 main.py
+ENTRYPOINT ["python3"]
+CMD ["main.py"]

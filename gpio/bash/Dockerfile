@@ -5,7 +5,7 @@ ARG DOCKER_REGISTRY=torizon
 
 FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG
 
-RUN apt-get -y update && apt-get install -y \
+RUN apt-get -y update && apt-get install -y --no-install-recommends \
     gpiod \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 

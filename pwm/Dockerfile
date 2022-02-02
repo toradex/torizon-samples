@@ -23,4 +23,4 @@ FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG AS deploy-con
 # get the compiled program from the Build stage
 COPY --from=cross-container /project/build/* /usr/local/bin/
 
-CMD pwm
+CMD ["pwm"]

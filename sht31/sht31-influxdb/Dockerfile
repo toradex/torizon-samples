@@ -14,10 +14,10 @@ RUN apt-get update \
     python3-pip \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
-COPY sht31module sht31module
+COPY sht31module /sht31module
 RUN  cd sht31module && python3 setup.py install
 
 COPY sht31-influxdb.py /usr/bin
 
-RUN pip3 install pyserial pynmea2
+RUN pip3 install --no-cache-dir pyserial pynmea2
 COPY gps/gps.py /usr/bin
