@@ -1,5 +1,9 @@
+variables:
+  DOCKERFILE_FOLDER: "gpio/bash/"
+
 # Stages
 stages:
+  - lint
   - build
   - build-multiarch
   - deploy
@@ -10,6 +14,11 @@ include:
   - /.gitlab-ci-scripts.yml
 
 # Jobs
+
+dockerfile-lint-gpio-bash:
+  extends: .dockerfile-lint
+  stage: lint
+
 docker-build-gpio-bash:
   extends: .docker-build
   before_script:
@@ -21,7 +30,6 @@ docker-build-gpio-bash:
     IMAGE_NAME: arm32v7-sample-gpio-bash
     IMAGE_ARCH: linux/arm/v7
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "gpio/bash/"
   stage: build
 
 docker-build-gpio-bash-arm64v8:
@@ -35,7 +43,6 @@ docker-build-gpio-bash-arm64v8:
     IMAGE_NAME: arm64v8-sample-gpio-bash
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "gpio/bash/"
   stage: build
 
 docker-build-gpio-bash-multiarch:

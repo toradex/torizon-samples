@@ -1,5 +1,9 @@
+variables:
+  DOCKERFILE_FOLDER: "tflite/"
+
 # Stages
 stages:
+  - lint
   - build
   - build-multiarch
   - deploy
@@ -10,6 +14,11 @@ include:
   - /.gitlab-ci-scripts.yml
 
 # Jobs
+
+dockerfile-lint-tflite:
+  extends: .dockerfile-lint
+  stage: lint
+
 docker-build-tflite:
   extends: .docker-build
   before_script:
@@ -22,7 +31,6 @@ docker-build-tflite:
     IMAGE_ARCH: linux/arm/v7
     PKG_ARCH: armv7l
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "tflite/"
   stage: build
 
 docker-build-tflite-arm64v8:
@@ -37,7 +45,6 @@ docker-build-tflite-arm64v8:
     IMAGE_ARCH: linux/arm64/v8
     PKG_ARCH: aarch64
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "tflite/"
   stage: build
 
 docker-build-tflite-multiarch:

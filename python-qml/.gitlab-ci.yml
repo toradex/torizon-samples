@@ -1,5 +1,9 @@
+variables:
+  DOCKERFILE_FOLDER: "python-qml/"
+
 # Stages
 stages:
+  - lint
   - build
   - build-multiarch
 
@@ -8,6 +12,11 @@ include:
   - /.gitlab-ci-scripts.yml
 
 # Jobs
+
+dockerfile-lint-qt5-python-qml:
+  extends: .dockerfile-lint
+  stage: lint
+
 docker-build-qt5-python-qml:
   extends: .docker-build
   before_script:
@@ -19,7 +28,6 @@ docker-build-qt5-python-qml:
     IMAGE_NAME: arm32v7-sample-qt5-python-qml
     IMAGE_ARCH: linux/arm/v7
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "python-qml/"
   stage: build
 
 docker-build-qt5-python-qml-arm64v8:
@@ -33,7 +41,6 @@ docker-build-qt5-python-qml-arm64v8:
     IMAGE_NAME: arm64v8-sample-qt5-python-qml
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "python-qml/"
   stage: build
 
 docker-build-qt5-python-qml-arm64v8-vivante:
@@ -47,7 +54,6 @@ docker-build-qt5-python-qml-arm64v8-vivante:
     IMAGE_NAME: arm64v8-sample-qt5-python-qml-vivante
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "python-qml/"
   stage: build
   # arm64 with Vivante(ARG BASE_NAME=qt5-wayland-vivante) is currently not
   # supported as python3-pyside2.qtgui is not co-installable with libqt5qui5-gles

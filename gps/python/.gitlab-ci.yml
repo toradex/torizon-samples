@@ -1,5 +1,9 @@
+variables:
+  DOCKERFILE_FOLDER: "gps/python/"
+
 # Stages
 stages:
+  - lint
   - build
   - build-multiarch
 
@@ -8,6 +12,11 @@ include:
   - /.gitlab-ci-scripts.yml
 
 # Jobs
+
+dockerfile-lint-uart-gps-python:
+  extends: .dockerfile-lint
+  stage: lint
+
 docker-build-uart-gps-python:
   extends: .docker-build
   before_script:
@@ -19,7 +28,6 @@ docker-build-uart-gps-python:
     IMAGE_NAME: arm32v7-sample-uart-gps-python
     IMAGE_ARCH: linux/arm/v7
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "gps/python/"
   stage: build
 
 docker-build-uart-gps-python-arm64v8:
@@ -33,7 +41,6 @@ docker-build-uart-gps-python-arm64v8:
     IMAGE_NAME: arm64v8-sample-uart-gps-python
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "gps/python/"
   stage: build
 
 docker-build-uart-gps-python-multiarch:

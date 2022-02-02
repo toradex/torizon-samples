@@ -1,5 +1,9 @@
+variables:
+  DOCKERFILE_FOLDER: "dlr-gstreamer/"
+
 # Stages
 stages:
+  - lint
   - build
   - deploy
 
@@ -9,6 +13,11 @@ include:
 
 # Jobs
 # Only for 64-bit vivante arch
+
+dockerfile-lint-dlr-gstreamer:
+  extends: .dockerfile-lint
+  stage: lint
+
 docker-build-dlr-gstreamer-arm64v8:
   extends: .docker-build
   before_script:
@@ -20,7 +29,6 @@ docker-build-dlr-gstreamer-arm64v8:
     IMAGE_NAME: arm64v8-sample-dlr-gstreamer-vivante
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "dlr-gstreamer/"
   stage: build
 
 docker-deploy-dlr-gstreamer-arm64v8:

@@ -1,5 +1,9 @@
+variables:
+  DOCKERFILE_FOLDER: "sht31/kiosk/"
+
 # Stages
 stages:
+  - lint
   - build
   - build-multiarch
 
@@ -8,6 +12,11 @@ include:
   - /.gitlab-ci-scripts.yml
 
 # Jobs
+
+dockerfile-lint-uart-sht31-kiosk:
+  extends: .dockerfile-lint
+  stage: lint
+
 docker-build-uart-sht31-kiosk:
   extends: .docker-build
   before_script:
@@ -19,7 +28,6 @@ docker-build-uart-sht31-kiosk:
     IMAGE_NAME: arm32v7-sample-uart-sht31-kiosk
     IMAGE_ARCH: linux/arm/v7
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "sht31/kiosk/"
   stage: build
 
 docker-build-uart-sht31-kiosk-arm64v8:
@@ -33,7 +41,6 @@ docker-build-uart-sht31-kiosk-arm64v8:
     IMAGE_NAME: arm64v8-sample-uart-sht31-kiosk-vivante
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "sht31/kiosk/"
   stage: build
 
 docker-build-uart-sht31-kiosk-multiarch:

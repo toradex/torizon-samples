@@ -1,5 +1,9 @@
+variables:
+  DOCKERFILE_FOLDER: "weather/"
+
 # Stages
 stages:
+  - lint
   - build
   - build-multiarch
 
@@ -8,6 +12,11 @@ include:
   - /.gitlab-ci-scripts.yml
 
 # Jobs
+
+dockerfile-lint-weather:
+  extends: .dockerfile-lint
+  stage: lint
+
 docker-build-weather:
   extends: .docker-build
   before_script:
@@ -21,7 +30,6 @@ docker-build-weather:
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     CROSS_TC_IMAGE_ARCH: armhf
     TOOLCHAIN_ARCH: armhf
-    DOCKERFILE_FOLDER: "weather/"
   stage: build
 
 docker-build-weather-arm64v8:
@@ -37,7 +45,6 @@ docker-build-weather-arm64v8:
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     CROSS_TC_IMAGE_ARCH: arm64
     TOOLCHAIN_ARCH: aarch64
-    DOCKERFILE_FOLDER: "weather/"
   stage: build
 
 docker-build-weather-multiarch:

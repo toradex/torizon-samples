@@ -3,9 +3,6 @@ image: docker:latest
 services:
   - name: docker:dind
 
-before_script:
-  - docker info
-
 variables:
   DEBIAN_RELEASE: "bullseye"
 
@@ -81,6 +78,21 @@ variables:
 
 # Scripts
 
+# Dockerfile linter
+
+.dockerfile-lint:
+  image: hadolint/hadolint:latest-debian
+  script:
+    # Some rules cannot be applied in our specific cases.
+    # However, since we don't want to completely ignore these rules,
+    # we are changing the following rules to have the level "info":
+    #- DL3003 warning: Use WORKDIR to switch to a directory
+    #- DL3008 warning: Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`
+    #- DL3013 warning: Pin versions in pip. Instead of `pip install <package>` use `pip install <package>==<version>` or `pip install --requirement <requirements file>`
+    #- DL3029 warning: Do not use --platform flag with FROM
+    #- DL4006 warning: Set the SHELL option -o pipefail before RUN with a pipe in it. If you are using /bin/sh in an alpine image or if your shell is symlinked to busybox then consider explicitly setting your SHELL to /bin/ash, or disable this check
+    - hadolint ${DOCKERFILE_FOLDER}/Dockerfile* --failure-threshold warning --info DL3003 --info DL3008 --info DL3013 --info DL3029 --info DL4006
+
 # Docker image build scripts
 #
 # Build the Docker images specificd in DOCKERFILE_FOLDER/IMAGE_NAME and push
@@ -90,8 +102,10 @@ variables:
     IMAGE_TAG: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
     IMAGE_ARCH: linux/arm
     ADD_TORADEX_REPOSITORY: 1
+  needs: []
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker info
     # Try to download latest image for cache, but don't fail if it does not exist
     - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} || true
     - docker pull ${CI_REGISTRY}/rd/torizon-core/samples/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} || true

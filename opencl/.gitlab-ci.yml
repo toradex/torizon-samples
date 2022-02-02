@@ -1,5 +1,9 @@
+variables:
+  DOCKERFILE_FOLDER: "opencl/"
+
 # Stages
 stages:
+  - lint
   - build
 
 # Scripts
@@ -8,6 +12,11 @@ include:
 
 # Jobs
 # Only for 64-bit vivante arch
+
+dockerfile-lint-opencl:
+  extends: .dockerfile-lint
+  stage: lint
+
 docker-build-opencl-arm64v8:
   extends: .docker-build
   before_script:
@@ -19,5 +28,4 @@ docker-build-opencl-arm64v8:
     IMAGE_NAME: arm64v8-sample-opencl-vivante
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    DOCKERFILE_FOLDER: "opencl/"
   stage: build

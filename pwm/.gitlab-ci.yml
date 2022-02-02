@@ -1,5 +1,9 @@
+variables:
+  DOCKERFILE_FOLDER: "pwm/"
+
 # Stages
 stages:
+  - lint
   - build
   - build-multiarch
 
@@ -8,6 +12,11 @@ include:
   - /.gitlab-ci-scripts.yml
 
 # Jobs
+
+dockerfile-lint-pwm:
+  extends: .dockerfile-lint
+  stage: lint
+
 docker-build-pwm:
   extends: .docker-build
   before_script:
@@ -21,7 +30,6 @@ docker-build-pwm:
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     CROSS_TC_IMAGE_ARCH: armhf
     GCC_PREFIX: arm-linux-gnueabihf
-    DOCKERFILE_FOLDER: "pwm/"
   stage: build
 
 docker-build-pwm-arm64v8:
@@ -37,7 +45,6 @@ docker-build-pwm-arm64v8:
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
     CROSS_TC_IMAGE_ARCH: arm64
     GCC_PREFIX: aarch64-linux-gnu
-    DOCKERFILE_FOLDER: "pwm/"
   stage: build
 
 docker-build-pwm-multiarch:
