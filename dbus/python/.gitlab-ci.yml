@@ -4,6 +4,7 @@ variables:
 # Stages
 stages:
   - lint
+  - repository tagging
   - build
   - build-multiarch
 
@@ -16,6 +17,16 @@ include:
 dockerfile-lint-dbus-python:
   extends: .dockerfile-lint
   stage: lint
+
+tag-dbus-python:
+  extends: .tag
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  stage: repository tagging
+  variables:
+    SAMPLE_NAME: dbus-python
 
 docker-build-dbus-python:
   extends: .docker-build

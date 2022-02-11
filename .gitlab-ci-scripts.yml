@@ -8,60 +8,56 @@ variables:
 
   # container version
   DEBIAN_MAJOR: "2"
-  DEBIAN_MINOR: "3"
-  DEBIAN_PATCH: "1"
+  DEBIAN_MINOR: "4"
+  DEBIAN_PATCH: "0"
 
   DEBIAN_SHELL_MAJOR: "2"
-  DEBIAN_SHELL_MINOR: "3"
-  DEBIAN_SHELL_PATCH: "1"
+  DEBIAN_SHELL_MINOR: "4"
+  DEBIAN_SHELL_PATCH: "0"
 
   WAYLAND_BASE_MAJOR: "2"
-  WAYLAND_BASE_MINOR: "3"
-  WAYLAND_BASE_PATCH: "1"
+  WAYLAND_BASE_MINOR: "4"
+  WAYLAND_BASE_PATCH: "0"
 
   WESTON_MAJOR: "2"
-  WESTON_MINOR: "5"
-  WESTON_PATCH: "1"
+  WESTON_MINOR: "6"
+  WESTON_PATCH: "0"
 
   QT5_WAYLAND_MAJOR: "2"
-  QT5_WAYLAND_MINOR: "5"
-  QT5_WAYLAND_PATCH: "1"
+  QT5_WAYLAND_MINOR: "6"
+  QT5_WAYLAND_PATCH: "0"
 
   QT5_WAYLAND_EXAMPLES_MAJOR: "2"
-  QT5_WAYLAND_EXAMPLES_MINOR: "5"
-  QT5_WAYLAND_EXAMPLES_PATCH: "1"
+  QT5_WAYLAND_EXAMPLES_MINOR: "6"
+  QT5_WAYLAND_EXAMPLES_PATCH: "0"
 
   WAYLAND_BASE_VIVANTE_MAJOR: "2"
-  WAYLAND_BASE_VIVANTE_MINOR: "3"
-  WAYLAND_BASE_VIVANTE_PATCH: "1"
+  WAYLAND_BASE_VIVANTE_MINOR: "4"
+  WAYLAND_BASE_VIVANTE_PATCH: "0"
 
   WESTON_VIVANTE_MAJOR: "2"
-  WESTON_VIVANTE_MINOR: "5"
-  WESTON_VIVANTE_PATCH: "1"
+  WESTON_VIVANTE_MINOR: "6"
+  WESTON_VIVANTE_PATCH: "0"
 
   QT5_WAYLAND_VIVANTE_MAJOR: "2"
-  QT5_WAYLAND_VIVANTE_MINOR: "5"
-  QT5_WAYLAND_VIVANTE_PATCH: "1"
+  QT5_WAYLAND_VIVANTE_MINOR: "6"
+  QT5_WAYLAND_VIVANTE_PATCH: "0"
 
   QT5_WAYLAND_EXAMPLES_VIVANTE_MAJOR: "2"
-  QT5_WAYLAND_EXAMPLES_VIVANTE_MINOR: "5"
-  QT5_WAYLAND_EXAMPLES_VIVANTE_PATCH: "1"
+  QT5_WAYLAND_EXAMPLES_VIVANTE_MINOR: "6"
+  QT5_WAYLAND_EXAMPLES_VIVANTE_PATCH: "0"
 
   WESTON_TOUCH_CALIBRATOR_MAJOR: "2"
-  WESTON_TOUCH_CALIBRATOR_MINOR: "4"
-  WESTON_TOUCH_CALIBRATOR_PATCH: "1"
+  WESTON_TOUCH_CALIBRATOR_MINOR: "5"
+  WESTON_TOUCH_CALIBRATOR_PATCH: "0"
 
   GRAPHICS_TESTS_MAJOR: "2"
-  GRAPHICS_TESTS_MINOR: "3"
-  GRAPHICS_TESTS_PATCH: "1"
+  GRAPHICS_TESTS_MINOR: "4"
+  GRAPHICS_TESTS_PATCH: "0"
 
   GRAPHICS_TESTS_VIVANTE_MAJOR: "2"
-  GRAPHICS_TESTS_VIVANTE_MINOR: "2"
-  GRAPHICS_TESTS_VIVANTE_PATCH: "1"
-
-  KIOSK_MODE_BROWSER_MAJOR: "2"
-  KIOSK_MODE_BROWSER_MINOR: "4"
-  KIOSK_MODE_BROWSER_PATCH: "0"
+  GRAPHICS_TESTS_VIVANTE_MINOR: "3"
+  GRAPHICS_TESTS_VIVANTE_PATCH: "0"
 
   # This should be set by docker image already, just to be sure...
   DOCKER_HOST: tcp://docker:2375
@@ -92,6 +88,31 @@ variables:
     #- DL3029 warning: Do not use --platform flag with FROM
     #- DL4006 warning: Set the SHELL option -o pipefail before RUN with a pipe in it. If you are using /bin/sh in an alpine image or if your shell is symlinked to busybox then consider explicitly setting your SHELL to /bin/ash, or disable this check
     - hadolint ${DOCKERFILE_FOLDER}/Dockerfile* --failure-threshold warning --info DL3003 --info DL3008 --info DL3013 --info DL3029 --info DL4006
+
+# Repository tagging
+
+# Make sure to create access token in "Settings/Access Tokens" section with "write_repository" scope selected.
+# Then in "Settings/CI/CD/" section add a variable with key "GIT_TOKEN" and a value of the access token. Also mask the variable.
+.tag:
+  stage: repository tagging
+  needs: []
+  before_script:
+    - if [ -z ${GIT_TOKEN} ]; then echo "Missing variable GIT_TOKEN." && exit 1; fi
+  script:
+  - apk update && apk add git
+  - TAGS="${SAMPLE_NAME}-${MAJOR}.${MINOR}.${PATCH}-${DEBIAN_RELEASE}"
+  - git remote set-url origin https://gitlab-ci-token:${GIT_TOKEN}@${CI_REPOSITORY_URL#*@}
+  - for TAG in ${TAGS};
+      do
+        if git ls-remote --tags origin  | grep ${TAG} > /dev/null; then
+          echo "${TAG} tag already exists.";
+        else
+          echo "Tagging repository with ${TAG} tag.";
+          git tag --delete ${TAG} > /dev/null 2>&1 || true;
+          git tag ${TAG};
+          git push -o ci.skip origin ${TAG};
+        fi
+      done
 
 # Docker image build scripts
 #

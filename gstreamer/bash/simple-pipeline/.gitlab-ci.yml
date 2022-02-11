@@ -4,6 +4,7 @@ variables:
 # Stages
 stages:
   - lint
+  - repository tagging
   - build
   - build-multiarch
 
@@ -16,6 +17,26 @@ include:
 dockerfile-lint-gstreamer-simple-pipeline:
   extends: .dockerfile-lint
   stage: lint
+
+tag-gstreamer-simple-pipeline:
+  extends: .tag
+  before_script:
+    - export MAJOR="${WAYLAND_BASE_MAJOR}"
+    - export MINOR="${WAYLAND_BASE_MINOR}"
+    - export PATCH="${WAYLAND_BASE_PATCH}"
+  stage: repository tagging
+  variables:
+    SAMPLE_NAME: gstreamer-simple-pipeline
+
+tag-gstreamer-simple-pipeline-arm64v8:
+  extends: .tag
+  before_script:
+    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
+    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
+    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
+  stage: repository tagging
+  variables:
+    SAMPLE_NAME: gstreamer-simple-pipeline-arm64v8
 
 docker-build-gstreamer-simple-pipeline:
   extends: .docker-build

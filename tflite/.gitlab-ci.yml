@@ -4,6 +4,7 @@ variables:
 # Stages
 stages:
   - lint
+  - repository tagging
   - build
   - build-multiarch
   - deploy
@@ -18,6 +19,16 @@ include:
 dockerfile-lint-tflite:
   extends: .dockerfile-lint
   stage: lint
+
+tag-tflite:
+  extends: .tag
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  stage: repository tagging
+  variables:
+    SAMPLE_NAME: tflite
 
 docker-build-tflite:
   extends: .docker-build

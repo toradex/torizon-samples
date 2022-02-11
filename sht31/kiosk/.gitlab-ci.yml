@@ -4,6 +4,7 @@ variables:
 # Stages
 stages:
   - lint
+  - repository tagging
   - build
   - build-multiarch
 
@@ -16,6 +17,16 @@ include:
 dockerfile-lint-uart-sht31-kiosk:
   extends: .dockerfile-lint
   stage: lint
+
+tag-uart-sht31-kiosk:
+  extends: .tag
+  before_script:
+    - export MAJOR="${KIOSK_MODE_BROWSER_MAJOR}"
+    - export MINOR="${KIOSK_MODE_BROWSER_MINOR}"
+    - export PATCH="${KIOSK_MODE_BROWSER_PATCH}"
+  stage: repository tagging
+  variables:
+    SAMPLE_NAME: uart-sht31-kiosk
 
 docker-build-uart-sht31-kiosk:
   extends: .docker-build
