@@ -1,3 +1,11 @@
+# DEPRECATED
+
+This sample is not maintained anymore. Instead, use the following resource:
+
+We have promoted the Torizon VS Code integration to stable. Start a Uno Platform
+project following instructions from
+[.NET Uno Development and Debugging on Torizon Using Visual Studio Code](https://developer.toradex.com/knowledge-base/net-uno-development-and-debugging-on-torizon-using-visual-studio-code).
+
 # Docker Desktop Clone (Using Uno)
 
 ## How to Run
