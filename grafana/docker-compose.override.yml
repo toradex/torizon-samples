@@ -38,9 +38,9 @@ services:
   kiosk:
     container_name: kiosk
     # For armhf (i.MX 6- and i.MX 7-based modules) use this image:
-    #image: torizon/kiosk-mode-browser:2
+    #image: torizon/chromium:2
     # For i.MX 8-based modules use this image:
-    image: torizon/kiosk-mode-browser:2
+    image: torizon/chromium:2
     command: --window-mode http://grafana:3000
     security_opt:
       - seccomp:unconfined    

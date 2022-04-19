@@ -59,9 +59,9 @@ variables:
   GRAPHICS_TESTS_VIVANTE_MINOR: "3"
   GRAPHICS_TESTS_VIVANTE_PATCH: "0"
 
-  KIOSK_MODE_BROWSER_MAJOR: "2"
-  KIOSK_MODE_BROWSER_MINOR: "5"
-  KIOSK_MODE_BROWSER_PATCH: "0"
+  CHROMIUM_MAJOR: "2"
+  CHROMIUM_MINOR: "5"
+  CHROMIUM_PATCH: "0"
 
   # This should be set by docker image already, just to be sure...
   DOCKER_HOST: tcp://docker:2375

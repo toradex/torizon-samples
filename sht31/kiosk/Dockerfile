@@ -1,4 +1,4 @@
-ARG BASE_NAME=kiosk-mode-browser
+ARG BASE_NAME=chromium
 ARG IMAGE_ARCH=linux/arm
 # For Apalis iMX8 use IMAGE_ARCH=linux/arm64
 ARG IMAGE_TAG=2

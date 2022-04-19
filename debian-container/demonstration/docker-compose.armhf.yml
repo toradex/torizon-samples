@@ -42,7 +42,7 @@ services:
         target: /var/run/docker.sock
 
   kiosk:
-    image: torizon/kiosk-mode-browser:2
+    image: torizon/chromium:2
     platform: linux/arm
     security_opt:
       - seccomp:unconfined

@@ -43,7 +43,7 @@ services:
         target: /var/run/docker.sock
 
   kiosk:
-    image: torizon/kiosk-mode-browser-x11:2
+    image: torizon/chromium-x11:2
     security_opt:
       - seccomp:unconfined
     command: http://portainer:9000

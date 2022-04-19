@@ -21,9 +21,9 @@ dockerfile-lint-uart-sht31-kiosk:
 tag-uart-sht31-kiosk:
   extends: .tag
   before_script:
-    - export MAJOR="${KIOSK_MODE_BROWSER_MAJOR}"
-    - export MINOR="${KIOSK_MODE_BROWSER_MINOR}"
-    - export PATCH="${KIOSK_MODE_BROWSER_PATCH}"
+    - export MAJOR="${CHROMIUM_MAJOR}"
+    - export MINOR="${CHROMIUM_MINOR}"
+    - export PATCH="${CHROMIUM_PATCH}"
   stage: repository tagging
   variables:
     SAMPLE_NAME: uart-sht31-kiosk
@@ -31,11 +31,11 @@ tag-uart-sht31-kiosk:
 docker-build-uart-sht31-kiosk:
   extends: .docker-build
   before_script:
-    - export MAJOR="${KIOSK_MODE_BROWSER_MAJOR}"
-    - export MINOR="${KIOSK_MODE_BROWSER_MINOR}"
-    - export PATCH="${KIOSK_MODE_BROWSER_PATCH}"
+    - export MAJOR="${CHROMIUM_MAJOR}"
+    - export MINOR="${CHROMIUM_MINOR}"
+    - export PATCH="${CHROMIUM_PATCH}"
   variables:
-    BASE_NAME: kiosk-mode-browser
+    BASE_NAME: chromium
     IMAGE_NAME: arm32v7-sample-uart-sht31-kiosk
     IMAGE_ARCH: linux/arm/v7
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
@@ -44,11 +44,11 @@ docker-build-uart-sht31-kiosk:
 docker-build-uart-sht31-kiosk-arm64v8:
   extends: .docker-build
   before_script:
-    - export MAJOR="${KIOSK_MODE_BROWSER_MAJOR}"
-    - export MINOR="${KIOSK_MODE_BROWSER_MINOR}"
-    - export PATCH="${KIOSK_MODE_BROWSER_PATCH}"
+    - export MAJOR="${CHROMIUM_MAJOR}"
+    - export MINOR="${CHROMIUM_MINOR}"
+    - export PATCH="${CHROMIUM_PATCH}"
   variables:
-    BASE_NAME: kiosk-mode-browser-vivante
+    BASE_NAME: chromium
     IMAGE_NAME: arm64v8-sample-uart-sht31-kiosk-vivante
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
