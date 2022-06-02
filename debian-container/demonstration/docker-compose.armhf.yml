@@ -42,6 +42,8 @@ services:
         target: /var/run/docker.sock
 
   kiosk:
+    environment:
+      - MACHINE
     image: torizon/chromium:2
     platform: linux/arm
     security_opt:

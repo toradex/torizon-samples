@@ -87,9 +87,11 @@ services:
       - "c 4:7 rmw"
       # ... for /dev/input devices
       - "c 13:* rmw"
-      - "c 199:* rmw"
       # ... for /dev/dri devices
       - "c 226:* rmw"
+      # ... for /dev/galcore device on i.MX8
+      - 'c 199:* rmw'
+
     command: --developer weston-launch --tty=/dev/tty7 --user=torizon
     healthcheck:
         test: ["CMD", "test", "-S", "/tmp/.X11-unix/X0"]
@@ -99,6 +101,8 @@ services:
         start_period: 10s
 
   kiosk:
+    environment:
+      - MACHINE
     build:
       context: kiosk
     container_name: kiosk
@@ -124,8 +128,8 @@ services:
         source: /var/run/dbus
         target: /var/run/dbus
       - type: bind
-        source: /dev/dri
-        target: /dev/dri
+        source: /dev
+        target: /dev
     security_opt:
       - seccomp:unconfined      
     depends_on:
@@ -141,6 +145,8 @@ services:
     device_cgroup_rules:
       # ... for /dev/dri devices
       - "c 226:* rmw"
+      # ... for /dev/galcore device on i.MX8
+      - 'c 199:* rmw'
 
 networks:
   backend:

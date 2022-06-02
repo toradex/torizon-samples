@@ -25,11 +25,14 @@ services:
       - "c 4:7 rmw"
       # ... for /dev/input devices
       - "c 13:* rmw"
-      - "c 199:* rmw"
       # ... for /dev/dri devices
       - "c 226:* rmw"
+      # ... for /dev/galcore device on i.MX8
+      - 'c 199:* rmw'
 
   kiosk:
+    environment:
+      - MACHINE
     container_name: kiosk
     # kiosk with wait-for-it
     # see ../Dockerfile.kiosk-wait
@@ -54,13 +57,12 @@ services:
         source: /var/run/dbus
         target: /var/run/dbus
       - type: bind
-        source: /dev/dri
-        target: /dev/dri
+        source: /dev/galcore
+        target: /dev/galcore
     cap_add:
       - CAP_SYS_ADMIN
     depends_on:
       - weston
     shm_size: "256mb"
-    device_cgroup_rules:
-      # ... for /dev/dri devices
-      - "c 226:* rmw"
+      # ... for /dev/galcore device on i.MX8
+      - 'c 199:* rmw'

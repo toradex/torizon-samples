@@ -28,9 +28,10 @@ services:
       - 'c 4:7 rmw'
       # ... for /dev/input devices
       - 'c 13:* rmw'
-      - 'c 199:* rmw'
       # ... for /dev/dri devices
       - 'c 226:* rmw'
+      # ... for /dev/galcore device
+      - 'c 199:* rmw'
 
   portainer:
     image: portainer/portainer-ce:2.9.3
@@ -47,6 +48,8 @@ services:
         target: /var/run/docker.sock
 
   kiosk:
+    environment:
+      - MACHINE
     image: torizon/chromium:2
     platform: linux/arm64
     security_opt:
@@ -60,9 +63,15 @@ services:
       - type: bind
         source: /var/run/dbus
         target: /var/run/dbus
+      - type: bind
+        source: /dev/galcore
+        target: /dev/galcore
     depends_on:
       - portainer
       - weston
+    device_cgroup_rules:
+      # ... for /dev/galcore device
+      - 'c 199:* rmw'
 
 volumes:
   portainer_data:

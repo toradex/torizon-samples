@@ -28,11 +28,12 @@ services:
       - "c 4:7 rmw"
       # ... for /dev/input devices
       - "c 13:* rmw"
-      - "c 199:* rmw"
       # ... for /dev/dri devices
       - "c 226:* rmw"
 
   kiosk:
+    environment:
+      - MACHINE
     container_name: kiosk
     # kiosk with wait-for-it
     # see ../Dockerfile.kiosk-wait
