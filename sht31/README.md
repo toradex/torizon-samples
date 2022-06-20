@@ -14,14 +14,13 @@ Copy this repository to the board and launch the services
 
 For armhf:
 ```
-docker-compose build --pull
-docker-compose up
+docker-compose -f docker-compose.armhf.yml build --pull
+docker-compose -f docker-compose.armhf.yml up
 ```
 
 For arm64:
 First make the changes described in following files for arm64:
 ```
-docker-compose.yml
 flaskapp/Dockerfile
 sht31-influxdb/Dockerfile
 kiosk/Dockerfile
@@ -29,8 +28,8 @@ kiosk/Dockerfile
 
 and do
 ```
-docker-compose build --pull --build-arg IMAGE_ARCH=linux/arm64
-docker-compose up
+docker-compose -f docker-compose.arm64.yml build --pull --build-arg IMAGE_ARCH=linux/arm64
+docker-compose -f docker-compose.arm64.yml up
 ```
 
 Docker compose will start a browser in kiosk mode and point it to the web page

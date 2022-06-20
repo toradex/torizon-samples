@@ -62,10 +62,7 @@ services:
     environment:
       - ACCEPT_FSL_EULA=1
     container_name: weston
-    image: torizon/weston:2
-    # For Apalis iMX8 use this image
-    # image: torizon/weston-vivante:2
-    # Required to get udev events from host udevd via netlink
+    image: torizon/weston-vivante:2
     network_mode: host
     volumes:
       - type: bind
@@ -128,8 +125,8 @@ services:
         source: /var/run/dbus
         target: /var/run/dbus
       - type: bind
-        source: /dev
-        target: /dev
+        source: /dev/galcore
+        target: /dev/galcore
     security_opt:
       - seccomp:unconfined      
     depends_on:
@@ -143,8 +140,6 @@ services:
         condition: service_started
     shm_size: "256mb"
     device_cgroup_rules:
-      # ... for /dev/dri devices
-      - "c 226:* rmw"
       # ... for /dev/galcore device on i.MX8
       - 'c 199:* rmw'
 
