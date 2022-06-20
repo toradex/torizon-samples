@@ -5,9 +5,6 @@ services:
     environment:
       - ACCEPT_FSL_EULA=1
     container_name: weston
-    # For armhf (i.MX 6- and i.MX 7-based modules) use this image:
-    #image: torizon/weston:2
-    # For i.MX 8-based modules use this image:
     image: torizon/weston-vivante:2
     # Required to get udev events from host udevd via netlink
     network_mode: host
@@ -40,9 +37,6 @@ services:
     container_name: kiosk
     environment:
       - MACHINE
-    # For armhf (i.MX 6- and i.MX 7-based modules) use this image:
-    #image: torizon/chromium:2
-    # For i.MX 8-based modules use this image:
     image: torizon/chromium:2
     command: --window-mode http://grafana:3000
     security_opt:
@@ -57,15 +51,13 @@ services:
         source: /var/run/dbus
         target: /var/run/dbus
       - type: bind
-        source: /dev
-        target: /dev
+        source: /dev/galcore
+        target: /dev/galcore
     depends_on:
       - weston
       - grafana
       - influxdb
     shm_size: '256mb'
     device_cgroup_rules:
-      # ... for /dev/dri devices
-      - 'c 226:* rmw'
       # ... for /dev/galcore device on i.MX8
       - 'c 199:* rmw'
