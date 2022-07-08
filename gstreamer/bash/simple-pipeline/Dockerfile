@@ -21,11 +21,8 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	gstreamer1.0-gl \
 	gstreamer1.0-gtk3 \
 	gstreamer1.0-pulseaudio \
+	v4l-utils \
 	&& if [ "${IMAGE_ARCH}" = "linux/arm64/v8" ]; then \
 		apt-get install -y --no-install-recommends \
 		gstreamer1.0-qt5; fi \
 	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
-	
-ENTRYPOINT ["gst-launch-1.0"] 
-
-CMD ["-v", "videotestsrc",  "!",  "videoconvert",  "!",  "videoscale",  "!",  "waylandsink",  "sync=false"]
