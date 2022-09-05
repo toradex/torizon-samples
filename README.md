@@ -44,5 +44,7 @@ Folders:
   python sample showing how to use OpenCV with i.MX8, i.MX8X or i.MX8MM
 - **tflite** 
   python sample and how to build it for distinct NXP's i.MX SoCs
+- **tflite-rtsp** 
+  python sample showing how to use and stream hardware-accelerated TensorFlow-lite with i.MX8MP and i.MX8QM
 - **multi-display**
   sample showing how to use multiple displays

@@ -13,4 +13,4 @@ docker build -t <your-dockerhub-username>/tflite_example .
 docker build --build-arg ARCH_ARG=linux/arm --build-arg PKG_ARCH=armv7l -t <your-dockerhub-username>/tflite_example .
 ```
 
-Please refer to [Torizon Sample: Image Classification with Tensorflow Lite](https://developer.toradex.com/knowledge-base/torizon-sample-tensorflow-lite) to know more about it.
+Please refer to [Torizon Sample: Image Classification with Tensorflow Lite](https://developer.toradex.com/knowledge-base/torizon-sample-tensorflow-lite) to learn more about it.

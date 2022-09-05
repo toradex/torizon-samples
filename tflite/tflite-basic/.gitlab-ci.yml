@@ -1,5 +1,5 @@
 variables:
-  DOCKERFILE_FOLDER: "tflite/"
+  DOCKERFILE_FOLDER: "tflite/tflite-basic/"
 
 # Stages
 stages:

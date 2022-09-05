@@ -25,7 +25,8 @@ stages:
   - uart-sht31-flask-app
   - uart-sht31-influxdb
   - uart-sht31-kiosk
-  - tflite
+  - tflite-basic
+  - tflite-rtsp
   - weather
   # Docker Compose only samples --> push to OTA
   - crank
@@ -176,14 +177,24 @@ uart-sht31-kiosk-jobs:
     - changes:
       - sht31/kiosk/*
 
-tflite-jobs:
-  stage: tflite
+tflite-basic-jobs:
+  stage: tflite-basic
   trigger:
-    include: tflite/.gitlab-ci.yml
+    include: tflite/tflite-basic/.gitlab-ci.yml
     strategy: depend
   rules:
     - changes:
-      - tflite/*
+      - tflite/tflite-basic/*
+
+tflite-rtsp-jobs:
+  stage: tflite-rtsp
+  trigger:
+    include: tflite/tflite-rtsp/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - tflite/tflite-rtsp/*
+      - tflite/tflite-rtsp/**/*
 
 weather-jobs:
   stage: weather
