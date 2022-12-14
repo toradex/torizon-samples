@@ -23,6 +23,8 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	libclc-vivante1 \
 	libgal-vivante1 \
 	libvsc-vivante1 \
+	libglesv2-vivante1 \
+	libegl-vivante1 \
 	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/krrishnarraj/clpeak.git && \
