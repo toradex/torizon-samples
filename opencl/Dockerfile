@@ -40,7 +40,7 @@ RUN git clone https://github.com/krrishnarraj/clpeak.git && \
 # DEPLOY
 FROM --platform=${IMAGE_ARCH} ${DOCKER_REGISTRY}/${BASE_NAME}:$IMAGE_TAG AS Deploy
 
-# Install runtime dependencies
+# Install runtime dependencies and clinfo which is useful for debugging
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	libopencl-vivante1 \
 	libclc-vivante1 \
@@ -48,6 +48,7 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	libvsc-vivante1 \
 	libglesv2-vivante1 \
 	libegl-vivante1 \
+	clinfo \
 	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 COPY --from=Build /sample/clpeak/build/clpeak /usr/local/bin/
