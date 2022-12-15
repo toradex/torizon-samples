@@ -145,6 +145,7 @@ variables:
                      --build-arg IMAGE_TAG=${IMAGE_TAG}
                      --build-arg GCC_PREFIX=${GCC_PREFIX}
                      --build-arg CROSS_TC_IMAGE_ARCH=${CROSS_TC_IMAGE_ARCH}
+                     --build-arg CROSS_TC_IMAGE_TAG=${CROSS_TC_IMAGE_TAG}
                      --build-arg TOOLCHAIN_ARCH=${TOOLCHAIN_ARCH}
                      --build-arg PKG_ARCH=${PKG_ARCH}
                      --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}

@@ -1,6 +1,6 @@
 variables:
-  DOCKERFILE_FOLDER: "opencl/"
-
+    DOCKERFILE_FOLDER: "opencl/"
+  
 # Stages
 stages:
   - lint
@@ -39,4 +39,6 @@ docker-build-opencl-arm64v8:
     IMAGE_NAME: arm64v8-sample-opencl-vivante
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    CROSS_TC_IMAGE_ARCH: arm64
+    CROSS_TC_IMAGE_TAG: ${DEBIAN_RELEASE}-latest
   stage: build
