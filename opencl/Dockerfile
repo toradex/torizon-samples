@@ -2,16 +2,16 @@
 ARG CROSS_TC_IMAGE_NAME=debian-cross-toolchain
 ARG CROSS_TC_IMAGE_ARCH=arm64
 ARG CROSS_TC_DOCKER_REGISTRY=torizon
-ARG CROSS_TC_IMAGE_TAG=2-bullseye 
+ARG CROSS_TC_IMAGE_TAG=2-bullseye
 
-
-# Runtime image
-ARG BASE_NAME=wayland-base-vivante
-
-# Common to both the cross SDK and runtime image
+# Runtime image for a headless application
 ARG IMAGE_ARCH=linux/arm64/v8
-ARG IMAGE_TAG=2
 ARG DOCKER_REGISTRY=torizon
+ARG BASE_NAME=debian
+ARG IMAGE_TAG=2-bullseye
+# Runtime image for a GUI application
+# ARG BASE_NAME=wayland-base-vivante
+# ARG IMAGE_TAG=2-bullseye for the SDK container and IMAGE_TAG=2 for the deploy container
 
 # BUILD
 FROM ${CROSS_TC_DOCKER_REGISTRY}/${CROSS_TC_IMAGE_NAME}-${CROSS_TC_IMAGE_ARCH}:${CROSS_TC_IMAGE_TAG} As Build
@@ -48,6 +48,7 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	libvsc-vivante1 \
 	libglesv2-vivante1 \
 	libegl-vivante1 \
+	libwayland-client0 \
 	clinfo \
 	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
