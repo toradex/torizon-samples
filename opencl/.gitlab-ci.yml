@@ -21,9 +21,9 @@ dockerfile-lint-opencl:
 tag-opencl:
   extends: .tag
   before_script:
-    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
-    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
-    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
   stage: repository tagging
   variables:
     SAMPLE_NAME: opencl
@@ -31,9 +31,9 @@ tag-opencl:
 docker-build-opencl-arm64v8:
   extends: .docker-build
   before_script:
-    - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
-    - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
-    - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
   variables:
     BASE_NAME: wayland-base-vivante
     IMAGE_NAME: arm64v8-sample-opencl-vivante
