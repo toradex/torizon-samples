@@ -6,6 +6,7 @@ stages:
   - lint
   - repository tagging
   - build
+  - deploy
 
 # Scripts
 include:
@@ -42,3 +43,13 @@ docker-build-opencl-arm64v8:
     CROSS_TC_IMAGE_ARCH: arm64
     CROSS_TC_IMAGE_TAG: ${DEBIAN_RELEASE}-latest
   stage: build
+
+docker-deploy-opencl-arm64v8:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-opencl-vivante
+  stage: deploy
