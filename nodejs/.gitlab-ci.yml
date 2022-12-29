@@ -1,0 +1,99 @@
+variables:
+  DOCKERFILE_FOLDER: "nodejs/"
+
+# Stages
+stages:
+  - lint
+  - repository tagging
+  - build
+  - build-multiarch
+  - deploy
+  - deploy-multiarch
+
+# Scripts
+include:
+  - /.gitlab-ci-scripts.yml
+
+# Jobs
+dockerfile-lint-nodejs:
+  extends: .dockerfile-lint
+  stage: lint
+
+tag-nodejs:
+  extends: .tag
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  stage: repository tagging
+  variables:
+    SAMPLE_NAME: nodejs
+
+docker-build-opencl-arm32v7:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: base
+    IMAGE_NAME: arm32v7-sample-nodejs
+    IMAGE_ARCH: linux/arm/v7
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+  stage: build
+
+docker-build-opencl-arm64v8:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BASE_NAME: base
+    IMAGE_NAME: arm64v8-sample-nodejs
+    IMAGE_ARCH: linux/arm64/v8
+    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+  stage: build
+
+docker-build-nodejs-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_NAME: sample-nodejs
+    IMAGE_NAME_32: arm32v7-sample-nodejs
+    IMAGE_NAME_64: arm64v8-sample-nodejs
+  stage: build-multiarch
+
+docker-deploy-nodejs-arm32v7:
+  extends: .docker-deploy
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm32v7-sample-nodejs
+  stage: deploy
+
+docker-deploy-nodejs-arm64v8:
+  extends: .docker-deploy
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: arm64v8-sample-nodejs
+  stage: deploy
+
+docker-deploy-nodejs-multiarch:
+  extends: .docker-deploy-multiarch
+  before_script:
+    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    IMAGE_NAME: sample-nodejs
+    IMAGE_NAME_32: arm32v7-sample-nodejs
+    IMAGE_NAME_64: arm64v8-sample-nodejs
+  stage: deploy-multiarch

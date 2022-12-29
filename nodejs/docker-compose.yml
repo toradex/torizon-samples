@@ -1,0 +1,5 @@
+services:
+  print-temp:
+    image: torizonextras/sample-nodejs:${CT_TAG_DEBIAN}
+    ports:
+      - "3000:3000"

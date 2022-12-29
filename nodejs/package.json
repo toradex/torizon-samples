@@ -1,0 +1,9 @@
+{
+  "name": "Node.js Sample",
+  "version": "1.0.0",
+  "description": "Project using Node.js",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

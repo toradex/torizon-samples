@@ -30,6 +30,8 @@ Folders:
   in a docker container on Torizon
 - **multi-display**
   sample showing how to use multiple displays
+- **nodejs**
+  sample showing how to set up a Node.js container and application
 - **opencl**
   how to use OpenCL 1.2 in iMX8 in a Docker container and Torizon
 - **opencv**

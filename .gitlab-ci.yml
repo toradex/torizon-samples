@@ -18,6 +18,7 @@ stages:
   - uart-gps-python
   - collectd
   - gstreamer-simple-pipeline
+  - nodejs
   - opencl
   - opencv
   - pwm
@@ -115,6 +116,16 @@ gstreamer-simple-pipeline-jobs:
   rules:
     - changes:
       - gstreamer/bash/simple-pipeline/*
+
+nodejs-jobs:
+  stage: nodejs
+  trigger:
+    include: nodejs/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+      - nodejs/*
+      - nodejs/**/*
 
 opencl-jobs:
   stage: opencl
