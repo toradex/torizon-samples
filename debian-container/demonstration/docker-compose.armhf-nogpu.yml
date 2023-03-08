@@ -44,6 +44,8 @@ services:
 
   kiosk:
     image: torizon/chromium-x11:2
+    environment:
+        - MACHINE
     security_opt:
       - seccomp:unconfined
     command: http://portainer:9000
