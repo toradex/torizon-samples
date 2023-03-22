@@ -25,7 +25,7 @@ int main()
     std::uniform_int_distribution<int> dist(0, 1000);
     std::string hostname = boost::asio::ip::host_name();
 
-    auto influxdb = influxdb::InfluxDBFactory::Get("http://influxdb:8086?");
+    auto influxdb = influxdb::InfluxDBFactory::Get("http://influxdb:8086?db=Weather");
     int retries = 45; // The number of retries, and total seconds, to wait for Influx
     for (int retry = 0; retry < retries; retry++)
     {
