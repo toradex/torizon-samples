@@ -18,6 +18,7 @@ services:
     name: ${CI_REGISTRY}/rd/torizon-core-containers/torizoncore-builder/torizoncore-builder:bullseye-latest
     entrypoint: [ "" ]
   script:
+    - if [ -d /deploy ]; then echo "/deploy already exists"; else mkdir -v /deploy; fi
     - echo "${APP_NAME}:${APP_VERSION}-${APP_ARCH} ${DOCKER_COMPOSE_FILE}"
     # When running pipeline on your fork, you have to download the credentials file from app.torizon.io,
     # make it a base 64 string with "base64 credentials.zip --wrap=0 > credential-base64.txt"
