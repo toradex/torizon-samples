@@ -1,6 +1,6 @@
 ARG BASE_NAME=wayland-base-vivante
 ARG IMAGE_ARCH=linux/arm64/v8
-ARG IMAGE_TAG=2
+ARG IMAGE_TAG=3
 ARG DOCKER_REGISTRY=torizon
 
 FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG
@@ -9,12 +9,7 @@ WORKDIR /home/torizon
 
 #### INSTALL IMX-GPU-VIV DEPENDENCIES ####
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
-    libgl-vivante1 \
-    libopencl-vivante1 \
-    libopencl-vivante1-dev \
-    libclc-vivante1 \
-    libgal-vivante1 \
-    libvsc-vivante1 \
+    imx-gpu-viv-wayland-dev \
     && apt-get clean && apt-get autoremove
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
@@ -39,8 +34,8 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
     libgstreamer1.0-0 gstreamer1.0-plugins-base \
     gstreamer1.0-plugins-good gstreamer1.0-plugins-bad \
-    gstreamer1.0-doc gstreamer1.0-tools gstreamer1.0-x \
-    gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 \
+    gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa \
+    gstreamer1.0-gl gstreamer1.0-gtk3 \
     gstreamer1.0-qt5 gstreamer1.0-pulseaudio \
     && apt-get clean && apt-get autoremove
 
@@ -51,12 +46,12 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 #### INSTALL OPENCV DPENDENCIES ####
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
     pkg-config libavcodec-dev libavformat-dev libswscale-dev \
-    libtbb2 libtbb-dev libjpeg-dev libpng-dev libdc1394-22-dev \
-    libdc1394-22-dev protobuf-compiler libgflags-dev libgoogle-glog-dev libblas-dev \
-    libhdf5-serial-dev liblmdb-dev libleveldb-dev liblapack-dev \
-    libsnappy-dev libprotobuf-dev libopenblas-dev \
-    libboost-dev libboost-all-dev libeigen3-dev libatlas-base-dev libne10-10 libne10-dev \
-    && apt-get clean && apt-get autoremove
+    libtbbmalloc2 libtbb-dev libjpeg-dev libpng-dev libdc1394-25 \
+    libdc1394-dev protobuf-compiler libgflags-dev libgoogle-glog-dev \
+    libblas-dev libhdf5-serial-dev liblmdb-dev libleveldb-dev liblapack-dev \
+    libsnappy-dev libprotobuf-dev libopenblas-dev libboost-dev \
+    libboost-all-dev libeigen3-dev libatlas-base-dev libne10-10 libne10-dev \
+    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 #### INSTALL OPENCV ####
 RUN apt-get update && apt-get install -y --no-install-recommends python3-opencv \
