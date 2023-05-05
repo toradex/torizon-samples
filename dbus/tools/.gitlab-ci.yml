@@ -35,10 +35,10 @@ docker-build-dbus-tools:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: base
+    BASE_NAME: debian
     IMAGE_NAME: arm32v7-sample-dbus-tools
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}-${DEBIAN_RELEASE}
   stage: build
 
 docker-build-dbus-tools-arm64v8:
@@ -48,10 +48,10 @@ docker-build-dbus-tools-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: base
+    BASE_NAME: debian
     IMAGE_NAME: arm64v8-sample-dbus-tools
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}-${DEBIAN_RELEASE}
   stage: build
 
 docker-build-dbus-tools-multiarch:
