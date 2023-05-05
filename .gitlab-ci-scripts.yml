@@ -4,60 +4,33 @@ services:
   - name: docker:dind
 
 variables:
-  DEBIAN_RELEASE: "bullseye"
+  DEBIAN_RELEASE: "bookworm"
+  DEBIAN_RELEASE_NUMBER: "3"
 
+  # FIXME: sht31-kiosk relies on chromium, which hasn't been ported to bookworm yet
+  DEBIAN_RELEASE_NUMBER_LEGACY: "2"
+
+  TORADEX_INTERNAL_DOCKERHUB_CACHE: "artifactory-horw.int.toradex.com/dockerhub-proxy-horw"
   # container version
   DEBIAN_MAJOR: "2"
   DEBIAN_MINOR: "5"
   DEBIAN_PATCH: "0"
 
-  DEBIAN_SHELL_MAJOR: "2"
-  DEBIAN_SHELL_MINOR: "5"
-  DEBIAN_SHELL_PATCH: "0"
-
   WAYLAND_BASE_MAJOR: "2"
   WAYLAND_BASE_MINOR: "5"
   WAYLAND_BASE_PATCH: "0"
-
-  WESTON_MAJOR: "2"
-  WESTON_MINOR: "7"
-  WESTON_PATCH: "0"
 
   QT5_WAYLAND_MAJOR: "2"
   QT5_WAYLAND_MINOR: "7"
   QT5_WAYLAND_PATCH: "0"
 
-  QT5_WAYLAND_EXAMPLES_MAJOR: "2"
-  QT5_WAYLAND_EXAMPLES_MINOR: "7"
-  QT5_WAYLAND_EXAMPLES_PATCH: "0"
-
   WAYLAND_BASE_VIVANTE_MAJOR: "2"
   WAYLAND_BASE_VIVANTE_MINOR: "5"
   WAYLAND_BASE_VIVANTE_PATCH: "0"
 
-  WESTON_VIVANTE_MAJOR: "2"
-  WESTON_VIVANTE_MINOR: "7"
-  WESTON_VIVANTE_PATCH: "0"
-
   QT5_WAYLAND_VIVANTE_MAJOR: "2"
   QT5_WAYLAND_VIVANTE_MINOR: "7"
   QT5_WAYLAND_VIVANTE_PATCH: "0"
-
-  QT5_WAYLAND_EXAMPLES_VIVANTE_MAJOR: "2"
-  QT5_WAYLAND_EXAMPLES_VIVANTE_MINOR: "7"
-  QT5_WAYLAND_EXAMPLES_VIVANTE_PATCH: "0"
-
-  WESTON_TOUCH_CALIBRATOR_MAJOR: "2"
-  WESTON_TOUCH_CALIBRATOR_MINOR: "6"
-  WESTON_TOUCH_CALIBRATOR_PATCH: "0"
-
-  GRAPHICS_TESTS_MAJOR: "2"
-  GRAPHICS_TESTS_MINOR: "5"
-  GRAPHICS_TESTS_PATCH: "0"
-
-  GRAPHICS_TESTS_VIVANTE_MAJOR: "2"
-  GRAPHICS_TESTS_VIVANTE_MINOR: "4"
-  GRAPHICS_TESTS_VIVANTE_PATCH: "0"
 
   CHROMIUM_MAJOR: "2"
   CHROMIUM_MINOR: "5"
@@ -72,9 +45,7 @@ variables:
   GITLAB_DOCKERREGISTRY_SUFFIX: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
   GITLAB_DOCKERREGISTRY_SUFFIX_LATEST: ${CI_COMMIT_REF_SLUG}-latest
 
-  DEBIAN_DOCKER_REGISTRY: ${CI_REGISTRY}/rd/torizon-core-containers/debian-docker-images
-  CROSS_TC_DOCKER_REGISTRY: ${CI_REGISTRY}/rd/torizon-core-containers/debian-cross-toolchains
-  KIOSK_DOCKER_REGISTRY: ${CI_REGISTRY}/rd/torizon-core-containers/kiosk-mode-browser
+  DOCKERHUB_REPOSITORY: torizon
 
 # Scripts
 
@@ -138,9 +109,7 @@ variables:
     # Ignore error "sh: write error: File exists" when installing qemu-user-static
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || true
     - docker build --build-arg IMAGE_ARCH=${IMAGE_ARCH}
-                     --build-arg DOCKER_REGISTRY=${DEBIAN_DOCKER_REGISTRY}
-                     --build-arg KIOSK_DOCKER_REGISTRY=${KIOSK_DOCKER_REGISTRY}
-                     --build-arg CROSS_TC_DOCKER_REGISTRY=${CROSS_TC_DOCKER_REGISTRY}
+                     --build-arg DOCKER_REGISTRY=${TORADEX_INTERNAL_DOCKERHUB_CACHE}/${DOCKERHUB_REPOSITORY}
                      --build-arg BASE_NAME=${BASE_NAME}
                      --build-arg IMAGE_TAG=${IMAGE_TAG}
                      --build-arg GCC_PREFIX=${GCC_PREFIX}
@@ -148,8 +117,6 @@ variables:
                      --build-arg CROSS_TC_IMAGE_TAG=${CROSS_TC_IMAGE_TAG}
                      --build-arg TOOLCHAIN_ARCH=${TOOLCHAIN_ARCH}
                      --build-arg PKG_ARCH=${PKG_ARCH}
-                     --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
-                     --cache-from ${CI_REGISTRY}/rd/torizon-core/samples/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
                      ${DOCKER_NO_CACHE:+--no-cache}
                      --label container.name=${IMAGE_NAME} 
                      --label container.version=${MAJOR}.${MINOR}.${PATCH}-${DATE} 
