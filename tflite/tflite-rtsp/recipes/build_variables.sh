@@ -1,4 +1,3 @@
-#This script loads necessary Build Variables #
 #!/bin/bash
 set -e
 
@@ -17,7 +16,7 @@ libdir='usr/lib'
 bindir='usr/bin'
 TARGET_ARCH='aarch64'
 sysconfdir='/etc'
-
+GCC_ARCH="aarch64-linux-gnu"
 mkdir -p ${WORKDIR}
 
 f () {

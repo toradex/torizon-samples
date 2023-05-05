@@ -36,11 +36,11 @@ docker-build-tflite-rtsp-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: base
+    BASE_NAME: debian
     IMAGE_NAME: arm64v8-sample-tflite-rtsp
     IMAGE_ARCH: linux/arm64/v8
     PKG_ARCH: aarch64
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}-${DEBIAN_RELEASE}
   stage: build
 
 docker-deploy-tflite-rtsp-arm64v8:
