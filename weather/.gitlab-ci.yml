@@ -35,10 +35,10 @@ docker-build-weather:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: base
+    BASE_NAME: debian
     IMAGE_NAME: arm32v7-sample-weather
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}-${DEBIAN_RELEASE}
     CROSS_TC_IMAGE_ARCH: armhf
     TOOLCHAIN_ARCH: armhf
   stage: build
@@ -50,10 +50,10 @@ docker-build-weather-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: base
+    BASE_NAME: debian
     IMAGE_NAME: arm64v8-sample-weather
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}-${DEBIAN_RELEASE}
     CROSS_TC_IMAGE_ARCH: arm64
     TOOLCHAIN_ARCH: aarch64
   stage: build

@@ -1,16 +1,18 @@
 # SDK container as base
 ARG CROSS_TC_IMAGE_ARCH=armhf
 ARG TOOLCHAIN_ARCH=armhf
-ARG CROSS_TC_DOCKER_REGISTRY=torizon
+ARG DOCKER_REGISTRY=torizon
 ARG BASE_NAME=debian
 ARG IMAGE_ARCH=linux/arm/v7
-ARG IMAGE_TAG=2-bullseye
+ARG IMAGE_TAG=3-bookworm
 ARG DOCKER_REGISTRY=torizon
 
-FROM $CROSS_TC_DOCKER_REGISTRY/debian-cross-toolchain-$CROSS_TC_IMAGE_ARCH:$IMAGE_TAG AS build
+FROM $DOCKER_REGISTRY/debian-cross-toolchain-$CROSS_TC_IMAGE_ARCH:$IMAGE_TAG AS build
 
 ARG CROSS_TC_IMAGE_ARCH
 ARG TOOLCHAIN_ARCH
+
+WORKDIR /
 
 # install all required development packages
 COPY $TOOLCHAIN_ARCH-toolchain.cmake $TOOLCHAIN_ARCH-toolchain.cmake
@@ -25,9 +27,11 @@ RUN dpkg --add-architecture "$CROSS_TC_IMAGE_ARCH" \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # Build cpr lib
+COPY 0001-Remove-WError.patch .
 RUN git clone https://github.com/libcpr/cpr.git \
     && mkdir cpr/build \
     && cd cpr/build \
+    && EMAIL=root@localhost git am ../../0001-Remove-WError.patch \
     && cmake .. -DCMAKE_TOOLCHAIN_FILE=/$TOOLCHAIN_ARCH-toolchain.cmake \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCPR_USE_SYSTEM_CURL=ON \
@@ -56,8 +60,8 @@ FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG
 # install runtime libraries
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4 \
-    libssl1.1 \
-    libjsoncpp24 \
+    libssl3 \
+    libjsoncpp25 \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # take application executable from build container
