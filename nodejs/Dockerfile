@@ -1,5 +1,5 @@
 ARG BASE_NAME=debian
-ARG IMAGE_TAG=2-bullseye
+ARG IMAGE_TAG=3-bookworm
 ARG DOCKER_REGISTRY=torizon
 
 # Select the image architecture
