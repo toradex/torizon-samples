@@ -1,12 +1,12 @@
 ARG CROSS_TC_IMAGE_ARCH=armhf
-ARG CROSS_TC_DOCKER_REGISTRY=torizon
+ARG DOCKER_REGISTRY=torizon
 ARG BASE_NAME=debian
 ARG IMAGE_ARCH=linux/arm/v7
-ARG IMAGE_TAG=2-bullseye
+ARG IMAGE_TAG=3-bookworm
 ARG DOCKER_REGISTRY=torizon
 
 # First stage, x86_64 build container
-FROM $CROSS_TC_DOCKER_REGISTRY/debian-cross-toolchain-$CROSS_TC_IMAGE_ARCH:$IMAGE_TAG AS cross-container
+FROM $DOCKER_REGISTRY/debian-cross-toolchain-$CROSS_TC_IMAGE_ARCH:$IMAGE_TAG AS cross-container
 ARG GCC_PREFIX=arm-linux-gnueabihf
 ARG CROSS_TC_IMAGE_ARCH
 
