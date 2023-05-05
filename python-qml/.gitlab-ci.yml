@@ -48,7 +48,7 @@ docker-build-qt5-python-qml:
     BASE_NAME: qt5-wayland
     IMAGE_NAME: arm32v7-sample-qt5-python-qml
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}
   stage: build
 
 docker-build-qt5-python-qml-arm64v8:
@@ -61,7 +61,7 @@ docker-build-qt5-python-qml-arm64v8:
     BASE_NAME: qt5-wayland
     IMAGE_NAME: arm64v8-sample-qt5-python-qml
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}
   stage: build
 
 docker-build-qt5-python-qml-arm64v8-vivante:
@@ -74,7 +74,7 @@ docker-build-qt5-python-qml-arm64v8-vivante:
     BASE_NAME: qt5-wayland-vivante
     IMAGE_NAME: arm64v8-sample-qt5-python-qml-vivante
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}
   stage: build
   # arm64 with Vivante(ARG BASE_NAME=qt5-wayland-vivante) is currently not
   # supported as python3-pyside2.qtgui is not co-installable with libqt5qui5-gles

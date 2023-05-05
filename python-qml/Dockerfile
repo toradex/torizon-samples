@@ -7,7 +7,7 @@ ARG BASE_NAME=qt5-wayland
 ARG IMAGE_ARCH=linux/arm/v7
 # For arm64 use:
 # ARG IMAGE_ARCH=linux/arm64
-ARG IMAGE_TAG=2
+ARG IMAGE_TAG=3
 ARG DOCKER_REGISTRY=torizon
 
 ARG APPNAME=show_readings.py
