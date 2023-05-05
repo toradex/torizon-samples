@@ -48,7 +48,7 @@ docker-build-gstreamer-simple-pipeline:
     BASE_NAME: wayland-base
     IMAGE_NAME: arm32v7-sample-gstreamer-simple-pipeline
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}
   stage: build
 
 docker-build-gstreamer-simple-pipeline-arm64v8:
@@ -61,7 +61,7 @@ docker-build-gstreamer-simple-pipeline-arm64v8:
     BASE_NAME: wayland-base-vivante
     IMAGE_NAME: arm64v8-sample-gstreamer-simple-pipeline-vivante
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}
   stage: build
 
 docker-build-gstreamer-simple-pipeline-multiarch:
