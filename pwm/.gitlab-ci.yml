@@ -35,10 +35,10 @@ docker-build-pwm:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: base
+    BASE_NAME: debian
     IMAGE_NAME: arm32v7-sample-pwm
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}-${DEBIAN_RELEASE}
     CROSS_TC_IMAGE_ARCH: armhf
     GCC_PREFIX: arm-linux-gnueabihf
   stage: build
@@ -50,10 +50,10 @@ docker-build-pwm-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: base
+    BASE_NAME: debian
     IMAGE_NAME: arm64v8-sample-pwm
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}-${DEBIAN_RELEASE}
     CROSS_TC_IMAGE_ARCH: arm64
     GCC_PREFIX: aarch64-linux-gnu
   stage: build
