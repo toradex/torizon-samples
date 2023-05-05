@@ -1,28 +1,26 @@
 # Cross SDK
-ARG CROSS_TC_IMAGE_NAME=debian-cross-toolchain
-ARG CROSS_TC_IMAGE_ARCH=arm64
-ARG CROSS_TC_DOCKER_REGISTRY=torizon
-ARG CROSS_TC_IMAGE_TAG=2-bullseye
+ARG CROSS_TC_IMAGE_NAME=debian-cross-toolchain-arm64-vivante
+ARG DOCKER_REGISTRY=torizon
+ARG CROSS_TC_IMAGE_TAG=3-bookworm
 
 # Runtime image for a headless application
 ARG IMAGE_ARCH=linux/arm64/v8
 ARG DOCKER_REGISTRY=torizon
 ARG BASE_NAME=debian
-ARG IMAGE_TAG=2-bullseye
+ARG IMAGE_TAG=3-bookworm
 # Runtime image for a GUI application
 # ARG BASE_NAME=wayland-base-vivante
-# ARG IMAGE_TAG=2-bullseye for the SDK container and IMAGE_TAG=2 for the deploy container
+# ARG IMAGE_TAG=3-bookworm for the SDK container and IMAGE_TAG=3 for the deploy container
 
 # BUILD
-FROM ${CROSS_TC_DOCKER_REGISTRY}/${CROSS_TC_IMAGE_NAME}-${CROSS_TC_IMAGE_ARCH}:${CROSS_TC_IMAGE_TAG} As Build
-
+FROM ${DOCKER_REGISTRY}/${CROSS_TC_IMAGE_NAME}:${CROSS_TC_IMAGE_TAG} AS build
 ARG SDK_COMPILER_PREFIX=aarch64-linux-gnu-
 WORKDIR /sample
 
 # Install build dependencies
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	cmake \
-	libopencl-vivante1-dev \
+	imx-gpu-viv-wayland-dev \
 	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # Fetch and build the source code
@@ -38,20 +36,15 @@ RUN git clone https://github.com/krrishnarraj/clpeak.git && \
 	cmake --build .
 
 # DEPLOY
-FROM --platform=${IMAGE_ARCH} ${DOCKER_REGISTRY}/${BASE_NAME}:$IMAGE_TAG AS Deploy
+FROM --platform=${IMAGE_ARCH} ${DOCKER_REGISTRY}/${BASE_NAME}:$IMAGE_TAG AS deploy
 
 # Install runtime dependencies and clinfo which is useful for debugging
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
-	libopencl-vivante1 \
-	libclc-vivante1 \
-	libgal-vivante1 \
-	libvsc-vivante1 \
-	libglesv2-vivante1 \
-	libegl-vivante1 \
+        imx-gpu-viv-wayland \
 	libwayland-client0 \
 	clinfo \
 	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
-COPY --from=Build /sample/clpeak/build/clpeak /usr/local/bin/
+COPY --from=build /sample/clpeak/build/clpeak /usr/local/bin/
 
 ENTRYPOINT ["/usr/local/bin/clpeak"]

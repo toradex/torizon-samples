@@ -36,12 +36,11 @@ docker-build-opencl-arm64v8:
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
-    BASE_NAME: wayland-base-vivante
+    BASE_NAME: debian
     IMAGE_NAME: arm64v8-sample-opencl-vivante
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
-    CROSS_TC_IMAGE_ARCH: arm64
-    CROSS_TC_IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}-${DEBIAN_RELEASE}
+    CROSS_TC_IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}-${DEBIAN_RELEASE}
   stage: build
 
 docker-deploy-opencl-arm64v8:
