@@ -38,7 +38,7 @@ docker-build-uart-sht31-kiosk:
     BASE_NAME: chromium
     IMAGE_NAME: arm32v7-sample-uart-sht31-kiosk
     IMAGE_ARCH: linux/arm/v7
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER_LEGACY}
   stage: build
 
 docker-build-uart-sht31-kiosk-arm64v8:
@@ -51,7 +51,7 @@ docker-build-uart-sht31-kiosk-arm64v8:
     BASE_NAME: chromium
     IMAGE_NAME: arm64v8-sample-uart-sht31-kiosk-vivante
     IMAGE_ARCH: linux/arm64/v8
-    IMAGE_TAG: ${DEBIAN_RELEASE}-latest
+    IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER_LEGACY}
   stage: build
 
 docker-build-uart-sht31-kiosk-multiarch:
