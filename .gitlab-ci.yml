@@ -8,37 +8,15 @@ include:
   - template: 'Workflows/Branch-Pipelines.gitlab-ci.yml'
 
 stages:
-  # Dockerfile-base samples --> re-build and manual (optional) push to Docker Hub
-  - adc
-  - dbus-tools
-  - dbus-python
-  - gpio-bash
-  - gpio-c
-  - dlr-gstreamer
-  - uart-gps-python
-  - collectd
-  - gstreamer-simple-pipeline
-  - nodejs
-  - opencl
-  - opencv
-  - pwm
-  - qt5-python-qml
-  - uart-sht31-flask-app
-  - uart-sht31-influxdb
-  - uart-sht31-kiosk
-  - tflite-basic
-  - tflite-rtsp
-  - weather
-  # Docker Compose only samples --> push to OTA
-  - crank
-  - portainer
-  # Final job, always run
+  # Trigger samples child pipelines
+  - build
+  # Final job, always run even if no child pipelines run
   - end
 
 #### Dockerfile-base samples ####
 
 adc-jobs:
-  stage: adc
+  stage: build
   trigger:
     include: adc/.gitlab-ci.yml
     strategy: depend
@@ -47,7 +25,7 @@ adc-jobs:
       - adc/*
 
 dbus-tools-jobs:
-  stage: dbus-tools
+  stage: build
   trigger:
     include: dbus/tools/.gitlab-ci.yml
     strategy: depend
@@ -56,7 +34,7 @@ dbus-tools-jobs:
       - dbus/tools/*
 
 dbus-python-jobs:
-  stage: dbus-python
+  stage: build
   trigger:
     include: dbus/python/.gitlab-ci.yml
     strategy: depend
@@ -65,7 +43,7 @@ dbus-python-jobs:
       - dbus/python/*
 
 gpio-bash-jobs:
-  stage: gpio-bash
+  stage: build
   trigger:
     include: gpio/bash/.gitlab-ci.yml
     strategy: depend
@@ -74,7 +52,7 @@ gpio-bash-jobs:
       - gpio/bash/*
 
 gpio-c-jobs:
-  stage: gpio-c
+  stage: build
   trigger:
     include: gpio/c/.gitlab-ci.yml
     strategy: depend
@@ -83,7 +61,7 @@ gpio-c-jobs:
       - gpio/c/*
 
 dlr-gstreamer-jobs:
-  stage: dlr-gstreamer
+  stage: build
   trigger:
     include: dlr-gstreamer/.gitlab-ci.yml
     strategy: depend
@@ -92,7 +70,7 @@ dlr-gstreamer-jobs:
       - dlr-gstreamer/*
 
 uart-gps-python-jobs:
-  stage: uart-gps-python
+  stage: build
   trigger:
     include: gps/python/.gitlab-ci.yml
     strategy: depend
@@ -101,7 +79,7 @@ uart-gps-python-jobs:
       - gps/python/*
 
 collectd-jobs:
-  stage: collectd
+  stage: build
   trigger:
     include: grafana/.gitlab-ci.yml
     strategy: depend
@@ -110,7 +88,7 @@ collectd-jobs:
       - grafana/*
 
 gstreamer-simple-pipeline-jobs:
-  stage: gstreamer-simple-pipeline
+  stage: build
   trigger:
     include: gstreamer/bash/simple-pipeline/.gitlab-ci.yml
   rules:
@@ -118,7 +96,7 @@ gstreamer-simple-pipeline-jobs:
       - gstreamer/bash/simple-pipeline/*
 
 nodejs-jobs:
-  stage: nodejs
+  stage: build
   trigger:
     include: nodejs/.gitlab-ci.yml
     strategy: depend
@@ -128,7 +106,7 @@ nodejs-jobs:
       - nodejs/**/*
 
 opencl-jobs:
-  stage: opencl
+  stage: build
   trigger:
     include: opencl/.gitlab-ci.yml
     strategy: depend
@@ -137,7 +115,7 @@ opencl-jobs:
       - opencl/*
 
 opencv-jobs:
-  stage: opencv
+  stage: build
   trigger:
     include: opencv/.gitlab-ci.yml
     strategy: depend
@@ -146,7 +124,7 @@ opencv-jobs:
       - opencv/*
 
 pwm-jobs:
-  stage: pwm
+  stage: build
   trigger:
     include: pwm/.gitlab-ci.yml
   rules:
@@ -154,7 +132,7 @@ pwm-jobs:
       - pwm/*
 
 qt5-python-qml-jobs:
-  stage: qt5-python-qml
+  stage: build
   trigger:
     include: python-qml/.gitlab-ci.yml
     strategy: depend
@@ -163,7 +141,7 @@ qt5-python-qml-jobs:
       - python-qml/*
 
 uart-sht31-flask-app-jobs:
-  stage: uart-sht31-flask-app
+  stage: build
   trigger:
     include: sht31/flaskapp/.gitlab-ci.yml
     strategy: depend
@@ -172,7 +150,7 @@ uart-sht31-flask-app-jobs:
       - sht31/flaskapp/*
 
 uart-sht31-influxdb-jobs:
-  stage: uart-sht31-influxdb
+  stage: build
   trigger:
     include: sht31/sht31-influxdb/.gitlab-ci.yml
   rules:
@@ -180,7 +158,7 @@ uart-sht31-influxdb-jobs:
       - sht31/sht31-influxdb/*
 
 uart-sht31-kiosk-jobs:
-  stage: uart-sht31-kiosk
+  stage: build
   trigger:
     include: sht31/kiosk/.gitlab-ci.yml
     strategy: depend
@@ -189,7 +167,7 @@ uart-sht31-kiosk-jobs:
       - sht31/kiosk/*
 
 tflite-basic-jobs:
-  stage: tflite-basic
+  stage: build
   trigger:
     include: tflite/tflite-basic/.gitlab-ci.yml
     strategy: depend
@@ -198,7 +176,7 @@ tflite-basic-jobs:
       - tflite/tflite-basic/*
 
 tflite-rtsp-jobs:
-  stage: tflite-rtsp
+  stage: build
   trigger:
     include: tflite/tflite-rtsp/.gitlab-ci.yml
     strategy: depend
@@ -208,7 +186,7 @@ tflite-rtsp-jobs:
       - tflite/tflite-rtsp/**/*
 
 weather-jobs:
-  stage: weather
+  stage: build
   trigger:
     include: weather/.gitlab-ci.yml
     strategy: depend
@@ -219,7 +197,7 @@ weather-jobs:
 #### Docker Compose only samples ####
 
 crank-jobs:
-  stage: crank
+  stage: build
   trigger:
     include: crank/.gitlab-ci.yml
     strategy: depend
@@ -228,7 +206,7 @@ crank-jobs:
       - crank/*
 
 portainer-jobs:
-  stage: portainer
+  stage: build
   trigger:
     include: debian-container/.gitlab-ci.yml
     strategy: depend
