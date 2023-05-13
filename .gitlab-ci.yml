@@ -3,6 +3,11 @@
 #   those samples are included from here
 # Shared scripts are in .gitlab-ci-scripts.yml and included in each sample
 
+variables:
+  # On local runner setup over VPN, fetch may fail with many jobs in parallel
+  # see https://docs.gitlab.com/ee/ci/runners/configure_runners.html#job-stages-attempts
+  GET_SOURCES_ATTEMPTS: 5
+
 # Only run branch pipelines
 include:
   - template: 'Workflows/Branch-Pipelines.gitlab-ci.yml'
