@@ -15,6 +15,10 @@ include:
 # Jobs
 # Only for 64-bit vivante arch
 
+default:
+  # retry failed jobs, since Docker is not very stable when running many jobs in parallel
+  retry: 2
+
 dockerfile-lint-opencv:
   extends: .dockerfile-lint
   stage: lint

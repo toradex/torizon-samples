@@ -13,6 +13,11 @@ variables:
   APP_NAME: "crank-storyboard"
 
 # Jobs
+
+default:
+  # retry failed jobs, since Docker is not very stable when running many jobs in parallel
+  retry: 2
+
 push-arm32v7:
   extends: .tcb-push-to-platform-services
   before_script:

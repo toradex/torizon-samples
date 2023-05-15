@@ -14,6 +14,10 @@ include:
 
 # Jobs
 
+default:
+  # retry failed jobs, since Docker is not very stable when running many jobs in parallel
+  retry: 2
+
 dockerfile-lint-weather:
   extends: .dockerfile-lint
   stage: lint

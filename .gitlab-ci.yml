@@ -8,6 +8,10 @@ variables:
   # see https://docs.gitlab.com/ee/ci/runners/configure_runners.html#job-stages-attempts
   GET_SOURCES_ATTEMPTS: 5
 
+default:
+  # retry failed jobs, since Docker is not very stable when running many jobs in parallel
+  retry: 2
+
 # Only run branch pipelines
 include:
   - template: 'Workflows/Branch-Pipelines.gitlab-ci.yml'
