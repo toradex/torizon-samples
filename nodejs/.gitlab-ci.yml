@@ -29,7 +29,7 @@ tag-nodejs:
   variables:
     SAMPLE_NAME: nodejs
 
-docker-build-opencl-arm32v7:
+docker-build-nodejs-arm32v7:
   extends: .docker-build
   before_script:
     - export MAJOR="${DEBIAN_MAJOR}"
@@ -42,7 +42,7 @@ docker-build-opencl-arm32v7:
     IMAGE_TAG: ${DEBIAN_RELEASE_NUMBER}-${DEBIAN_RELEASE}
   stage: build
 
-docker-build-opencl-arm64v8:
+docker-build-nodejs-arm64v8:
   extends: .docker-build
   before_script:
     - export MAJOR="${DEBIAN_MAJOR}"
