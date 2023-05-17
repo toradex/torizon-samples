@@ -109,7 +109,7 @@ variables:
     - export DATE=$(date +%Y%m%d)
     # Ignore error "sh: write error: File exists" when installing qemu-user-static
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || true
-    - docker build --build-arg IMAGE_ARCH=${IMAGE_ARCH}
+    - for i in 1 2 3 4 5; do docker build --build-arg IMAGE_ARCH=${IMAGE_ARCH}
                      --build-arg DOCKER_REGISTRY=${TORADEX_INTERNAL_DOCKERHUB_CACHE}/${DOCKERHUB_REPOSITORY}
                      --build-arg BASE_NAME=${BASE_NAME}
                      --build-arg IMAGE_TAG=${IMAGE_TAG}
@@ -127,7 +127,7 @@ variables:
                      -f ${DOCKERFILE_FOLDER}Dockerfile
                      -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
                      -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
-                     ${DOCKERFILE_FOLDER}
+                     ${DOCKERFILE_FOLDER} && echo "docker build success, attempt $i" && break; done
     - for i in 1 2 3 4 5; do timeout ${DOCKER_PUSH_TIMEOUT} docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} && echo "docker push success, attempt $i" && break; done
     - for i in 1 2 3 4 5; do timeout ${DOCKER_PUSH_TIMEOUT} docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} && echo "docker push success, attempt $i" && break; done
 
