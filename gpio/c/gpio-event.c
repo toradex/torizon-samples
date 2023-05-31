@@ -3,98 +3,114 @@
 #include <gpiod.h>
 #include <string.h>
 
-struct gpiod_line *get_gpio_line(char* bank, int gpio)
-{
-	struct gpiod_chip *chip;
-	struct gpiod_line *line;
+/* gpiod_line is a struct that contains both the bank and the line of a GPIO pin. Thus, we will call it gpiod_pin for simplification */
+typedef struct gpiod_line gpiod_pin;
+typedef struct gpiod_line_event gpiod_pin_event;
 
-	/* open the GPIO bank */
+gpiod_pin *get_gpio_pin(char* bank, int line){
+	struct gpiod_chip *chip;
+	gpiod_pin *pin;
+
+	/* open the GPIO bank path "/dev/gpiochip<bank_number>" */
 	chip = gpiod_chip_open_by_name(bank);
 	if (chip == NULL)
 		return NULL;
 
-	/* open the GPIO line */
-	line = gpiod_chip_get_line(chip, gpio);
-	if (line == NULL)
+	/* Getting the GPIO line of a specific bank */
+	pin = gpiod_chip_get_line(chip, line);
+	if (pin == NULL)
 		return NULL;
 
-	return line;
+	return pin;
 }
 
-int main(int argc, char *argv[])
-{
-	struct gpiod_line *output_line;
-	struct gpiod_line *input_line;
-	struct gpiod_line_event event;
-	int line_value = 0;
+int main(int argc, char *argv[]){
+	gpiod_pin *output_pin;
+	gpiod_pin *input_pin;
+	gpiod_pin_event event;
+	int pin_value = 0;
 	int ret;
-	char chip[32];
-	unsigned int offset;
+	char bank[32];
+	unsigned int line;
 
-	/* check the arguments */
+	/* Displaying the program usage */
 	if (!(argc == 3 || argc == 5)) {
-		printf("Usage by bank/pin number:\n"
-			"\tgpio-event INPUT-BANK-NUMBER INPUT-GPIO-NUMBER OUTPUT-BANK-NUMBER OUTPUT-GPIO-NUMBER\n"
-			"Usage by SODIMM name:\n"
-			"\tgpio-event INPUT-SODIMM-NAME OUTPUT-SODIMM-NAME\n");
+		printf("Usage by SODIMM name:\n"
+			"\tgpio-event <INPUT-SODIMM-NAME> <OUTPUT-SODIMM-NAME>\n"
+			"Usage by bank/pin number:\n"
+			"\tgpio-event <INPUT-BANK> <INPUT-GPIO-LINE> <OUTPUT-BANK> <OUTPUT-GPIO-LINE>\n");
 		return EXIT_FAILURE;
 	}
-
+	/* Getting the input and output GPIO pin */
 	if (argc == 5) {
-		char gpio_chip[10];
-		snprintf(gpio_chip, sizeof(gpio_chip), "gpiochip%s", argv[1]);
-		input_line = get_gpio_line(gpio_chip, atoi(argv[2]));
-		snprintf(gpio_chip, sizeof(gpio_chip), "gpiochip%s", argv[3]);
-		output_line = get_gpio_line(gpio_chip, atoi(argv[4]));
+		char bank[10];
+
+		snprintf(bank, sizeof(bank), "gpiochip%s", argv[1]);
+		input_pin = get_gpio_pin(bank, atoi(argv[2]));
+
+		snprintf(bank, sizeof(bank), "gpiochip%s", argv[3]);
+		output_pin = get_gpio_pin(bank, atoi(argv[4]));
 	}
+	/* Getting the input and output GPIO pin by the SODIMM name */
 	else {	
-		if (gpiod_ctxless_find_line(argv[1], chip, sizeof(chip), &offset) <= 0) {
+		if (gpiod_ctxless_find_line(argv[1], bank, sizeof(bank), &line) <= 0) {
 			printf("Error finding GPIO\n");
 			return EXIT_FAILURE;
 		}
-		input_line = get_gpio_line(chip, offset);
-		if (input_line == NULL) {
+
+		input_pin = get_gpio_pin(bank, line);
+
+		if (input_pin == NULL) {
 			perror("Error setting gpiod\n");
 			return EXIT_FAILURE;
 		}
 
-		if (gpiod_ctxless_find_line(argv[2], chip, sizeof(chip), &offset) <= 0) {
+		if (gpiod_ctxless_find_line(argv[2], bank, sizeof(bank), &line) <= 0) {
 			printf("Error finding GPIO\n");
 			return EXIT_FAILURE;
 		}
-		output_line = get_gpio_line(chip, offset);
-		if (output_line == NULL) {
+
+		output_pin = get_gpio_pin(bank, line);
+
+		if (output_pin == NULL) {
 			perror("Error setting gpiod\n");
 			return EXIT_FAILURE;
 		}
 	}
-	ret = gpiod_line_request_rising_edge_events(input_line, "gpio-test");
+
+	/* Enabling rising edges events on the input pin */
+	ret = gpiod_line_request_rising_edge_events(input_pin, "gpio-test");
+	/* The function returns 0 if the operation succeeds, -1 on failure */
 	if (ret < 0) {
 		perror("Request events failed\n");
 		return EXIT_FAILURE;
 	}
 
-	ret = gpiod_line_request_output(output_line, "gpio-test",
+	/* Setting the pin as output */
+	ret = gpiod_line_request_output(output_pin, "gpio-test",
 		GPIOD_LINE_ACTIVE_STATE_HIGH);
-	if (ret < 0) {
+	/* The function returns 0 if the pin was properly reserved */
+	if (ret < 0) { 
 		perror("Request output failed\n");
 		return EXIT_FAILURE;
 	}
 
-	while (1) {
-		gpiod_line_event_wait(input_line, NULL);
+	while (1) { 
+		/* Waiting for an event on the input pin */
+		gpiod_line_event_wait(input_pin, NULL);
 
-		if (gpiod_line_event_read(input_line, &event) != 0)
+		/* Reading next pending event from the GPIO pin */
+		if (gpiod_line_event_read(input_pin, &event) != 0)
 			continue;
 
-		/* this should always be a rising event */
+		/* Checking if it is a rising event as previously defined */
 		if (event.event_type != GPIOD_LINE_EVENT_RISING_EDGE)
 			continue;
 
-		/* toggle output */
-		line_value = !line_value;
-		printf("Setting pin to %d\n", line_value);
-		gpiod_line_set_value(output_line, line_value);
+		/* Output toggle */
+		pin_value = !pin_value;
+		printf("Setting pin to %d\n", pin_value);
+		gpiod_line_set_value(output_pin, pin_value);
 	}
 
 	return EXIT_SUCCESS;
