@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  gpiodotnet-debug:
+    build:
+      context: .
+      dockerfile: Dockerfile.debug
+    image: ${LOCAL_REGISTRY}:5002/gpiodotnet-debug:${TAG}
+    ports:
+      - 2222:2222
+
+  gpiodotnet:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKER_LOGIN}/gpiodotnet:${TAG}

@@ -1,0 +1,65 @@
+name: Build & Deploy TorizonCore
+on:
+  - push
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    name: Build & Deploy
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Initial Setup
+        shell: pwsh
+        env:
+          TORIZON_ARCH: ""
+          DOCKER_PSSWD: ${{ secrets.DOCKER_PSSWD }}
+          PLATFORM_CLIENT_ID: ${{ secrets.PLATFORM_CLIENT_ID }}
+          PLATFORM_CLIENT_SECRET: ${{ secrets.PLATFORM_CLIENT_SECRET }}
+          PLATFORM_CREDENTIALS: ${{ secrets.PLATFORM_CREDENTIALS }}
+        run: |
+          $_settings = (Get-Content ./.vscode/settings.json | ConvertFrom-Json)
+          $env:TORIZON_ARCH = $_settings.torizon_arch
+          if ($env:TORIZON_ARCH -eq "aarch64") { $env:TORIZON_ARCH = "arm64" }
+          if ($env:TORIZON_ARCH -eq "armhf") { $env:TORIZON_ARCH = "arm" }
+          echo "TORIZON_ARCH=$env:TORIZON_ARCH" | `
+            Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+          ./.vscode/tasks.ps1 run validate-pipeline-settings
+
+      - name: Decode Credentials
+        env:
+          PLATFORM_CREDENTIALS: ${{ secrets.PLATFORM_CREDENTIALS }}
+        run: |
+          echo $PLATFORM_CREDENTIALS | base64 -d > credentials.zip
+
+      - name: Create and Publish Image
+        shell: pwsh
+        env:
+          TASKS_ITERATIVE: "False"
+          TASKS_OVERRIDE_ENV: "False"
+          DOCKER_PSSWD: ${{ secrets.DOCKER_PSSWD }}
+          PLATFORM_CLIENT_ID: ${{ secrets.PLATFORM_CLIENT_ID }}
+          PLATFORM_CLIENT_SECRET: ${{ secrets.PLATFORM_CLIENT_SECRET }}
+        run: |
+          ./.vscode/tasks.ps1 run run-torizon-binfmt
+          ./.vscode/tasks.ps1 run tcb-platform-publish
+
+      - name: Deploy Application
+        shell: pwsh
+        env:
+          TASKS_ITERATIVE: "False"
+          TASKS_OVERRIDE_ENV: "False"
+          PLATFORM_CLIENT_ID: ${{ secrets.PLATFORM_CLIENT_ID }}
+          PLATFORM_CLIENT_SECRET: ${{ secrets.PLATFORM_CLIENT_SECRET }}
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          ./.vscode/tasks.ps1 run platform-update-fleet
+
+      - name: Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-compose-prod
+          path: |
+            docker-compose.prod.yml
+            docker-compose.prod.lock.yml

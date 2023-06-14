@@ -1,0 +1,10 @@
+[
+    {
+        "source": "gpioDotnet.csproj",
+        "target": "$projectName.csproj"
+    },
+    {
+        "source": ".vscode/launch.json",
+        "target": ".vscode/launch.json"
+    }
+]
