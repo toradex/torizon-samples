@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  gpioc-debug:
+    build:
+      context: .
+      dockerfile: Dockerfile.debug
+    image: ${LOCAL_REGISTRY}:5002/gpioc-debug:${TAG}
+    ports:
+      - 2230:2230
+
+  gpioc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKER_LOGIN}/gpioc:${TAG}
