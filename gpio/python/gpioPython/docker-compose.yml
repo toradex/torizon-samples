@@ -8,9 +8,13 @@ services:
     ports:
       - 6502:6502
       - 6512:6512
+    devices:
+      - "/dev/gpiochip0"
     
   gpiopython:
     build:
       context: .
       dockerfile: Dockerfile
     image: ${DOCKER_LOGIN}/gpiopython:${TAG}
+    devices:
+      - "/dev/gpiochip0"
