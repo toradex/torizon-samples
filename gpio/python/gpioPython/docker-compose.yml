@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  gpiopython-debug:
+    build:
+      context: .
+      dockerfile: Dockerfile.debug
+    image: ${LOCAL_REGISTRY}:5002/gpiopython-debug:${TAG}
+    ports:
+      - 6502:6502
+      - 6512:6512
+    
+  gpiopython:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKER_LOGIN}/gpiopython:${TAG}
