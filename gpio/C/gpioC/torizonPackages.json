@@ -1,6 +1,9 @@
 {
     "deps": [
+        "libgpiod2"
     ],
     "devDeps": [
+        "libgpiod-dev",
+        "libgpiod2"
     ]
 }
