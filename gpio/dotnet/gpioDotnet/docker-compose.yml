@@ -7,9 +7,13 @@ services:
     image: ${LOCAL_REGISTRY}:5002/gpiodotnet-debug:${TAG}
     ports:
       - 2222:2222
+    devices:
+      - "/dev/gpiochip0"
 
   gpiodotnet:
     build:
       context: .
       dockerfile: Dockerfile
     image: ${DOCKER_LOGIN}/gpiodotnet:${TAG}
+    devices:
+      - "/dev/gpiochip0"
