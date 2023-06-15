@@ -7,9 +7,13 @@ services:
     image: ${LOCAL_REGISTRY}:5002/pwmc-debug:${TAG}
     ports:
       - 2230:2230
+    volumes:
+      - /sys/class/pwm/pwmchip0:/sys/class/pwm/pwmchip0
 
   pwmc:
     build:
       context: .
       dockerfile: Dockerfile
     image: ${DOCKER_LOGIN}/pwmc:${TAG}
+    volumes:
+      - /sys/class/pwm/pwmchip0:/sys/class/pwm/pwmchip0
