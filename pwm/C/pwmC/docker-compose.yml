@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  pwmc-debug:
+    build:
+      context: .
+      dockerfile: Dockerfile.debug
+    image: ${LOCAL_REGISTRY}:5002/pwmc-debug:${TAG}
+    ports:
+      - 2230:2230
+
+  pwmc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKER_LOGIN}/pwmc:${TAG}
