@@ -109,25 +109,38 @@ variables:
     - export DATE=$(date +%Y%m%d)
     # Ignore error "sh: write error: File exists" when installing qemu-user-static
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || true
-    - for i in 1 2 3 4 5; do docker build --build-arg IMAGE_ARCH=${IMAGE_ARCH}
-                     --build-arg DOCKER_REGISTRY=${TORADEX_INTERNAL_DOCKERHUB_CACHE}/${DOCKERHUB_REPOSITORY}
-                     --build-arg BASE_NAME=${BASE_NAME}
-                     --build-arg IMAGE_TAG=${IMAGE_TAG}
-                     --build-arg GCC_PREFIX=${GCC_PREFIX}
-                     --build-arg CROSS_TC_IMAGE_ARCH=${CROSS_TC_IMAGE_ARCH}
-                     --build-arg CROSS_TC_IMAGE_TAG=${CROSS_TC_IMAGE_TAG}
-                     --build-arg TOOLCHAIN_ARCH=${TOOLCHAIN_ARCH}
-                     --build-arg PKG_ARCH=${PKG_ARCH}
-                     ${DOCKER_NO_CACHE:+--no-cache}
-                     --label container.name=${IMAGE_NAME} 
-                     --label container.version=${MAJOR}.${MINOR}.${PATCH}-${DATE} 
-                     --label git.branch=${CI_COMMIT_BRANCH}  
-                     --label git.hash=${CI_COMMIT_SHA} 
-                     --label pipeline.id=${CI_PIPELINE_ID} 
-                     -f ${DOCKERFILE_FOLDER}Dockerfile
-                     -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-                     -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
-                     ${DOCKERFILE_FOLDER} && echo "docker build success, attempt $i" && break; done
+    - |
+      set +e
+      status=0
+      for i in 1 2 3 4 5; do
+        docker build --build-arg IMAGE_ARCH=${IMAGE_ARCH} \
+                     --build-arg DOCKER_REGISTRY=${TORADEX_INTERNAL_DOCKERHUB_CACHE}/${DOCKERHUB_REPOSITORY} \
+                     --build-arg BASE_NAME=${BASE_NAME} \
+                     --build-arg IMAGE_TAG=${IMAGE_TAG} \
+                     --build-arg GCC_PREFIX=${GCC_PREFIX} \
+                     --build-arg CROSS_TC_IMAGE_ARCH=${CROSS_TC_IMAGE_ARCH} \
+                     --build-arg CROSS_TC_IMAGE_TAG=${CROSS_TC_IMAGE_TAG} \
+                     --build-arg TOOLCHAIN_ARCH=${TOOLCHAIN_ARCH} \
+                     --build-arg PKG_ARCH=${PKG_ARCH} \
+                     ${DOCKER_NO_CACHE:+--no-cache} \
+                     --label container.name=${IMAGE_NAME} \
+                     --label container.version=${MAJOR}.${MINOR}.${PATCH}-${DATE}  \
+                     --label git.branch=${CI_COMMIT_BRANCH} \
+                     --label git.hash=${CI_COMMIT_SHA} \
+                     --label pipeline.id=${CI_PIPELINE_ID} \
+                     -f ${DOCKERFILE_FOLDER}Dockerfile \
+                     -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} \
+                     -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} \
+                     ${DOCKERFILE_FOLDER}
+        status="$?"
+        if [ "$status" -eq 0 ]; then
+          echo "docker build success, attempt $i"
+          break
+        fi
+      done
+      if [ "$status" -ne 0 ]; then
+        exit "$status"
+      fi
     - for i in 1 2 3 4 5; do timeout ${DOCKER_PUSH_TIMEOUT} docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} && echo "docker push success, attempt $i" && break; done
     - for i in 1 2 3 4 5; do timeout ${DOCKER_PUSH_TIMEOUT} docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} && echo "docker push success, attempt $i" && break; done
 
