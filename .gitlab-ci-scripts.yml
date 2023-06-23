@@ -41,7 +41,6 @@ variables:
   # Use overlayfs driver for better performance
   DOCKER_TLS_CERTDIR: ""
   DOCKER_DRIVER: overlay2
-  DOCKER_PUSH_TIMEOUT: 1800
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   GITLAB_DOCKERREGISTRY_SUFFIX: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
   GITLAB_DOCKERREGISTRY_SUFFIX_LATEST: ${CI_COMMIT_REF_SLUG}-latest
@@ -141,8 +140,8 @@ variables:
       if [ "$status" -ne 0 ]; then
         exit "$status"
       fi
-    - for i in 1 2 3 4 5; do timeout ${DOCKER_PUSH_TIMEOUT} docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} && echo "docker push success, attempt $i" && break; done
-    - for i in 1 2 3 4 5; do timeout ${DOCKER_PUSH_TIMEOUT} docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} && echo "docker push success, attempt $i" && break; done
+    - docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+    - docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
 
 .do_docker_experimental: &do_docker_experimental
   # Enable experimental features in Docker client (experimental feature are needed for manifest)
