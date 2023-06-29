@@ -214,15 +214,6 @@ crank-jobs:
     - changes:
       - crank/*
 
-portainer-jobs:
-  stage: build
-  trigger:
-    include: debian-container/.gitlab-ci.yml
-    strategy: depend
-  rules:
-    - changes:
-      - debian-container/*
-
 # Run this job even if no other job is added to the pipeline
 # It prevents commits without a job
 final-job:
