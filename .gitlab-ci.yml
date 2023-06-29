@@ -203,17 +203,6 @@ weather-jobs:
     - changes:
       - weather/*
 
-#### Docker Compose only samples ####
-
-crank-jobs:
-  stage: build
-  trigger:
-    include: crank/.gitlab-ci.yml
-    strategy: depend
-  rules:
-    - changes:
-      - crank/*
-
 # Run this job even if no other job is added to the pipeline
 # It prevents commits without a job
 final-job:
