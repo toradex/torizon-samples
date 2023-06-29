@@ -22,186 +22,197 @@ stages:
   # Final job, always run even if no child pipelines run
   - end
 
+.pass-torizon-containers-variable:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      # This case is selected when samples' pipeline is triggered by
+      # torizon-containers one. Since we trigger each sample pipeline
+      # separately, we need to pass the variable received from the
+      # multi-project pipeline to the parent-child triggered pipeline.
+      variables:
+        TORIZON_CONTAINERS_CI_REGISTRY: "$TORIZON_CONTAINERS_CI_REGISTRY"
+    - if: $CI_PIPELINE_SOURCE != "pipeline"
+      changes:
+      - "$SAMPLE_FOLDER"
+
 #### Dockerfile-base samples ####
 
 adc-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: adc/**/*
   trigger:
     include: adc/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - adc/*
 
 dbus-tools-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: dbus/tools/*
   trigger:
     include: dbus/tools/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - dbus/tools/*
 
 dbus-python-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: dbus/python/*
   trigger:
     include: dbus/python/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - dbus/python/*
 
 gpio-bash-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: gpio/bash/*
   trigger:
     include: gpio/bash/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - gpio/bash/*
 
 gpio-c-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: gpio/c/*
   trigger:
     include: gpio/c/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - gpio/c/*
 
 dlr-gstreamer-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: dlr-gstreamer/**/*
   trigger:
     include: dlr-gstreamer/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - dlr-gstreamer/*
 
 uart-gps-python-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: gps/python/*
   trigger:
     include: gps/python/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - gps/python/*
 
 collectd-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: grafana/*
   trigger:
     include: grafana/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - grafana/*
 
 gstreamer-simple-pipeline-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: gstreamer/bash/simple-pipeline/*
   trigger:
     include: gstreamer/bash/simple-pipeline/.gitlab-ci.yml
-  rules:
-    - changes:
-      - gstreamer/bash/simple-pipeline/*
 
 nodejs-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: nodejs/*
   trigger:
     include: nodejs/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - nodejs/*
-      - nodejs/**/*
 
 opencl-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: opencl/*
   trigger:
     include: opencl/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - opencl/*
 
 opencv-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: opencv/*
   trigger:
     include: opencv/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - opencv/*
 
 pwm-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: pwm/**/*
   trigger:
     include: pwm/.gitlab-ci.yml
-  rules:
-    - changes:
-      - pwm/*
 
 qt5-python-qml-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: python-qml/**/*
   trigger:
     include: python-qml/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - python-qml/*
 
 uart-sht31-flask-app-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: sht31/flaskapp/**/*
   trigger:
     include: sht31/flaskapp/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - sht31/flaskapp/*
 
 uart-sht31-influxdb-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: sht31/sht31-influxdb/**/*
   trigger:
     include: sht31/sht31-influxdb/.gitlab-ci.yml
-  rules:
-    - changes:
-      - sht31/sht31-influxdb/*
 
 uart-sht31-kiosk-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: sht31/kiosk/*
   trigger:
     include: sht31/kiosk/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - sht31/kiosk/*
 
 tflite-basic-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: tflite/tflite-basic/*
   trigger:
     include: tflite/tflite-basic/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - tflite/tflite-basic/*
 
 tflite-rtsp-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: tflite/tflite-rtsp/**/*
   trigger:
     include: tflite/tflite-rtsp/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - tflite/tflite-rtsp/*
-      - tflite/tflite-rtsp/**/*
 
 weather-jobs:
   stage: build
+  extends: .pass-torizon-containers-variable
+  variables:
+    SAMPLE_FOLDER: weather/**/*
   trigger:
     include: weather/.gitlab-ci.yml
     strategy: depend
-  rules:
-    - changes:
-      - weather/*
 
 # Run this job even if no other job is added to the pipeline
 # It prevents commits without a job

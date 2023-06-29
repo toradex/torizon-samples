@@ -113,7 +113,7 @@ variables:
       status=0
       for i in 1 2 3 4 5; do
         docker build --build-arg IMAGE_ARCH=${IMAGE_ARCH} \
-                     --build-arg DOCKER_REGISTRY=${TORADEX_INTERNAL_DOCKERHUB_CACHE}/${DOCKERHUB_REPOSITORY} \
+                     --build-arg DOCKER_REGISTRY=${TORIZON_CONTAINERS_CI_REGISTRY:-$TORADEX_INTERNAL_DOCKERHUB_CACHE/$DOCKERHUB_REPOSITORY} \
                      --build-arg BASE_NAME=${BASE_NAME} \
                      --build-arg IMAGE_TAG=${IMAGE_TAG} \
                      --build-arg GCC_PREFIX=${GCC_PREFIX} \
