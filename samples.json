@@ -5,6 +5,12 @@
             "baseTemplate": "python3Console",
             "baseTemplateSupport": "Toradex",
             "sampleSupport": "Toradex"
+        },
+        "c": {
+            "folder": "gpioC",
+            "baseTemplate": "cppConsole",
+            "baseTemplateSupport": "Toradex",
+            "sampleSupport": "Toradex"
         }
     }
 }

@@ -10,4 +10,4 @@ For more details about each sample metadata, please check the [samples.json](sam
 
 - **gpio:**
   Samples showing how to interact with GPIOs on TorizonCore.
-  Example available in Python.
+  Examples available in Python and C.
