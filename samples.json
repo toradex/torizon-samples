@@ -11,6 +11,12 @@
             "baseTemplate": "cppConsole",
             "baseTemplateSupport": "Toradex",
             "sampleSupport": "Toradex"
+        },
+        "dotnet": {
+            "folder": "gpioDotnet",
+            "baseTemplate": "dotnetConsole",
+            "baseTemplateSupport": "Toradex",
+            "sampleSupport": "Toradex"
         }
     }
 }
