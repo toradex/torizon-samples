@@ -11,3 +11,7 @@ For more details about each sample metadata, please check the [samples.json](sam
 - **gpio:**
   Samples showing how to interact with GPIOs on TorizonCore.
   Examples available in Python, C and .NET.
+
+- **pwm:**
+  Samples showing how to interact with pwm interface exposed through sysfs.
+  Examples available in C.
