@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 source build_variables.sh `basename "$0"`
+source global_variables.sh
 THIS_DIR=$(cd $(dirname $0) && pwd)
-SRCBRANCH='lf-5.15.32_2.0.0'
-SRCREV='f2550359747106f28d936beb99ee677cda0c5912'
-TIM_VX_SRC='https://github.com/NXPmicro/tim-vx-imx.git'
+SRCBRANCH='lf-5.15.52_2.1.0'
+TIM_VX_SRC='https://github.com/nxp-imx/tim-vx-imx.git'
 PKG_CONFIG_SYSROOT_DIR="/"
 
 EXTRA_OECMAKE=" \
@@ -22,7 +22,6 @@ pushd ${WORKDIR} && \
   popd
 
 pushd ${S} && \
-  git reset ${SRCREV} --hard && \
   git clean -df && \
   mkdir build && pushd build && \
   cmake ${EXTRA_OECMAKE} .. && make -j`nproc` all install && \
