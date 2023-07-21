@@ -41,13 +41,13 @@ RUN ldconfig
 ## Install Python
 RUN apt-get -y update && apt-get install -y \
   python3 python3-dev python3-numpy python3-pybind11 \
-  python3-pip python3-setuptools python3-wheel python3-venv \
+  python3-pip python3-setuptools python3-wheel \
   && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 ## Install TF Lite ##
 COPY --from=tflite-build /build /build
 RUN cp -r /build/* /
-RUN python3 -m venv /venv && /venv/bin/pip3 install --no-cache-dir /tflite_runtime-*.whl && rm -rf *.whl
+RUN pip3 install --break-system-packages --no-cache-dir /tflite_runtime-*.whl && rm -rf *.whl
 
 ## Install runtime TF Lite dependencies ## 
 RUN apt-get -y update && apt-get install -y \
