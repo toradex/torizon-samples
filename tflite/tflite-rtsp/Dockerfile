@@ -35,8 +35,6 @@ RUN ./tflite-vx-delegate.sh
 ############################################################
 
 FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG AS tflite-base
-COPY --from=tflite-build /out /
-RUN ldconfig
 
 ## Install Python
 RUN apt-get -y update && apt-get install -y \
