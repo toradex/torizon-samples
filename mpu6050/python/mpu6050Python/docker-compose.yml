@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  mpu6050python-debug:
+    build:
+      context: .
+      dockerfile: Dockerfile.debug
+    image: ${LOCAL_REGISTRY}:5002/mpu6050python-debug:${TAG}
+    ports:
+      - 6502:6502
+      - 6512:6512
+    
+  mpu6050python:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKER_LOGIN}/mpu6050python:${TAG}

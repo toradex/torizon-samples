@@ -1,0 +1,115 @@
+image: docker:latest
+
+services:
+    - docker:dind
+
+variables:
+  # This should be set by docker image already, just to be sure...
+  DOCKER_HOST: tcp://docker:2375
+  # Use overlayfs driver for better performance
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_DRIVER: overlay2
+  DOCKER_BUILDKIT: 1
+
+stages:
+  - setup
+  - build
+  - platform
+
+initial-setup:
+  stage: setup
+  image:
+    name: torizonextras/pwsh-gitlab:latest
+
+  variables:
+    TORIZON_ARCH: ""
+
+  script: |
+    echo '
+
+      $_settings = (Get-Content ./.vscode/settings.json | ConvertFrom-Json)
+      $_torizonArch = $_settings.torizon_arch
+      if ($_torizonArch -eq "aarch64") { $_torizonArch = "arm64" }
+      if ($_torizonArch -eq "armhf") { $_torizonArch = "arm" }
+      "TORIZON_ARCH=$_torizonArch " | Set-Content -Path "setup.env"
+      
+      ./.vscode/tasks.ps1 run validate-pipeline-settings
+
+    ' | gitlabWrapper.ps1
+
+  artifacts:
+    reports:
+      dotenv: setup.env
+
+build-docker-image:
+  needs:
+    - initial-setup
+  stage: build
+  image:
+    name: torizonextras/pwsh-gitlab:latest
+
+  variables:
+    TASKS_ITERATIVE: "False"
+    TASKS_OVERRIDE_ENV: "False"
+
+  script: |
+    echo '
+
+      ./.vscode/tasks.ps1 run run-torizon-binfmt
+      ./.vscode/tasks.ps1 run create-production-image
+
+    ' | gitlabWrapper.ps1
+
+  artifacts:
+    paths:
+      - docker-compose.prod.yml
+
+push-package-to-platform:
+  needs:
+    - initial-setup
+    - build-docker-image
+  stage: platform
+  image:
+    name: torizonextras/pwsh-gitlab:latest
+
+  variables:
+    TASKS_ITERATIVE: "False"
+    TASKS_OVERRIDE_ENV: "False"
+
+  script: |
+    echo $PLATFORM_CREDENTIALS | base64 -d > credentials.zip
+    echo '
+
+      ./.vscode/tasks.ps1 run run-torizon-binfmt
+      ./.vscode/tasks.ps1 run tcb-platform-publish
+
+    ' | gitlabWrapper.ps1
+
+  artifacts:
+    paths:
+      - docker-compose.prod.yml
+      - docker-compose.prod.lock.yml
+    when: on_success
+
+# trigger a deployment to the fleet only when pushing to main branch
+update-fleet:
+  needs:
+    - initial-setup
+    - push-package-to-platform
+  stage: platform
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  image:
+    name: torizonextras/pwsh-gitlab:latest
+
+  variables:
+    TASKS_ITERATIVE: "False"
+    TASKS_OVERRIDE_ENV: "False"
+
+  script: |
+    echo $PLATFORM_CREDENTIALS | base64 -d > credentials.zip
+    echo '
+
+      ./.vscode/tasks.ps1 run platform-update-fleet
+
+    ' | gitlabWrapper.ps1

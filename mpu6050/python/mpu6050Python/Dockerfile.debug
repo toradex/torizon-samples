@@ -1,0 +1,107 @@
+# ARGUMENTS --------------------------------------------------------------------
+##
+# Board architecture
+##
+ARG IMAGE_ARCH=
+# For armv7 use:
+#ARG IMAGE_ARCH=arm
+
+##
+# Base container version
+##
+ARG BASE_VERSION=3.0.8-bookworm
+
+##
+# Application Name
+##
+ARG APP_EXECUTABLE=app
+
+##
+# Debug port
+##
+ARG SSH_DEBUG_PORT=
+
+##
+# Run as
+##
+ARG SSHUSERNAME=
+
+ARG APP_ROOT=/home/torizon
+
+FROM --platform=linux/${IMAGE_ARCH} \
+    torizon/debian:${BASE_VERSION} AS Debug
+
+ARG IMAGE_ARCH
+ARG SSH_DEBUG_PORT
+ARG APP_EXECUTABLE
+ARG SSHUSERNAME
+ENV APP_EXECUTABLE ${APP_EXECUTABLE}
+ARG APP_ROOT
+
+# SSH for remote debug
+EXPOSE ${SSH_DEBUG_PORT}
+EXPOSE 6512
+
+# Make sure we don't get notifications we can't answer during building.
+ENV DEBIAN_FRONTEND="noninteractive"
+
+# your regular RUN statements here
+# Install required packages
+RUN apt-get -q -y update && \
+    apt-get -q -y install \
+    openssl \
+    openssh-server \
+    rsync \
+    file \
+    screen \
+    python3-minimal \
+    python3-pip \
+    python3-setuptools \
+    python3-venv \
+    python3-debugpy \    
+    && apt-get clean && apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/*
+
+# automate for torizonPackages.json
+RUN apt-get -q -y update && \
+    apt-get -q -y install \
+# DO NOT REMOVE THIS LABEL: this is used for VS Code automation
+    # __torizon_packages_dev_start__
+    # __torizon_packages_dev_end__
+# DO NOT REMOVE THIS LABEL: this is used for VS Code automation
+    && \
+    apt-get clean && apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create virtualenv
+RUN python3 -m venv ${APP_ROOT}/.venv --system-site-packages
+
+# Install pip packages on venv
+COPY requirements-debug.txt /requirements-debug.txt
+RUN . ${APP_ROOT}/.venv/bin/activate && \
+    pip3 install --upgrade pip && pip3 install --break-system-packages -r requirements-debug.txt && \
+    rm requirements-debug.txt
+
+# ⚠️ DEBUG PURPOSES ONLY!!
+# copies RSA key to enable SSH login for user
+COPY .conf/id_rsa.pub /id_rsa.pub
+
+# create folders needed for the different components
+# configures SSH access to the container and sets environment by default
+RUN mkdir /var/run/sshd && \
+    sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' \
+        -i /etc/pam.d/sshd && \
+    if test $SSHUSERNAME != root ; \
+        then mkdir -p /home/$SSHUSERNAME/.ssh ; \
+        else mkdir -p /root/.ssh ; fi && \
+    if test $SSHUSERNAME != root ; \
+        then cp /id_rsa.pub /home/$SSHUSERNAME/.ssh/authorized_keys ; \
+        else cp /id_rsa.pub /root/.ssh/authorized_keys ; fi && \
+    echo "PermitUserEnvironment yes" >> /etc/ssh/sshd_config && \
+    echo "Port ${SSH_DEBUG_PORT}" >> /etc/ssh/sshd_config && \
+    su -c "env" $SSHUSERNAME > /etc/environment
+
+RUN rm -r /etc/ssh/ssh*key && \
+    dpkg-reconfigure openssh-server
+
+CMD [ "/usr/sbin/sshd", "-D" ]
