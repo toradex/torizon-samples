@@ -12,6 +12,10 @@ For more details about each sample metadata, please check the [samples.json](sam
   Samples showing how to interact with GPIOs on TorizonCore.
   Examples available in Python, C and .NET.
 
+- **mpu6050:**
+  Samples showing how to interact with an MPU6050 sensor through the I2C interface on TorizonCore.
+  Examples available in Python.
+
 - **pwm:**
   Samples showing how to interact with pwm interface exposed through sysfs.
   Examples available in C.
