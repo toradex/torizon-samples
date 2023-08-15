@@ -5,6 +5,10 @@ services:
       context: .
       dockerfile: Dockerfile.debug
     image: ${LOCAL_REGISTRY}:5002/mpu6050python-debug:${TAG}
+    volumes:
+      - /dev:/dev
+    device_cgroup_rules:
+      - 'c 89:* rmw'
     ports:
       - 6502:6502
       - 6512:6512
@@ -14,3 +18,5 @@ services:
       context: .
       dockerfile: Dockerfile
     image: ${DOCKER_LOGIN}/mpu6050python:${TAG}
+    devices:
+      - /dev/verdin-i2c1
