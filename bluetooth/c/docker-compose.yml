@@ -5,6 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile.debug
     image: ${LOCAL_REGISTRY}:5002/bluetoothconnection-debug:${TAG}
+    network_mode: host
     ports:
       - 2230:2230
 
@@ -13,3 +14,4 @@ services:
       context: .
       dockerfile: Dockerfile
     image: ${DOCKER_LOGIN}/bluetoothconnection:${TAG}
+    network_mode: host

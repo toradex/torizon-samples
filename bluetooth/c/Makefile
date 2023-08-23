@@ -2,7 +2,7 @@
 CC := g++
 CCFLAGS := -Iincludes/
 DBGFLAGS := -g
-LDFLAGS :=
+LDFLAGS := -lbluetooth
 CCOBJFLAGS := $(CCFLAGS) -c
 ARCH :=
 

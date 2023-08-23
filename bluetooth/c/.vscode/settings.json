@@ -15,5 +15,10 @@
   "torizon_run_as": "torizon",
   "torizon_app_root": "/home/torizon",
   "tcb.packageName": "bluetoothconnection",
-  "tcb.version": "early-access"
+  "tcb.version": "early-access",
+  "files.associations": {
+    "time.h": "c",
+    "rfcomm.h": "c",
+    "bluetooth.h": "c"
+  }
 }
