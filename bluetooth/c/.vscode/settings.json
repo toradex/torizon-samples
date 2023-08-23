@@ -1,19 +1,27 @@
 {
-  "torizon_psswd": "",
-  "torizon_login": "",
-  "torizon_ip": "",
-  "host_ip": "",
+  "torizon_psswd": "1",
+  "torizon_login": "torizon",
+  "torizon_ip": "10.22.1.130",
+  "host_ip": "10.22.1.115",
   "torizon_workspace": "${workspaceFolder}",
   "torizon_debug_port": "",
   "torizon_debug_ssh_port": "2230",
   "torizon_debug_port2": "",
   "terminal.integrated.defaultProfile.linux": "bash",
   "torizon_debug_port3": "",
-  "torizon_gpu": "",
-  "torizon_arch": "",
+  "torizon_gpu": "-vivante",
+  "torizon_arch": "aarch64",
   "wait_sync": "1",
   "torizon_run_as": "torizon",
   "torizon_app_root": "/home/torizon",
   "tcb.packageName": "bluetoothconnection",
-  "tcb.version": "early-access"
+  "tcb.version": "early-access",
+  "docker.environment": {
+    "DOCKER_HOST": "tcp://10.22.1.130:2375"
+  },
+  "files.associations": {
+    "time.h": "c",
+    "rfcomm.h": "c",
+    "bluetooth.h": "c"
+  }
 }
