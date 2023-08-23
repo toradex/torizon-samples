@@ -10,6 +10,8 @@ Folders:
   example using Alsa API for a C/C++ CMake based project
 - **aws-iot**
   Getting Started with AWS IoT Greengrass for Torizon
+- **bluetooth**
+  example using libbluetooth from within a container
 - **crank**
   how to run a Crank Storyboard sample
 - **dbus**
