@@ -1,0 +1,34 @@
+# ARGUMENTS --------------------------------------------------------------------
+ARG CROSS_SDK_BASE_TAG=3-bookworm
+
+##
+# Board architecture
+# arm or arm64
+##
+ARG IMAGE_ARCH=
+
+
+# BUILD ------------------------------------------------------------------------
+FROM torizon/debian-cross-toolchain-${IMAGE_ARCH}:${CROSS_SDK_BASE_TAG}
+
+# __deps__
+RUN apt-get -q -y update && \
+    apt-get -q -y install \
+    # ADD YOUR PACKAGES HERE
+    && \
+    apt-get clean && apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/*
+# __deps__
+
+# automate for torizonPackages.json
+RUN apt-get -q -y update && \
+    apt-get -q -y install \
+# DOES NOT REMOVE THIS LABEL: this is used for VS Code automation
+    # __torizon_packages_dev_start__
+    # __torizon_packages_dev_end__
+# DOES NOT REMOVE THIS LABEL: this is used for VS Code automation
+    && \
+    apt-get clean && apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
