@@ -1,6 +1,12 @@
 {
     "deps": [
+        "bluez",
+        "libc6-dev",
+        "libbluetooth-dev"
     ],
     "devDeps": [
+        "bluez",
+        "libc6-dev",
+        "libbluetooth-dev"
     ]
 }
