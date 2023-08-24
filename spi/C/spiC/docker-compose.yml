@@ -7,9 +7,13 @@ services:
     image: ${LOCAL_REGISTRY}:5002/spic-debug:${TAG}
     ports:
       - 2230:2230
+    devices:
+      - "/dev/verdin-spi-cs0"
 
   spic:
     build:
       context: .
       dockerfile: Dockerfile
     image: ${DOCKER_LOGIN}/spic:${TAG}
+    devices:
+      - "/dev/verdin-spi-cs0"

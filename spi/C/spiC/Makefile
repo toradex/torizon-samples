@@ -1,5 +1,5 @@
 # tool macros
-CC := g++
+CC := gcc
 CCFLAGS := -Iincludes/
 DBGFLAGS := -g
 LDFLAGS :=
