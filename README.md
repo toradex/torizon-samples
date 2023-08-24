@@ -19,3 +19,8 @@ For more details about each sample metadata, please check the [samples.json](sam
 - **pwm:**
   Samples showing how to interact with pwm interface exposed through sysfs.
   Examples available in C.
+
+- **spi:**
+  Samples using the SPI communication protocol, through the 
+`spidev` interface, on the User-Space.
+  Examples available in C.
