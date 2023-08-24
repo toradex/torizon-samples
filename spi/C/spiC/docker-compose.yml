@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  spic-debug:
+    build:
+      context: .
+      dockerfile: Dockerfile.debug
+    image: ${LOCAL_REGISTRY}:5002/spic-debug:${TAG}
+    ports:
+      - 2230:2230
+
+  spic:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKER_LOGIN}/spic:${TAG}

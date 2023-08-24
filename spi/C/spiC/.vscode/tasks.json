@@ -1,0 +1,2056 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-makedir-amd64-local",
+            "hide": true,
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "ARCH=x86_64",
+                "makedir"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-makedir-amd64",
+            "hide": true,
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "ARCH=amd64",
+                "makedir"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-makedir-arm",
+            "hide": true,
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "ARCH=armhf",
+                "makedir"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-makedir-arm64",
+            "hide": true,
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "ARCH=aarch64",
+                "makedir"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-makedir-riscv64",
+            "hide": true,
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "ARCH=riscv64",
+                "makedir"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-debug-amd64-local",
+            "detail": "Build a debug version of the application for amd64 using\nthe toolchain installed in the host.",
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "ARCH=x86_64",
+                "debug"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "build-makedir-amd64-local"
+            ]
+        },
+        {
+            "label": "clean",
+            "detail": "Clean the application build directory. `make clean`",
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "clean"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-debug-arm64",
+            "detail": "Build a debug version of the application for arm64 using\nthe toolchain from the SDK container.",
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "args": [
+                "docker",
+                "run",
+                "--rm",
+                "-it",
+                "-v",
+                "${workspaceFolder}:/app",
+                "cross-toolchain-arm64-spic",
+                "make",
+                "ARCH=aarch64",
+                "CC=aarch64-linux-gnu-g++",
+                "debug"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "build-container-image-sdk-arm64"
+            ]
+        },
+        {
+            "label": "deploy-torizon-arm64",
+            "detail": "",
+            "hide": true,
+            "command": "scp",
+            "type": "process",
+            "args": [
+                "-i",
+                "${workspaceFolder}/.conf/id_rsa",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "-P",
+                "${config:torizon_debug_ssh_port}",
+                "-pr",
+                "${workspaceFolder}/aarch64/debug",
+                "${config:torizon_run_as}@${config:torizon_ip}:~/app"
+            ],
+            "dependsOn": [
+                "validate-settings",
+                "validate-arch-arm64",
+                "copy-docker-compose",
+                "apply-torizon-packages",
+                "pre-cleanup-arm64",
+                "build-makedir-arm64",
+                "build-debug-arm64",
+                "build-container-torizon-debug-arm64",
+                "push-container-torizon-debug-arm64",
+                "pull-container-torizon-debug-arm64",
+                "run-container-torizon-debug-arm64",
+                "wait-a-bit",
+                "pos-cleanup"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-debug-arm",
+            "detail": "Build a debug version of the application for armhf using\nthe toolchain from the SDK container.",
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "args": [
+                "docker",
+                "run",
+                "--rm",
+                "-it",
+                "-v",
+                "${workspaceFolder}:/app",
+                "cross-toolchain-arm-spic",
+                "make",
+                "ARCH=armhf",
+                "CC=arm-linux-gnueabihf-g++",
+                "debug"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "build-container-image-sdk-arm"
+            ]
+        },
+        {
+            "label": "deploy-torizon-arm",
+            "detail": "",
+            "hide": true,
+            "command": "scp",
+            "type": "process",
+            "args": [
+                "-i",
+                "${workspaceFolder}/.conf/id_rsa",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "-P",
+                "${config:torizon_debug_ssh_port}",
+                "-pr",
+                "${workspaceFolder}/armhf/debug",
+                "${config:torizon_run_as}@${config:torizon_ip}:~/app"
+            ],
+            "dependsOn": [
+                "validate-settings",
+                "validate-arch-arm",
+                "apply-torizon-packages",
+                "copy-docker-compose",
+                "pre-cleanup-arm",
+                "build-makedir-arm",
+                "build-debug-arm",
+                "build-container-torizon-debug-arm",
+                "push-container-torizon-debug-arm",
+                "pull-container-torizon-debug-arm",
+                "run-container-torizon-debug-arm",
+                "wait-a-bit",
+                "pos-cleanup"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-debug-amd64",
+            "detail": "Build a debug version of the application for amd64 using\nthe toolchain from the SDK container.",
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "args": [
+                "docker",
+                "run",
+                "--rm",
+                "-it",
+                "-v",
+                "${workspaceFolder}:/app",
+                "cross-toolchain-amd64-spic",
+                "make",
+                "ARCH=amd64",
+                "CC=x86_64-linux-gnu-g++",
+                "debug"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "build-container-image-sdk-amd64"
+            ]
+        },
+        {
+            "label": "deploy-torizon-amd64",
+            "detail": "",
+            "hide": true,
+            "command": "scp",
+            "type": "process",
+            "args": [
+                "-i",
+                "${workspaceFolder}/.conf/id_rsa",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "-P",
+                "${config:torizon_debug_ssh_port}",
+                "-pr",
+                "${workspaceFolder}/amd64/debug",
+                "${config:torizon_run_as}@${config:torizon_ip}:~/app"
+            ],
+            "dependsOn": [
+                "validate-settings",
+                "validate-arch-amd64",
+                "apply-torizon-packages",
+                "copy-docker-compose",
+                "pre-cleanup-amd64",
+                "build-makedir-amd64",
+                "build-debug-amd64",
+                "build-container-torizon-debug-amd64",
+                "push-container-torizon-debug-amd64",
+                "pull-container-torizon-debug-amd64",
+                "run-container-torizon-debug-amd64",
+                "wait-a-bit",
+                "pos-cleanup"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-debug-riscv64",
+            "detail": "Build a debug version of the application for riscv64 using\nthe toolchain from the SDK container.",
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "args": [
+                "docker",
+                "run",
+                "--rm",
+                "-it",
+                "-v",
+                "${workspaceFolder}:/app",
+                "cross-toolchain-riscv64-spic",
+                "make",
+                "ARCH=riscv64",
+                "CC=riscv64-linux-gnu-g++",
+                "debug"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "build-container-image-sdk-riscv64"
+            ]
+        },
+        {
+            "label": "deploy-torizon-riscv64",
+            "detail": "",
+            "hide": true,
+            "command": "scp",
+            "type": "process",
+            "args": [
+                "-i",
+                "${workspaceFolder}/.conf/id_rsa",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "-P",
+                "${config:torizon_debug_ssh_port}",
+                "-pr",
+                "${workspaceFolder}/riscv64/debug",
+                "${config:torizon_run_as}@${config:torizon_ip}:~/app"
+            ],
+            "dependsOn": [
+                "validate-settings",
+                "validate-arch-riscv64",
+                "apply-torizon-packages",
+                "copy-docker-compose",
+                "pre-cleanup-riscv64",
+                "build-makedir-riscv64",
+                "build-debug-riscv64",
+                "build-container-torizon-debug-riscv64",
+                "push-container-torizon-debug-riscv64",
+                "pull-container-torizon-debug-riscv64",
+                "run-container-torizon-debug-riscv64",
+                "wait-a-bit",
+                "pos-cleanup"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "try-update-template",
+            "detail": "This task has automation steps to update the project\nbased on the template used to create it.",
+            "command": "pwsh",
+            "type": "process",
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "args": [
+                "${workspaceFolder}/.conf/projectUpdater.ps1",
+                "${workspaceFolder}",
+                "${workspaceFolderBasename}",
+                "0"
+            ],
+            "dependsOrder": "sequence",
+            "icon": {
+                "id": "repo-sync",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "try-update-template-accepting-all",
+            "detail": "This task has automation steps to update the project\nbased on the template used to create it.",
+            "command": "pwsh",
+            "type": "process",
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "args": [
+                "${workspaceFolder}/.conf/projectUpdater.ps1",
+                "${workspaceFolder}",
+                "${workspaceFolderBasename}",
+                "1"
+            ],
+            "dependsOrder": "sequence",
+            "icon": {
+                "id": "repo-sync",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "create-production-image",
+            "detail": "This task has automation steps to build the production\nDocker image. The production Docker image\nis based in the Dockerfile file.",
+            "command": "pwsh",
+            "type": "process",
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false,
+                "group": "create-prod-image"
+            },
+            "options": {
+                "env": {
+                    "DOCKER_PSSWD": "${command:docker_password}",
+                    "TORIZON_ARCH": "${input:archList}"
+                }
+            },
+            "args": [
+                "${workspaceFolder}/.conf/createDockerComposeProduction.ps1",
+                "${workspaceFolder}",
+                "${command:docker_registry}",
+                "${command:docker_tag}",
+                "spic",
+                "${command:torizon_gpu}"
+            ],
+            "dependsOrder": "sequence",
+            "icon": {
+                "id": "package",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "set-platform-fleet-name",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "args": [
+                "echo",
+                "\"setting",
+            "${command:tcb.fleetName}\""
+            ],
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            },
+            "dependsOrder": "sequence",
+        "dependsOn": []
+        },
+        {
+            "label": "fill-pipeline-settings",
+            "detail": "This task will fill the properties that are needed to be\nset in the .vscode/settings.json to correctly\nrun the GitHub Actions or GitLab CI pipelines.",
+            "command": "echo",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "DOCKER_REGISTRY": "${command:docker_registry}",
+                    "DOCKER_PSSWD": "${command:docker_password}",
+                    "DOCKER_TAG": "${command:docker_tag}",
+                    "TCB_CLIENTID": "${command:tcb.clientId}",
+                    "TCB_CLIENTSECRET": "${command:tcb.clientSecret}",
+                    "TCB_PACKAGE": "spiC",
+                    "TCB_FLEET": "${command:tcb.fleetName}",
+                    "TORIZON_ARCH": "${command:torizon_arch}"
+                }
+            },
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "args": [
+                "-e",
+                "\"✅ github-actions-settings done\n",
+                "\n",
+                "'⚠️ ENV VARIABLES NEED TO BE SET IN CI/CD PLATFORM'\n",
+                "\tDOCKER_PSSWD\n",
+                "\tPLATFORM_CLIENT_ID\n",
+                "\tPLATFORM_CLIENT_SECRET\n",
+                "\tPLATFORM_CREDENTIALS\n\""
+            ],
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "icon": {
+                "id": "notebook-edit",
+                "color": "terminal.ansiYellow"
+            },
+            "dependsOrder": "sequence",
+        "dependsOn": []
+        },
+        {
+            "label": "platform-update-fleet",
+            "detail": "This task will trigger the update of the fleet in the\nTorizon Platform with the latest version\nof the application published to the platform.",
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "PLATFORM_CLIENT_ID": "${command:tcb.clientId}",
+                    "PLATFORM_CLIENT_SECRET": "${command:tcb.clientSecret}"
+                }
+            },
+            "args": [
+                "pwsh",
+                "./.conf/torizonIO.ps1",
+                "update",
+                "fleet",
+                "latest",
+                "spiC",
+                "${command:tcb.fleetName}"
+            ],
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "icon": {
+                "id": "cloud-upload",
+                "color": "terminal.ansiYellow"
+            },
+            "dependsOrder": "sequence",
+        "dependsOn": []
+        },
+        {
+            "label": "tcb-platform-publish",
+            "detail": "This task will build the production image based on the\nDockerfile and push it to the Torizon\nPlatform creating a new docker-compose package.",
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "DOCKER_PSSWD": "${command:docker_password}",
+                    "DOCKER_LOGIN": "${command:docker_login}",
+                    "VSCODE_CMD": "--verbose platform push --credentials credentials.zip --package-name spiC --package-version ${command:tcb.getNextPackageVersion} --login ${env:DOCKER_LOGIN} ${env:DOCKER_PSSWD} --canonicalize docker-compose.prod.yml"
+                }
+            },
+            "args": [
+                "source",
+                "./.conf/tcb-env-setup.sh",
+                "-s",
+                "${workspaceFolder}/storage",
+                "-t",
+                "${config:tcb.version}"
+            ],
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "icon": {
+                "id": "cloud-upload",
+                "color": "terminal.ansiYellow"
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "create-production-image"
+            ]
+        },
+        {
+            "label": "docker-login",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "env": {
+                    "DOCKER_LOGIN": "${command:docker_login}",
+                    "DOCKER_PSSWD": "${command:docker_password}"
+                }
+            },
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "args": [
+                "docker",
+                "login",
+                "--username",
+                "${command:docker_login}",
+                "--password",
+                "${command:docker_password}"
+            ],
+            "dependsOrder": "sequence",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "run-docker-registry",
+            "detail": "",
+            "hide": true,
+            "command": "pwsh",
+            "type": "process",
+            "presentation": {
+                "echo": false,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "args": [
+                "-nop",
+                "-file",
+                "${workspaceFolder}/.conf/runContainerIfNotExists.ps1",
+                "-ContainerRuntime",
+                "docker",
+                "-RunArguments",
+                "\"-d -p 5002:5000 --restart=always registry:2\"",
+                "-ContainerName",
+                "registry"
+            ],
+            "dependsOrder": "sequence",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "run-docker-registry-wsl",
+            "detail": "",
+            "hide": true,
+            "command": "pwsh",
+            "type": "process",
+            "presentation": {
+                "echo": false,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "options": {
+                "env": {
+                    "TASKS_USE_PWSH_INSTEAD_BASH": "true"
+                }
+            },
+            "args": [
+                "-nop",
+                "-file",
+                "${workspaceFolder}/.vscode/tasks.ps1",
+                "run",
+                "run-docker-registry"
+            ],
+            "dependsOrder": "sequence",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "run-torizon-binfmt",
+            "detail": "",
+            "hide": true,
+            "command": "pwsh",
+            "type": "process",
+            "presentation": {
+                "echo": false,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "args": [
+                "${workspaceFolder}/.conf/runContainerIfNotExists.ps1",
+                "-ContainerRuntime",
+                "docker",
+                "-RunArguments",
+                "--rm --privileged torizon/binfmt",
+                "-ContainerName",
+                "binfmt"
+            ],
+            "dependsOrder": "sequence",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "run-share-wsl-ports",
+            "detail": "",
+            "hide": true,
+            "command": "pwsh",
+            "type": "process",
+            "presentation": {
+                "echo": false,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "args": [
+                "${workspaceFolder}/.conf/shareWSLPorts.ps1",
+                "${workspaceFolder}"
+            ],
+            "dependsOrder": "sequence",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "check-deps",
+            "detail": "This task will check if the dependencies needed to run\nthe project are installed in the host machine.",
+            "command": "pwsh",
+            "type": "process",
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "args": [
+                "${workspaceFolder}/.conf/checkDeps.ps1"
+            ],
+            "dependsOrder": "sequence",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "apply-torizon-packages",
+            "detail": "",
+            "hide": true,
+            "command": "pwsh",
+            "type": "process",
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "args": [
+                "${workspaceFolder}/.conf/torizonPackages.ps1",
+                "${config:torizon_arch}"
+            ],
+            "dependsOrder": "sequence",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "copy-docker-compose",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "scp",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "${config:torizon_workspace}/docker-compose.yml",
+                "torizon@${config:torizon_ip}:~/"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "wait-a-bit",
+            "detail": "",
+            "hide": true,
+            "command": "sleep",
+            "type": "process",
+            "args": [
+                "${config:wait_sync}"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "pos-cleanup",
+            "detail": "",
+            "hide": true,
+            "command": "ssh",
+            "type": "process",
+            "args": [
+                "-i",
+                "${workspaceFolder}/.conf/id_rsa",
+                "-p",
+                "${config:torizon_debug_ssh_port}",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "${config:torizon_run_as}@${config:torizon_ip}",
+                "rm -rf ~/app"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "validate-settings",
+            "detail": "",
+            "hide": true,
+            "command": "bash",
+            "type": "process",
+            "args": [
+                "-c",
+            "[[ ! -z \"${config:torizon_ip}\" ]] && true || false"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            },
+            "dependsOn": [
+                "validate-deps-running"
+            ]
+        },
+        {
+            "label": "validate-arch-amd64",
+            "detail": "",
+            "hide": true,
+            "command": "bash",
+            "type": "process",
+            "args": [
+                "-c",
+            "[[ \"${config:torizon_arch}\" == \"x86_64\" ]] && true || false"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "validate-arch-arm",
+            "detail": "",
+            "hide": true,
+            "command": "bash",
+            "type": "process",
+            "args": [
+                "-c",
+            "[[ \"${config:torizon_arch}\" == \"armv7l\" ]] && true || false"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "validate-arch-arm64",
+            "detail": "",
+            "hide": true,
+            "command": "bash",
+            "type": "process",
+            "args": [
+                "-c",
+            "[[ \"${config:torizon_arch}\" == \"aarch64\" ]] && true || false"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "validate-arch-riscv64",
+            "detail": "",
+            "hide": true,
+            "command": "bash",
+            "type": "process",
+            "args": [
+                "-c",
+            "[[ \"${config:torizon_arch}\" == \"riscv64\" ]] && true || false"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "pre-cleanup-arm64",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "ssh",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "torizon@${config:torizon_ip}",
+                "LOCAL_REGISTRY=${config:host_ip} TAG=arm64 GPU=${config:torizon_gpu} docker-compose down --remove-orphans"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "pre-cleanup-arm",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "ssh",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "torizon@${config:torizon_ip}",
+                "LOCAL_REGISTRY=${config:host_ip} TAG=arm GPU=${config:torizon_gpu} docker-compose down --remove-orphans"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "pre-cleanup-amd64",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "ssh",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "torizon@${config:torizon_ip}",
+                "LOCAL_REGISTRY=${config:host_ip} TAG=amd64 GPU=${config:torizon_gpu} docker-compose down --remove-orphans"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "pre-cleanup-riscv64",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "ssh",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "torizon@${config:torizon_ip}",
+                "LOCAL_REGISTRY=${config:host_ip} TAG=riscv64 GPU=${config:torizon_gpu} docker-compose down --remove-orphans"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-container-torizon-debug-arm64",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "env": {
+                    "LOCAL_REGISTRY": "localhost",
+                    "TAG": "arm64",
+                    "GPU": "${config:torizon_gpu}",
+                    "SSH_DEBUG_PORT": "${config:torizon_debug_ssh_port}",
+                    "DEBUG_PORT": "${config:torizon_debug_port}",
+                    "DEBUG_PORT2": "${config:torizon_debug_port2}",
+                    "DEBUG_PORT3": "${config:torizon_debug_port3}"
+                }
+            },
+            "args": [
+                "docker",
+                "compose",
+                "build",
+                "--pull",
+                "--build-arg",
+                "SSHUSERNAME=${config:torizon_run_as}",
+                "--build-arg",
+                "IMAGE_ARCH=arm64",
+                "--build-arg",
+                "SSH_DEBUG_PORT=${config:torizon_debug_ssh_port}",
+                "--build-arg",
+                "GPU=${config:torizon_gpu}",
+                "spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-container-torizon-debug-arm",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "env": {
+                    "LOCAL_REGISTRY": "localhost",
+                    "TAG": "arm",
+                    "GPU": "${config:torizon_gpu}",
+                    "SSH_DEBUG_PORT": "${config:torizon_debug_ssh_port}",
+                    "DEBUG_PORT": "${config:torizon_debug_port}",
+                    "DEBUG_PORT2": "${config:torizon_debug_port2}",
+                    "DEBUG_PORT3": "${config:torizon_debug_port3}"
+                }
+            },
+            "args": [
+                "docker",
+                "compose",
+                "build",
+                "--pull",
+                "--build-arg",
+                "SSHUSERNAME=${config:torizon_run_as}",
+                "--build-arg",
+                "IMAGE_ARCH=arm",
+                "--build-arg",
+                "SSH_DEBUG_PORT=${config:torizon_debug_ssh_port}",
+                "--build-arg",
+                "GPU=${config:torizon_gpu}",
+                "spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-container-torizon-debug-amd64",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "env": {
+                    "LOCAL_REGISTRY": "localhost",
+                    "TAG": "amd64",
+                    "GPU": "${config:torizon_gpu}",
+                    "SSH_DEBUG_PORT": "${config:torizon_debug_ssh_port}",
+                    "DEBUG_PORT": "${config:torizon_debug_port}",
+                    "DEBUG_PORT2": "${config:torizon_debug_port2}",
+                    "DEBUG_PORT3": "${config:torizon_debug_port3}"
+                }
+            },
+            "args": [
+                "docker",
+                "compose",
+                "build",
+                "--pull",
+                "--build-arg",
+                "SSHUSERNAME=${config:torizon_run_as}",
+                "--build-arg",
+                "IMAGE_ARCH=amd64",
+                "--build-arg",
+                "SSH_DEBUG_PORT=${config:torizon_debug_ssh_port}",
+                "--build-arg",
+                "GPU=${config:torizon_gpu}",
+                "spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-container-torizon-debug-riscv64",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "env": {
+                    "LOCAL_REGISTRY": "localhost",
+                    "TAG": "riscv64",
+                    "GPU": "${config:torizon_gpu}",
+                    "SSH_DEBUG_PORT": "${config:torizon_debug_ssh_port}",
+                    "DEBUG_PORT": "${config:torizon_debug_port}",
+                    "DEBUG_PORT2": "${config:torizon_debug_port2}",
+                    "DEBUG_PORT3": "${config:torizon_debug_port3}"
+                }
+            },
+            "args": [
+                "docker",
+                "compose",
+                "build",
+                "--pull",
+                "--build-arg",
+                "SSHUSERNAME=${config:torizon_run_as}",
+                "--build-arg",
+                "IMAGE_ARCH=riscv64",
+                "--build-arg",
+                "SSH_DEBUG_PORT=${config:torizon_debug_ssh_port}",
+                "--build-arg",
+                "GPU=${config:torizon_gpu}",
+                "spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-container-image-sdk-arm64",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "args": [
+                "docker",
+                "build",
+                "--pull",
+                "-f",
+                "${workspaceFolder}/Dockerfile.sdk",
+                "${workspaceFolder}",
+                "-t",
+                "cross-toolchain-arm64-spic",
+                "--build-arg",
+                "IMAGE_ARCH=arm64"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-container-image-sdk-arm",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "args": [
+                "docker",
+                "build",
+                "--pull",
+                "-f",
+                "${workspaceFolder}/Dockerfile.sdk",
+                "${workspaceFolder}",
+                "-t",
+                "cross-toolchain-arm-spic",
+                "--build-arg",
+                "IMAGE_ARCH=arm"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-container-image-sdk-amd64",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "args": [
+                "docker",
+                "build",
+                "--pull",
+                "-f",
+                "${workspaceFolder}/Dockerfile.sdk",
+                "${workspaceFolder}",
+                "-t",
+                "cross-toolchain-amd64-spic",
+                "--build-arg",
+                "IMAGE_ARCH=amd64"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-container-image-sdk-riscv64",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "args": [
+                "docker",
+                "build",
+                "--pull",
+                "-f",
+                "${workspaceFolder}/Dockerfile.sdk",
+                "${workspaceFolder}",
+                "-t",
+                "cross-toolchain-riscv64-spic",
+                "--build-arg",
+                "IMAGE_ARCH=riscv64"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "push-container-torizon-debug-arm",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "env": {
+                    "LOCAL_REGISTRY": "localhost",
+                    "TAG": "arm"
+                }
+            },
+            "args": [
+                "docker",
+                "compose",
+                "push",
+                "spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "push-container-torizon-debug-arm64",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "env": {
+                    "LOCAL_REGISTRY": "localhost",
+                    "TAG": "arm64"
+                }
+            },
+            "args": [
+                "docker",
+                "compose",
+                "push",
+                "spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "push-container-torizon-debug-amd64",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "env": {
+                    "LOCAL_REGISTRY": "localhost",
+                    "TAG": "amd64"
+                }
+            },
+            "args": [
+                "docker",
+                "compose",
+                "push",
+                "spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "push-container-torizon-debug-riscv64",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "env": {
+                    "LOCAL_REGISTRY": "localhost",
+                    "TAG": "riscv64"
+                }
+            },
+            "args": [
+                "docker",
+                "compose",
+                "push",
+                "spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "pull-container-torizon-debug-arm64",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "ssh",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "torizon@${config:torizon_ip}",
+                "LOCAL_REGISTRY=${config:host_ip} TAG=arm64 docker-compose pull spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "pull-container-torizon-debug-arm",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "ssh",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "torizon@${config:torizon_ip}",
+                "LOCAL_REGISTRY=${config:host_ip} TAG=arm docker-compose pull spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "pull-container-torizon-debug-amd64",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "ssh",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "torizon@${config:torizon_ip}",
+                "LOCAL_REGISTRY=${config:host_ip} TAG=amd64 docker-compose pull spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "pull-container-torizon-debug-amd64",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "ssh",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "torizon@${config:torizon_ip}",
+                "LOCAL_REGISTRY=${config:host_ip} TAG=amd64 docker-compose pull spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "pull-container-torizon-debug-riscv64",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "ssh",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "torizon@${config:torizon_ip}",
+                "LOCAL_REGISTRY=${config:host_ip} TAG=riscv64 docker-compose pull spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "run-container-torizon-debug-arm64",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "ssh",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "torizon@${config:torizon_ip}",
+                "LOCAL_REGISTRY=${config:host_ip} TAG=arm64 GPU=${config:torizon_gpu} docker-compose up -d spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "run-container-torizon-debug-arm",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "ssh",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "torizon@${config:torizon_ip}",
+                "LOCAL_REGISTRY=${config:host_ip} TAG=arm GPU=${config:torizon_gpu} docker-compose up -d spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "run-container-torizon-debug-amd64",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "ssh",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "torizon@${config:torizon_ip}",
+                "LOCAL_REGISTRY=${config:host_ip} TAG=amd64 GPU=${config:torizon_gpu} docker-compose up -d spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "run-container-torizon-debug-amd64",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "ssh",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "torizon@${config:torizon_ip}",
+                "LOCAL_REGISTRY=${config:host_ip} TAG=amd64 GPU=${config:torizon_gpu} docker-compose up -d spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "run-container-torizon-debug-riscv64",
+            "detail": "",
+            "hide": true,
+            "command": "sshpass",
+            "type": "process",
+            "args": [
+                "-p",
+                "${config:torizon_psswd}",
+                "ssh",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "torizon@${config:torizon_ip}",
+                "LOCAL_REGISTRY=${config:host_ip} TAG=riscv64 GPU=${config:torizon_gpu} docker-compose up -d spic-debug"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "wait-a-bit"
+            ],
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "push-release-arm",
+            "detail": "This task will build the application based in the\nproduction Dockerfile and push the image to DockerHub.",
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "env": {
+                    "DOCKER_LOGIN": "${command:docker_login}",
+                    "TAG": "arm"
+                }
+            },
+            "args": [
+                "docker",
+                "compose",
+                "push",
+                "spic"
+            ],
+            "dependsOn": [
+                "docker-login",
+                "build-release-arm"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "repo-push",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "push-release-arm64",
+            "detail": "This task will build the application based in the\nproduction Dockerfile and push the image to DockerHub.",
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "env": {
+                    "DOCKER_LOGIN": "${command:docker_login}",
+                    "TAG": "arm64"
+                }
+            },
+            "args": [
+                "docker",
+                "compose",
+                "push",
+                "spic"
+            ],
+            "dependsOn": [
+                "docker-login",
+                "build-release-arm64"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "repo-push",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "push-release-amd64",
+            "detail": "This task will build the application based in the\nproduction Dockerfile and push the image to DockerHub.",
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "env": {
+                    "DOCKER_LOGIN": "${command:docker_login}",
+                    "TAG": "amd64"
+                }
+            },
+            "args": [
+                "docker",
+                "compose",
+                "push",
+                "spic"
+            ],
+            "dependsOn": [
+                "docker-login",
+                "build-release-amd64"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "repo-push",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-release-arm",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "env": {
+                    "DOCKER_LOGIN": "${command:docker_login}",
+                    "TAG": "arm"
+                }
+            },
+            "args": [
+                "docker",
+                "compose",
+                "build",
+                "--build-arg",
+                "IMAGE_ARCH=arm",
+                "spic"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-release-arm64",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "shell",
+            "options": {
+                "env": {
+                    "DOCKER_LOGIN": "${command:docker_login}",
+                    "TAG": "arm64"
+                }
+            },
+            "args": [
+                "docker",
+                "compose",
+                "build",
+                "--build-arg",
+                "IMAGE_ARCH=arm64",
+                "spic"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "build-release-amd64",
+            "detail": "",
+            "hide": true,
+            "command": "DOCKER_HOST=",
+            "type": "process",
+            "options": {
+                "env": {
+                    "DOCKER_LOGIN": "${command:docker_login}",
+                    "TAG": "amd64"
+                }
+            },
+            "args": [
+                "docker",
+                "compose",
+                "build",
+                "--build-arg",
+                "IMAGE_ARCH=amd64",
+                "spic"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "show-project-documentation",
+            "detail": "This task will open the project specific documentation\nin a new tab.",
+            "command": "${command:markdown.showPreview}",
+            "type": "process",
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "dependsOn": [
+                "wget-documentation-file",
+                "open-project-documentation-file",
+                "wait-a-bit"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "book",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "open-project-documentation-file",
+            "command": "code",
+            "detail": "",
+            "hide": true,
+            "type": "process",
+            "presentation": {
+                "echo": false,
+                "reveal": "never",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "args": [
+                "cppConsole-doc-README.md"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "wget-documentation-file",
+            "command": "wget",
+            "detail": "",
+            "hide": true,
+            "type": "process",
+            "args": [
+                "-O",
+                "cppConsole-doc-README.md",
+                "https://raw.githubusercontent.com/toradex/vscode-torizon-templates-documentation/main/cppConsole/README.md"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": "$msCompile",
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            }
+        },
+        {
+            "label": "validate-pipeline-settings",
+            "detail": "",
+            "hide": true,
+            "command": "pwsh",
+            "type": "process",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "DOCKER_REGISTRY": "${command:docker_registry}",
+                    "DOCKER_PSSWD": "${command:docker_password}",
+                    "DOCKER_TAG": "${command:docker_tag}",
+                    "TCB_CLIENTID": "${command:tcb.clientId}",
+                    "TCB_CLIENTSECRET": "${command:tcb.clientSecret}",
+                    "TCB_PACKAGE": "spiC",
+                    "TCB_FLEET": "${command:tcb.fleetName}",
+                    "TORIZON_ARCH": "${command:torizon_arch}"
+                }
+            },
+            "args": [
+                ".conf/checkCIEnv.ps1"
+            ],
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            },
+            "dependsOrder": "sequence",
+        "dependsOn": []
+        },
+        {
+            "label": "validate-deps-running",
+            "detail": "",
+            "hide": true,
+            "command": "pwsh",
+            "type": "process",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "TORIZON_PSSWD": "${config:torizon_psswd}",
+                    "TORIZON_LOGIN": "${config:torizon_login}",
+                    "HOST_IP": "${config:host_ip}",
+                    "TORIZON_IP": "${config:torizon_ip}",
+                    "TORIZON_ARCH": "${config:torizon_arch}",
+                    "TORIZON_GPU": "${config:torizon_gpu}"
+                }
+            },
+            "args": [
+                ".conf/validateDepsRunning.ps1"
+            ],
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "icon": {
+                "id": "flame",
+                "color": "terminal.ansiYellow"
+            },
+            "dependsOrder": "sequence",
+        "dependsOn": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "dockerLogin",
+            "type": "promptString",
+            "description": "Container Registry Login"
+        },
+        {
+            "id": "dockerImageRegistry",
+            "type": "promptString",
+            "description": "Image Registry"
+        },
+        {
+            "id": "dockerImageTag",
+            "type": "promptString",
+            "description": "Image Tag"
+        },
+        {
+            "id": "dockerImageGpu",
+            "type": "promptString",
+            "description": "Image GPU"
+        },
+        {
+            "id": "dockerPsswd",
+            "type": "promptString",
+            "password": true,
+            "description": "Container Registry Password"
+        },
+        {
+            "id": "archList",
+            "type": "pickString",
+            "description": "Container architecture",
+            "options": [
+                "arm",
+                "arm64",
+                "amd64",
+                "riscv64"
+            ]
+        }
+    ]
+}
