@@ -45,6 +45,8 @@ EXPOSE ${SSH_DEBUG_PORT}
 # Make sure we don't get notifications we can't answer during building.
 ENV DEBIAN_FRONTEND="noninteractive"
 
+RUN usermod -a -G spidev torizon
+
 # your regular RUN statements here
 # Install required packages
 RUN apt-get -q -y update && \

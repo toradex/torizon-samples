@@ -19,6 +19,8 @@ ARG IMAGE_ARCH
 ARG COMPILER_ARCH
 ENV IMAGE_ARCH ${IMAGE_ARCH}
 
+RUN usermod -a -G spidev torizon
+
 # __deps__
 RUN apt-get -q -y update && \
     apt-get -q -y install \

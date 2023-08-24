@@ -138,7 +138,7 @@
                 "cross-toolchain-arm64-spic",
                 "make",
                 "ARCH=aarch64",
-                "CC=aarch64-linux-gnu-g++",
+                "CC=aarch64-linux-gnu-gcc",
                 "debug"
             ],
             "problemMatcher": [
@@ -209,7 +209,7 @@
                 "cross-toolchain-arm-spic",
                 "make",
                 "ARCH=armhf",
-                "CC=arm-linux-gnueabihf-g++",
+                "CC=arm-linux-gnueabihf-gcc",
                 "debug"
             ],
             "problemMatcher": [
@@ -280,7 +280,7 @@
                 "cross-toolchain-amd64-spic",
                 "make",
                 "ARCH=amd64",
-                "CC=x86_64-linux-gnu-g++",
+                "CC=x86_64-linux-gnu-gcc",
                 "debug"
             ],
             "problemMatcher": [
@@ -351,7 +351,7 @@
                 "cross-toolchain-riscv64-spic",
                 "make",
                 "ARCH=riscv64",
-                "CC=riscv64-linux-gnu-g++",
+                "CC=riscv64-linux-gnu-gcc",
                 "debug"
             ],
             "problemMatcher": [
