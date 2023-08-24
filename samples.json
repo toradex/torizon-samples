@@ -34,5 +34,13 @@
             "baseTemplateSupport": "Toradex",
             "sampleSupport": "Toradex"
         }
+    },
+    "SPI": {
+        "c": {
+            "folder": "spiC",
+            "baseTemplate": "cppConsole",
+            "baseTemplateSupport": "Toradex",
+            "sampleSupport": "Toradex"
+        }
     }
 }
