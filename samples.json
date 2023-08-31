@@ -1,4 +1,12 @@
 {
+    "BLUETOOTH": {
+        "c": {
+            "folder": "bluetoothC",
+            "baseTemplate": "cppConsole",
+            "baseTemplateSupport": "Toradex",
+            "sampleSupport": "Toradex"
+        }
+    },
     "GPIO": {
         "python": {
             "folder": "gpioPython",

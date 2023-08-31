@@ -8,6 +8,10 @@ For more details about each sample metadata, please check the [samples.json](sam
 
 **Folders**:
 
+- **bluetooth:**
+  Samples showing how to interact with libbluetooth on TorizonCore.
+  Examples available in C.
+
 - **gpio:**
   Samples showing how to interact with GPIOs on TorizonCore.
   Examples available in Python, C and .NET.
