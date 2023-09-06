@@ -2,7 +2,7 @@
 CC := gcc
 CCFLAGS := -Iincludes/
 DBGFLAGS := -g
-LDFLAGS :=
+LDFLAGS := -lm
 CCOBJFLAGS := $(CCFLAGS) -c
 ARCH :=
 
