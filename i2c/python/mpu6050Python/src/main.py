@@ -74,6 +74,6 @@ while True:
 	gyro_y = gyro_y_raw/16.4
 	gyro_z = gyro_z_raw/16.4
 	
-	print("Accel X = {:.2f}°/s    Accel Y = {:.2f}°/s    Accel Z = {:.2f}°/s  |  Gyro X = {:.2f}g    Gyro Y ={:.2f}g    Gyro Z = {:.2f}g".format(accel_x, accel_y, accel_z, gyro_x, gyro_y, gyro_z))
+	print("Accel X = {:.2f}g    Accel Y = {:.2f}g    Accel Z = {:.2f}g  |  Gyro X = {:.2f}rad/s    Gyro Y ={:.2f}rad/s    Gyro Z = {:.2f}rad/s".format(accel_x, accel_y, accel_z, gyro_x, gyro_y, gyro_z))
 
 	time.sleep(0.5)
