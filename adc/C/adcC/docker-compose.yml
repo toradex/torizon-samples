@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  adcc-debug:
+    build:
+      context: .
+      dockerfile: Dockerfile.debug
+    image: ${LOCAL_REGISTRY}:5002/adcc-debug:${TAG}
+    ports:
+      - 2230:2230
+
+  adcc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKER_LOGIN}/adcc:${TAG}
