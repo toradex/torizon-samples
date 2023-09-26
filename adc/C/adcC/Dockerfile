@@ -35,11 +35,11 @@ COPY . /app
 WORKDIR /app
 
 RUN if [ "$IMAGE_ARCH" = "arm64" ] ; then \
-        make ARCH=. CC=aarch64-linux-gnu-g++ ; \
+        make ARCH=. CC=aarch64-linux-gnu-gcc ; \
     elif [ "$IMAGE_ARCH" = "arm" ] ; then \
-        make ARCH=. CC=arm-linux-gnueabihf-g++ ; \
+        make ARCH=. CC=arm-linux-gnueabihf-gcc ; \
     elif [ "$IMAGE_ARCH" = "amd64" ] ; then \
-        make ARCH=. CC=x86_64-linux-gnu-g++ ; \
+        make ARCH=. CC=x86_64-linux-gnu-gcc ; \
     fi
 
 # BUILD ------------------------------------------------------------------------
