@@ -9,7 +9,7 @@ ARG IMAGE_ARCH=
 ##
 # Base container version
 ##
-ARG BASE_VERSION=3.0.8-bookworm
+ARG BASE_VERSION=3-bookworm
 
 ##
 # Application Name
@@ -28,6 +28,53 @@ ARG SSHUSERNAME=
 
 ARG APP_ROOT=
 
+
+## Build image
+FROM --platform=linux/${IMAGE_ARCH} \
+    torizon/debian:${BASE_VERSION} AS Base
+
+## Install Python
+RUN apt-get -y update && apt-get install -y \
+  python3 python3-dev python3-numpy python3-pybind11 \
+  && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+## Install Pip and Wheel ##
+RUN apt-get -y update && apt-get install -y \
+  python3-pip python3-setuptools python3-wheel \
+  && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+## Install Build tools
+RUN apt-get -y update && apt-get install -y \
+  cmake build-essential gcc g++ git wget unzip patchelf imx-gpu-viv-wayland-dev \
+  && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+
+#RUN apt-get -y update && apt-get install -y \
+#  libovxlib-dev libneuralnetworks libnnrt-dev\
+#  && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+## Prepare build output directory
+COPY global_variables.sh global_variables.sh
+
+## Build nn-imx
+COPY nn-imx_1.3.0.sh nn-imx_1.3.0.sh
+RUN ./nn-imx_1.3.0.sh
+
+## Build tim vx
+COPY tim-vx.sh tim-vx.sh
+RUN ./tim-vx.sh
+
+## Build tensorflow lite
+COPY tensorflow-lite_2.9.1.sh tensorflow-lite_2.9.1.sh
+RUN ./tensorflow-lite_2.9.1.sh
+
+## Build tflite vx delegate
+COPY tflite-vx-delegate.sh tflite-vx-delegate.sh
+RUN ./tflite-vx-delegate.sh
+
+
+
+## Deploy image
 FROM --platform=linux/${IMAGE_ARCH} \
     torizon/debian:${BASE_VERSION} AS Debug
 
@@ -65,6 +112,11 @@ RUN apt-get -q -y update && \
 # automate for torizonPackages.json
 RUN apt-get -q -y update && \
     apt-get -q -y install \
+    imx-gpu-viv-wayland-dev \
+    python3-numpy \
+    python3-pil \
+    python3-pybind11 \
+    python3-wheel \
 # DO NOT REMOVE THIS LABEL: this is used for VS Code automation
     # __torizon_packages_dev_start__
     # __torizon_packages_dev_end__
@@ -81,6 +133,38 @@ COPY requirements-debug.txt /requirements-debug.txt
 RUN . ${APP_ROOT}/.venv/bin/activate && \
     pip3 install --upgrade pip && pip3 install --break-system-packages -r requirements-debug.txt && \
     rm requirements-debug.txt
+
+
+## Install TF Lite ##
+# Rebember to unzip build.zip before running it
+COPY build /build
+# If you want to build it from source, comment the line above and uncomment the line below
+# COPY --from=Base /build /build
+RUN cp -r /build/* /
+RUN . ${APP_ROOT}/.venv/bin/activate && pip3 install tflite_runtime-2.9.1-cp311-cp311-linux_aarch64.whl && rm -rf *.whl
+
+
+RUN apt-get -y update && apt-get install -y \
+  libneuralnetworks libovxlib-dev libnnrt-dev\
+  && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+
+# This example will use a filtered version of dogs vs cats dataset to measure performance
+#RUN wget https://storage.googleapis.com/mledu-datasets/cats_and_dogs_filtered.zip
+#RUN unzip cats_and_dogs_filtered.zip
+
+# Rebember to unzip cats_and_dogs_filtered.zip before running it
+## Instead of the steps above, have the dataset already in your workspace. This way you can also use this sample for local debug
+COPY --chmod=0777 cats_and_dogs_filtered ${APP_ROOT}/cats_and_dogs_filtered
+
+# Also valid for the model
+COPY --chmod=0777 labels_mobilenet_quant_v1_224.txt ${APP_ROOT}/labels_mobilenet_quant_v1_224.txt
+COPY --chmod=0777 mobilenet_v1_1.0_224_quant.tflite ${APP_ROOT}/mobilenet_v1_1.0_224_quant.tflite
+
+# Download the model
+#ENV MODEL_LINK https://storage.googleapis.com/download.tensorflow.org/models/tflite/mobilenet_v1_1.0_224_quant_and_labels.zip
+#RUN wget -O model.zip $MODEL_LINK && unzip model.zip && rm -rf __MACOSX model.zip
+
 
 # ⚠️ DEBUG PURPOSES ONLY!!
 # copies RSA key to enable SSH login for user

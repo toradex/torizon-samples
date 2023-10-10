@@ -161,3 +161,5 @@ cython_debug/
 
 credentials.zip
 *.lock.yml
+
+cats_and_dogs_filtered
