@@ -28,3 +28,8 @@ For more details about each sample metadata, please check the [samples.json](sam
   Samples using the SPI communication protocol, through the 
 `spidev` interface, on the User-Space.
   Examples available in C.
+
+- **tflite:**
+  Sample showing an example using Tensorflow Lite with hardware acceleration 
+  on the IMX8 SoCs with Vivante GPU. 
+  Examples available in Python.
