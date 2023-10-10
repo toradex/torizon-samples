@@ -1,0 +1,18 @@
+{
+  "torizon_psswd": "",
+  "torizon_login": "",
+  "torizon_ip": "",
+  "host_ip": "",
+  "torizon_workspace": "${workspaceFolder}",
+  "torizon_debug_port": "6512",
+  "torizon_debug_ssh_port": "6502",
+  "torizon_debug_port2": "",
+  "torizon_debug_port3": "",
+  "torizon_gpu": "",
+  "torizon_arch": "",
+  "wait_sync": "1",
+  "torizon_run_as": "torizon",
+  "torizon_app_root": "/home/torizon",
+  "tcb.packageName": "tflitePythonVivante",
+  "tcb.version": "3.8.1"
+}
