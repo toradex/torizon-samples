@@ -50,5 +50,13 @@
             "baseTemplateSupport": "Toradex",
             "sampleSupport": "Toradex"
         }
+    },
+    "TFLITE": {
+        "python": {
+            "folder": "tflitePythonVivante",
+            "baseTemplate": "python3Console",
+            "baseTemplateSupport": "Toradex",
+            "sampleSupport": "Community"
+        }
     }
 }
