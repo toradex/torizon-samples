@@ -27,7 +27,7 @@
             "sampleSupport": "Toradex"
         }
     },
-    "MPU6050": {
+    "I2C": {
         "python": {
             "folder": "mpu6050Python",
             "baseTemplate": "python3Console",
