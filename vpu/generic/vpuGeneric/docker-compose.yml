@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  vpugeneric:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKER_LOGIN}/vpugeneric:${TAG}
