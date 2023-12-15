@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Use release task message",
+            "request": "launch",
+            "type": "node-terminal",
+            "command": "exit",
+            "postDebugTask": "use-release-task-message"
+        }
+    ]
+}
