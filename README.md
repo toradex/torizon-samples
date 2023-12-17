@@ -33,3 +33,7 @@ For more details about each sample metadata, please check the [samples.json](sam
   Sample showing an example using Tensorflow Lite with hardware acceleration 
   on the IMX8 SoCs with Vivante GPU. 
   Examples available in Python.
+
+- **vpu:**
+  Sample showing an example of using VPU on i.MX8 for encoding and decoding
+  Example available as a generic Dockerfile.

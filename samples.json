@@ -58,5 +58,13 @@
             "baseTemplateSupport": "Toradex",
             "sampleSupport": "Community"
         }
+    },
+    "VPU": {
+        "generic": {
+            "folder": "vpuGeneric",
+            "baseTemplate": "genericTemplate",
+            "baseTemplateSupport": "Toradex",
+            "sampleSupport": "Community"
+        }
     }
 }
