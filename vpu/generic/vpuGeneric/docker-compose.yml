@@ -5,3 +5,77 @@ services:
       context: .
       dockerfile: Dockerfile
     image: ${DOCKER_LOGIN}/vpugeneric:${TAG}
+    environment:
+      #- MACHINE=verdin-imx8mm
+      - MACHINE=verdin-imx8mp
+      #- MACHINE=apalis-imx8
+    network_mode: host
+    volumes:
+      - type: bind
+        source: /tmp
+        target: /tmp
+      - type: bind
+        source: /dev
+        target: /dev
+      - type: bind
+        source: /run/udev
+        target: /run/udev
+    # Add device access rights through cgroup...
+    device_cgroup_rules:
+      # ... for /dev/galcore
+      - "c 199:* rmw"
+      # ... for /dev/dri/render*
+      - "c 226:* rmw"
+      # ... for /dev/video*
+      - "c 81:* rmw"
+      # ... for /dev/mxc_hantro_h1 on verdin-imx8mm
+      # ... for /dev/mxc_hantro_vc8000e on verdin-imx8mp
+      - "c 234:0 rmw"
+      # ... for /dev/mxc_hantro on verdin-imx8mm and verdin-imx8mp
+      - "c 235:0 rmw"
+      # ... for /dev/dma_heap/linux,cma
+      - "c 253:1 rmw"
+      # ... for /dev/dma_heap/linux,cma-uncached
+      - "c 253:2 rmw"
+      # ... for /dev/media*
+      - "c 251:* rmw"
+      # ... for /dev/urandom
+      - "c 1:9 rmw"
+      # ... for /dev/null
+      - "c 1:3 rmw"
+    depends_on: [
+      weston
+    ]
+
+  weston:
+    image: torizon/weston${GPU}:3
+    environment:
+      - ACCEPT_FSL_EULA=1
+    # Required to get udev events from host udevd via netlink
+    network_mode: host
+    volumes:
+      - type: bind
+        source: /tmp
+        target: /tmp
+      - type: bind
+        source: /dev
+        target: /dev
+      - type: bind
+        source: /run/udev
+        target: /run/udev
+    cap_add:
+      - CAP_SYS_TTY_CONFIG
+    # Add device access rights through cgroup...
+    device_cgroup_rules:
+      # ... for tty0
+      - "c 4:0 rmw"
+      # ... for tty1
+      - "c 4:1 rmw"
+      # ... for tty7
+      - "c 4:7 rmw"
+      # ... for /dev/input devices
+      - "c 13:* rmw"
+      # ... for /dev/galcore
+      - "c 199:* rmw"
+      # ... for /dev/dri devices
+      - "c 226:* rmw"
