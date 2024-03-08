@@ -7,10 +7,10 @@ CCOBJFLAGS := $(CCFLAGS) -c
 ARCH :=
 
 # path macros
-BIN_PATH := $(ARCH)/bin
-OBJ_PATH := $(ARCH)/obj
+BIN_PATH := build-$(ARCH)/bin
+OBJ_PATH := build-$(ARCH)/obj
 SRC_PATH := src
-DBG_PATH := $(ARCH)/debug
+DBG_PATH := build-$(ARCH)/debug
 
 # compile macros
 TARGET_NAME := gpioC

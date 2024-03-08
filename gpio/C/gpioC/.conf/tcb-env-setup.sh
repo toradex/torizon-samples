@@ -3,6 +3,13 @@
 # we need this to expand during the source of the file
 shopt -s expand_aliases
 
+# For DockerHub the variable can be empty, by tcb platform push command
+# requires a value, so passing the default DockerHub registry to it if it is 
+# empty
+if [$DOCKER_REGISTRY = ""]; then
+    export DOCKER_REGISTRY="registry-1.docker.io"
+fi
+
 # Check to make sure script is being sourced otherwise exit
 SOURCED=0
 
@@ -294,5 +301,8 @@ tcb_env_setup_cleanup
 unset -f tcb_env_setup_cleanup 2>/dev/null
 
 if [[ ! -z "${VSCODE_CMD}" ]]; then
+    # solve any environment variable
+    VSCODE_CMD=$(eval echo $VSCODE_CMD)
+    # execute it
     torizoncore-builder $VSCODE_CMD
 fi

@@ -80,3 +80,6 @@ dkms.conf
 
 credentials.zip
 *.lock.yml
+
+.conf/.depok
+.conf/.docok

@@ -362,13 +362,49 @@ function checkLongArgs ([System.Collections.ArrayList] $list) {
     return $ret
 }
 
+##
+# If the user is using bash as default shell, we need to scape the $ special
+# characters, because powershell will try to expand the variables before it
+# reach the bash shell
+##
+function bashVariables ([System.Collections.ArrayList] $list) {
+    $ret = [System.Collections.ArrayList]@()
+
+    foreach ($item in $list) {
+        if ($item.Contains("$")) {
+
+            # if $env
+            # if ${}
+            # if $global
+            # then we continue because these are meant to be expanded
+            if (
+                $item.Contains("`$global:") -or
+                $item.Contains("`$env:") -or 
+                $item.Contains("`${")
+            ) {
+                [void]$ret.Add($item)
+                continue
+            }
+
+            # ok, we can scape it
+            $item = $item.Replace("`$", "``$")
+            [void]$ret.Add($item)
+        } else {
+            [void]$ret.Add($item)
+        }
+    }
+
+    return $ret
+}
+
 function quotingSpecialChars ([System.Collections.ArrayList] $list) {
     $ret = [System.Collections.ArrayList]@()
 
     foreach ($item in $list) {
-        if (
-            _containsSpecialChars($item) -and (-not $item.Contains(" "))
-        ) {
+        $_specialChar = _containsSpecialChars($item)
+        $_space = $item.Contains(" ")
+
+        if ($_specialChar -and -not $_space) {
             $item = "'$item'"
         }
 
@@ -437,8 +473,9 @@ function _parseEnvs () {
     $expValue = checkTorizonInputs($expValue)
     $expValue = checkDockerInputs($expValue)
     $expValue = checkTCBInputs($expValue)
-    $expValue  = checkInput($expValue)
+    $expValue = checkInput($expValue)
     $expValue = checkConfig($expValue)
+    $expValue = bashVariables($expValue)
     $expValue = $expValue.ToString()
     $_env = Invoke-Expression "echo `"$expValue`""
 
@@ -475,6 +512,7 @@ function runTask () {
             $taskArgs = checkInput($taskArgs)
             $taskArgs = checkConfig($taskArgs)
             $taskArgs = checkLongArgs($taskArgs)
+            $taskArgs = bashVariables($taskArgs)
             $taskArgs = quotingSpecialChars($taskArgs)
             $taskDepends = $task.dependsOn
             $taskEnv = $task.options.env
@@ -539,7 +577,6 @@ function runTask () {
             }
 
             # parse the variables
-            Write-Host "echo `"$taskCmd $taskArgs $isBackground`""
             $_cmd = Invoke-Expression "echo `"$taskCmd $taskArgs $isBackground`""
 
             if ($env:TASKS_DEBUG -eq $true) {
@@ -549,6 +586,23 @@ function runTask () {
                     "Args: $taskArgs"
                 Write-Host -ForegroundColor Yellow `
                     "Parsed Command: $_cmd"
+            }
+
+            # all to global
+            # we are spawning a new process, so we need to set all the envs
+            # as global, so the new process can see it
+            # this is useful when the user set bash variables
+            $_ALLENV = $(Get-ChildItem env:)
+            foreach ($_env in $_ALLENV) {
+                try {
+                # set it as a $Global:
+                Set-Variable `
+                    -Scope Global `
+                    -Name $_env.Name -Value $_env.Value
+                } catch {
+                    # ignore
+                    # some variables are not overwrite
+                }
             }
 
             # execute the task
@@ -572,7 +626,7 @@ function runTask () {
                 Set-Location $_cwd
             }
 
-            # abort we had a error
+            # abort we had an error
             if ($exitCode -ne 0) {
                 Write-Host -ForegroundColor Red `
                     "> TASK $($json.tasks[$i].label) exited with error code $($exitCode) <"
@@ -595,7 +649,7 @@ function getCliInputs () {
 # set the relative workspaceFolder (following the pattern that VS Code expects)
 if (
     ($null -eq $env:APOLLOX_WORKSPACE) -and 
-    ($env:APOLLOX_CONTAINER -eq 1)
+    ($env:APOLLOX_CONTAINER -ne 1)
 ) {
     $Global:workspaceFolder = Join-Path $PSScriptRoot ..
 } else {

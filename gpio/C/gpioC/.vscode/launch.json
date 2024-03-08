@@ -5,7 +5,7 @@
             "name": "Local AMD64",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/x86_64/debug/gpioC",
+            "program": "${workspaceFolder}/build-local/debug/gpioC",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}",
@@ -30,14 +30,14 @@
             "name": "Torizon riscv64",
             "type": "cppdbg",
             "request": "launch",
-            "program": "~/app/gpioC",
+            "program": "${config:torizon_app_root}/gpioC",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "~/app",
+            "cwd": "${config:torizon_app_root}",
             "environment": [],
             "externalConsole": false,
             "sourceFileMap": {
-                "/app": "${workspaceFolder}"
+                "${config:torizon_app_root}": "${workspaceFolder}"
             },
             "pipeTransport": {
                 "debuggerPath": "/usr/bin/gdb",
@@ -75,14 +75,14 @@
             "name": "Torizon AMD64",
             "type": "cppdbg",
             "request": "launch",
-            "program": "~/app/gpioC",
+            "program": "${config:torizon_app_root}/gpioC",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "~/app",
+            "cwd": "${config:torizon_app_root}",
             "environment": [],
             "externalConsole": false,
             "sourceFileMap": {
-                "/app": "${workspaceFolder}"
+                "${config:torizon_app_root}": "${workspaceFolder}"
             },
             "pipeTransport": {
                 "debuggerPath": "/usr/bin/gdb",
@@ -120,14 +120,14 @@
             "name": "Torizon ARMv7",
             "type": "cppdbg",
             "request": "launch",
-            "program": "~/app/gpioC",
+            "program": "${config:torizon_app_root}/gpioC",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "~/app",
+            "cwd": "${config:torizon_app_root}",
             "environment": [],
             "externalConsole": false,
             "sourceFileMap": {
-                "/app": "${workspaceFolder}"
+                "${config:torizon_app_root}": "${workspaceFolder}"
             },
             "pipeTransport": {
                 "debuggerPath": "/usr/bin/gdb",
@@ -165,14 +165,14 @@
             "name": "Torizon ARMv8",
             "type": "cppdbg",
             "request": "launch",
-            "program": "~/app/gpioC",
+            "program": "${config:torizon_app_root}/gpioC",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "~/app",
+            "cwd": "${config:torizon_app_root}",
             "environment": [],
             "externalConsole": false,
             "sourceFileMap": {
-                "/app": "${workspaceFolder}"
+                "${config:torizon_app_root}": "${workspaceFolder}"
             },
             "pipeTransport": {
                 "debuggerPath": "/usr/bin/gdb",

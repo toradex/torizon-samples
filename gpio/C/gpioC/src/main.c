@@ -1,8 +1,8 @@
-#include <iostream>
+#include <stdio.h>
 #include <gpiod.h>
 #include <unistd.h>
 
-int main() {
+int main(int argc, char *argv[]) {
     const char* gpiolineName = NULL;//"SODIMM_55";
     const char* gpioChip = "/dev/gpiochip0";
 

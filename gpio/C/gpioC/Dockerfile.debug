@@ -3,18 +3,13 @@
 # Board architecture
 ##
 ARG IMAGE_ARCH=
-# For armv7 use:
-#ARG IMAGE_ARCH=arm
+
+
 
 ##
 # Base container version
 ##
-ARG BASE_VERSION=3-bookworm
-
-##
-# Application Name
-##
-ARG APP_EXECUTABLE=app
+ARG BASE_VERSION=3.2.1-bookworm
 
 ##
 # Debug port
@@ -26,6 +21,12 @@ ARG SSH_DEBUG_PORT=
 ##
 ARG SSHUSERNAME=
 
+##
+# Application root directory inside the container
+##
+ARG APP_ROOT=
+
+
 # BUILD ------------------------------------------------------------------------
 ##
 # Deploy Step
@@ -35,9 +36,8 @@ FROM --platform=linux/${IMAGE_ARCH} \
 
 ARG IMAGE_ARCH
 ARG SSH_DEBUG_PORT
-ARG APP_EXECUTABLE
 ARG SSHUSERNAME
-ENV APP_EXECUTABLE ${APP_EXECUTABLE}
+ARG APP_ROOT
 
 # SSH for remote debug
 EXPOSE ${SSH_DEBUG_PORT}
@@ -90,5 +90,10 @@ RUN mkdir /var/run/sshd && \
 
 RUN rm -r /etc/ssh/ssh*key && \
     dpkg-reconfigure openssh-server
+
+# Copy the compiled application to the $APP_ROOT directory path inside the
+# container, where $APP_ROOT is the torizon_app_root configuration defined
+# in settings.json
+COPY --chown=$SSHUSERNAME:$SSHUSERNAME ./build-${IMAGE_ARCH}/debug ${APP_ROOT}
 
 CMD [ "/usr/sbin/sshd", "-D" ]

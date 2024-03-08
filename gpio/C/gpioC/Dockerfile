@@ -1,5 +1,5 @@
-ARG CROSS_SDK_BASE_TAG=3-bookworm
-ARG BASE_VERSION=3-bookworm
+ARG CROSS_SDK_BASE_TAG=3.2.1-bookworm
+ARG BASE_VERSION=3.2.1-bookworm
 ##
 # Board architecture
 # arm or arm64
@@ -7,17 +7,16 @@ ARG BASE_VERSION=3-bookworm
 ARG IMAGE_ARCH=
 
 ##
-# Application Name
+# Directory of the application inside container
 ##
-ARG APP_EXECUTABLE=gpioC
+ARG APP_ROOT=
 
 
 # BUILD ------------------------------------------------------------------------
 FROM torizon/debian-cross-toolchain-${IMAGE_ARCH}:${CROSS_SDK_BASE_TAG} As Build
 
+ARG APP_ROOT
 ARG IMAGE_ARCH
-ARG COMPILER_ARCH
-ENV IMAGE_ARCH ${IMAGE_ARCH}
 
 # __deps__
 RUN apt-get -q -y update && \
@@ -31,26 +30,30 @@ RUN apt-get -q -y update && \
     rm -rf /var/lib/apt/lists/*
 # __deps__
 
-COPY . /app
-WORKDIR /app
+COPY . ${APP_ROOT}
+WORKDIR ${APP_ROOT}
 
+# Remove the code from the debug builds, inside this container, to build the
+# release version from a clean build
+RUN rm -rf ${APP_ROOT}/build-${IMAGE_ARCH}
+
+# Compile the application
 RUN if [ "$IMAGE_ARCH" = "arm64" ] ; then \
-        make ARCH=. CC=aarch64-linux-gnu-g++ ; \
+        make ARCH=${IMAGE_ARCH} CC=aarch64-linux-gnu-gcc ; \
     elif [ "$IMAGE_ARCH" = "arm" ] ; then \
-        make ARCH=. CC=arm-linux-gnueabihf-g++ ; \
+        make ARCH=${IMAGE_ARCH} CC=arm-linux-gnueabihf-gcc ; \
     elif [ "$IMAGE_ARCH" = "amd64" ] ; then \
-        make ARCH=. CC=x86_64-linux-gnu-g++ ; \
+        make ARCH=${IMAGE_ARCH} CC=x86_64-linux-gnu-gcc ; \
     fi
 
 # BUILD ------------------------------------------------------------------------
 
 
-# DEPLOY ------------------------------------------------------------------------
+# DEPLOY -----------------------------------------------------------------------
 FROM --platform=linux/${IMAGE_ARCH} torizon/debian:${BASE_VERSION} AS Deploy
 
 ARG IMAGE_ARCH
-ARG APP_EXECUTABLE
-ENV APP_EXECUTABLE ${APP_EXECUTABLE}
+ARG APP_ROOT
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
 # DO NOT REMOVE THIS LABEL: this is used for VS Code automation
@@ -59,10 +62,16 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 # DO NOT REMOVE THIS LABEL: this is used for VS Code automation
 	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
-# copy the build
-COPY --from=Build /app/bin /app
 
-# ADD YOUR ARGUMENTS HERE
-CMD [ "./app/gpioC" ]
+# Copy the application compiled in the build step to the $APP_ROOT directory
+# path inside the container, where $APP_ROOT is the torizon_app_root
+# configuration defined in settings.json
+COPY --from=Build ${APP_ROOT}/build-${IMAGE_ARCH}/bin ${APP_ROOT}
 
-# DEPLOY ------------------------------------------------------------------------
+# "cd" (enter) into the APP_ROOT directory
+WORKDIR ${APP_ROOT}
+
+# Command executed in runtime when the container starts
+CMD ["./gpioC"]
+
+# DEPLOY -----------------------------------------------------------------------
