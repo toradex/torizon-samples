@@ -1,11 +1,12 @@
 ARG BASE_NAME=wayland-base
-# Use BASE_NAME=wayland-base-vivante for i.MX 8 SoMs
+# Use BASE_NAME=wayland-base-vivante for i.MX8-based SoMs
+# Use BASE_NAME=wayland-base-am62 for AM62-based SoMs
 ARG IMAGE_ARCH=linux/arm/v7
+# Use ARG IMAGE_ARCH=linux/arm64/v8 for iMX8 and AM62-based SoMs
 ARG IMAGE_TAG=3
 ARG DOCKER_REGISTRY=torizon
 
 FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG
-ARG IMAGE_ARCH
  
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	libgstreamer1.0-0 \
@@ -25,3 +26,7 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 		apt-get install -y --no-install-recommends \
 		gstreamer1.0-qt5; fi \
 	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+ENTRYPOINT ["gst-launch-1.0"]
+
+CMD ["videotestsrc", "!", "videoconvert", "!", "videoscale", "!", "waylandsink", "sync=false"]

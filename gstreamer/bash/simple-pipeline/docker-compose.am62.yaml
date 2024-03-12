@@ -2,7 +2,7 @@ version: "2.4"
 services:
 
   weston:
-    image: torizon/weston:3
+    image: torizon/weston-am62:3
     # Required to get udev events from host udevd via netlink
     network_mode: host
     volumes:

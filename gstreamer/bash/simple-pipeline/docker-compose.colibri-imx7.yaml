@@ -2,7 +2,7 @@ version: "2.4"
 services:
 
   weston:
-    image: torizon/weston:2
+    image: torizon/weston:3
     # Required to get udev events from host udevd via netlink
     network_mode: host
     ipc: host
@@ -22,15 +22,17 @@ services:
     device_cgroup_rules:
       # ... for tty0
       - 'c 4:0 rmw'
+      # ... for tty1
+      - 'c 4:1 rmw'
       # ... for tty7
       - 'c 4:7 rmw'
       # ... for /dev/input devices
       - 'c 13:* rmw'
       # ... for /dev/dri devices
       - 'c 226:* rmw'
-    command: --developer weston-launch --tty=/dev/tty7 --user=torizon -- --use-pixman
+    command: --developer --tty=/dev/tty7 -- --use-pixman
     healthcheck:
-        test: ["CMD", "test", "-S", "/tmp/.X11-unix/X0"]
+        test: ["CMD", "test", "-S", "/tmp/1000-runtime-dir/wayland-0"]
         interval: 5s
         timeout: 4s
         retries: 6
@@ -40,9 +42,8 @@ services:
     depends_on:
       weston:
         condition: service_healthy
-    image: <your-username>/<your-image>
+    image: <your-username>/gst_example
     volumes:
        - /tmp:/tmp 
-       - /sys:/sys
        - /dev:/dev
     restart: on-failure
