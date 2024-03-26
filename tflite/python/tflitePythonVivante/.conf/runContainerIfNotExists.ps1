@@ -53,6 +53,6 @@ if ($null -ne $_containerInfo) {
         Write-Host "Container is running"
     }
 } else {
-    Write-Host "Container does not exists. Starting ..."
+    Write-Host "Container does not exist. Starting ..."
     Invoke-Expression "$_containerRuntime run --name $_containerName $_runArguments"
 }

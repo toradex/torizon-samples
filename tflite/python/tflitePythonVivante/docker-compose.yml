@@ -53,4 +53,4 @@ services:
         target: /dev
       - type: bind
         source: /run/udev
-        target: /run/udev    
+        target: /run/udev

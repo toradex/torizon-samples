@@ -2,32 +2,6 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "deploy-torizon-arm",
-            "detail": "",
-            "hide": true,
-            "command": "scp",
-            "type": "process",
-            "args": [
-                "-i",
-                "${workspaceFolder}/.conf/id_rsa",
-                "-o",
-                "UserKnownHostsFile=/dev/null",
-                "-o",
-                "StrictHostKeyChecking=no",
-                "-P",
-                "${config:torizon_debug_ssh_port}",
-                "-pr",
-                "${workspaceFolder}/src",
-                "${config:torizon_run_as}@${config:torizon_ip}:${config:torizon_app_root}/src"
-            ],
-            "dependsOrder": "sequence",
-            "problemMatcher": "$msCompile",
-            "icon": {
-                "id": "flame",
-                "color": "terminal.ansiYellow"
-            }
-        },
-        {
             "label": "wait-debugpy-start-arm",
             "detail": "",
             "hide": true,
@@ -40,16 +14,13 @@
                 "validate-settings",
                 "validate-arch-arm",
                 "host-install-pip-requirements",
-                "apply-torizon-packages",
                 "copy-docker-compose",
-                "pre-cleanup-arm",
+                "pre-cleanup",
                 "build-container-torizon-debug-arm",
                 "push-container-torizon-debug-arm",
                 "pull-container-torizon-debug-arm",
                 "run-container-torizon-debug-arm",
                 "wait-a-bit",
-                "pos-cleanup",
-                "deploy-torizon-arm",
                 "start-torizon-debug-arm"
             ],
             "dependsOrder": "sequence",
@@ -84,32 +55,6 @@
             }
         },
         {
-            "label": "deploy-torizon-arm64",
-            "detail": "",
-            "hide": true,
-            "command": "scp",
-            "type": "process",
-            "args": [
-                "-i",
-                "${workspaceFolder}/.conf/id_rsa",
-                "-o",
-                "UserKnownHostsFile=/dev/null",
-                "-o",
-                "StrictHostKeyChecking=no",
-                "-P",
-                "${config:torizon_debug_ssh_port}",
-                "-pr",
-                "${workspaceFolder}/src",
-                "${config:torizon_run_as}@${config:torizon_ip}:${config:torizon_app_root}/src"
-            ],
-            "dependsOrder": "sequence",
-            "problemMatcher": "$msCompile",
-            "icon": {
-                "id": "flame",
-                "color": "terminal.ansiYellow"
-            }
-        },
-        {
             "label": "wait-debugpy-start-arm64",
             "detail": "",
             "hide": true,
@@ -122,16 +67,13 @@
                 "validate-settings",
                 "validate-arch-arm64",
                 "host-install-pip-requirements",
-                "apply-torizon-packages",
                 "copy-docker-compose",
-                "pre-cleanup-arm64",
+                "pre-cleanup",
                 "build-container-torizon-debug-arm64",
                 "push-container-torizon-debug-arm64",
                 "pull-container-torizon-debug-arm64",
                 "run-container-torizon-debug-arm64",
                 "wait-a-bit",
-                "pos-cleanup",
-                "deploy-torizon-arm64",
                 "start-torizon-debug-arm64"
             ],
             "dependsOrder": "sequence",
@@ -205,6 +147,29 @@
             }
         },
         {
+            "label": "fetch-templates-repo",
+            "detail": "",
+            "hide": true,
+            "command": "echo",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "args": [
+                "echo",
+                "${command:torizon.fetchTemplates}"
+            ],
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "icon": {
+                "id": "git-branch",
+                "color": "terminal.ansiYellow"
+            },
+            "dependsOrder": "sequence",
+        "dependsOn": []
+        },
+        {
             "label": "try-update-template",
             "detail": "This task has automation steps to update the project\nbased on the template used to create it.",
             "command": "pwsh",
@@ -221,12 +186,16 @@
                 "cwd": "${workspaceFolder}"
             },
             "args": [
+                "-nop",
                 "${workspaceFolder}/.conf/projectUpdater.ps1",
                 "${workspaceFolder}",
                 "${workspaceFolderBasename}",
                 "0"
             ],
             "dependsOrder": "sequence",
+            "dependsOn": [
+                "fetch-templates-repo"
+            ],
             "icon": {
                 "id": "repo-sync",
                 "color": "terminal.ansiCyan"
@@ -249,6 +218,7 @@
                 "cwd": "${workspaceFolder}"
             },
             "args": [
+                "-nop",
                 "${workspaceFolder}/.conf/projectUpdater.ps1",
                 "${workspaceFolder}",
                 "${workspaceFolderBasename}",
@@ -277,16 +247,19 @@
             "options": {
                 "env": {
                     "DOCKER_PSSWD": "${command:docker_password}",
-                    "TORIZON_ARCH": "${input:archList}"
+                    "TORIZON_ARCH": "${input:archList}",
+                    "APP_ROOT": "${config:torizon_app_root}"
                 }
             },
             "args": [
+                "-nop",
                 "${workspaceFolder}/.conf/createDockerComposeProduction.ps1",
                 "${workspaceFolder}",
-                "${command:docker_registry}",
+                "${command:docker_login}",
                 "${command:docker_tag}",
+                "${command:docker_registry}",
                 "tflitepythonvivante",
-                "${command:torizon_gpu}"
+                "${config:torizon_gpu}"
             ],
             "dependsOrder": "sequence",
             "icon": {
@@ -327,6 +300,7 @@
                 "cwd": "${workspaceFolder}",
                 "env": {
                     "DOCKER_REGISTRY": "${command:docker_registry}",
+                    "DOCKER_LOGIN": "${command:docker_login}",
                     "DOCKER_PSSWD": "${command:docker_password}",
                     "DOCKER_TAG": "${command:docker_tag}",
                     "TCB_CLIENTID": "${command:tcb.clientId}",
@@ -358,7 +332,7 @@
                 "$tsc"
             ],
             "icon": {
-                "id": "notebook-edit",
+                "id": "notebook",
                 "color": "terminal.ansiYellow"
             },
             "dependsOrder": "sequence",
@@ -378,6 +352,7 @@
             },
             "args": [
                 "pwsh",
+                "-nop",
                 "./.conf/torizonIO.ps1",
                 "update",
                 "fleet",
@@ -405,7 +380,8 @@
                 "env": {
                     "DOCKER_PSSWD": "${command:docker_password}",
                     "DOCKER_LOGIN": "${command:docker_login}",
-                    "VSCODE_CMD": "--verbose platform push --credentials credentials.zip --package-name tflitePythonVivante --package-version ${command:tcb.getNextPackageVersion} --login $DOCKER_LOGIN $DOCKER_PSSWD --canonicalize docker-compose.prod.yml"
+                    "DOCKER_REGISTRY": "${command:docker_registry}",
+                    "VSCODE_CMD": "--verbose platform push --credentials credentials.zip --package-name tflitePythonVivante --package-version ${command:tcb.getNextPackageVersion} --login-to $DOCKER_REGISTRY $DOCKER_LOGIN $DOCKER_PSSWD --canonicalize docker-compose.prod.yml"
                 }
             },
             "args": [
@@ -567,6 +543,37 @@
                 "clear": false
             },
             "args": [
+                "-nop",
+                "${workspaceFolder}/.conf/shareWSLPorts.ps1",
+                "${workspaceFolder}"
+            ],
+            "dependsOrder": "sequence",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            }
+        },
+        {
+            "label": "run-share-wsl-ports-debug",
+            "detail": "",
+            "hide": true,
+            "command": "pwsh",
+            "type": "process",
+            "presentation": {
+                "echo": false,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "options": {
+                "env": {
+                    "DEBUG_SHARED_PORTS": "true"
+                }
+            },
+            "args": [
+                "-nop",
                 "${workspaceFolder}/.conf/shareWSLPorts.ps1",
                 "${workspaceFolder}"
             ],
@@ -590,6 +597,7 @@
                 "clear": false
             },
             "args": [
+                "-nop",
                 "${workspaceFolder}/.conf/checkDeps.ps1"
             ],
             "dependsOrder": "sequence",
@@ -613,6 +621,7 @@
                 "clear": false
             },
             "args": [
+                "-nop",
                 "${workspaceFolder}/.conf/torizonPackages.ps1",
                 "${config:torizon_arch}"
             ],
@@ -636,7 +645,7 @@
                 "UserKnownHostsFile=/dev/null",
                 "-o",
                 "StrictHostKeyChecking=no",
-                "${config:torizon_workspace}/docker-compose.yml",
+                "${command:torizon_workspace}/docker-compose.yml",
                 "torizon@${config:torizon_ip}:~/"
             ],
             "dependsOrder": "sequence",
@@ -779,24 +788,31 @@
             }
         },
         {
-            "label": "pre-cleanup-arm64",
+            "label": "pre-cleanup",
             "detail": "",
             "hide": true,
-            "command": "sshpass",
-            "type": "process",
+            "command": "if",
+            "type": "shell",
             "args": [
+                "[",
+                "${command:cleanLock}",
+                "==",
+                "false",
+                "];",
+                "then",
+                "DOCKER_HOST=${config:torizon_ip}:2375",
+                "docker",
+                "compose",
                 "-p",
-                "${config:torizon_psswd}",
-                "ssh",
-                "-o",
-                "UserKnownHostsFile=/dev/null",
-                "-o",
-                "StrictHostKeyChecking=no",
-                "torizon@${config:torizon_ip}",
-                "LOCAL_REGISTRY=${config:host_ip} TAG=arm64 GPU=${config:torizon_gpu} docker-compose down --remove-orphans"
+                "torizon",
+                "down",
+                "--remove-orphans",
+                ";",
+                "fi"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
+                "remove-dangling-images",
                 "wait-a-bit"
             ],
             "problemMatcher": "$msCompile",
@@ -806,80 +822,19 @@
             }
         },
         {
-            "label": "pre-cleanup-arm",
+            "label": "remove-dangling-images",
             "detail": "",
             "hide": true,
-            "command": "sshpass",
-            "type": "process",
+            "command": "DOCKER_HOST=${config:torizon_ip}:2375",
+            "type": "shell",
             "args": [
-                "-p",
-                "${config:torizon_psswd}",
-                "ssh",
-                "-o",
-                "UserKnownHostsFile=/dev/null",
-                "-o",
-                "StrictHostKeyChecking=no",
-                "torizon@${config:torizon_ip}",
-                "LOCAL_REGISTRY=${config:host_ip} TAG=arm GPU=${config:torizon_gpu} docker-compose down --remove-orphans"
+                "docker",
+                "image",
+                "prune",
+                "-f",
+                "--filter=dangling=true"
             ],
             "dependsOrder": "sequence",
-            "dependsOn": [
-                "wait-a-bit"
-            ],
-            "problemMatcher": "$msCompile",
-            "icon": {
-                "id": "flame",
-                "color": "terminal.ansiYellow"
-            }
-        },
-        {
-            "label": "pre-cleanup-amd64",
-            "detail": "",
-            "hide": true,
-            "command": "sshpass",
-            "type": "process",
-            "args": [
-                "-p",
-                "${config:torizon_psswd}",
-                "ssh",
-                "-o",
-                "UserKnownHostsFile=/dev/null",
-                "-o",
-                "StrictHostKeyChecking=no",
-                "torizon@${config:torizon_ip}",
-                "LOCAL_REGISTRY=${config:host_ip} TAG=amd64 GPU=${config:torizon_gpu} docker-compose down --remove-orphans"
-            ],
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "wait-a-bit"
-            ],
-            "problemMatcher": "$msCompile",
-            "icon": {
-                "id": "flame",
-                "color": "terminal.ansiYellow"
-            }
-        },
-        {
-            "label": "pre-cleanup-riscv64",
-            "detail": "",
-            "hide": true,
-            "command": "sshpass",
-            "type": "process",
-            "args": [
-                "-p",
-                "${config:torizon_psswd}",
-                "ssh",
-                "-o",
-                "UserKnownHostsFile=/dev/null",
-                "-o",
-                "StrictHostKeyChecking=no",
-                "torizon@${config:torizon_ip}",
-                "LOCAL_REGISTRY=${config:host_ip} TAG=riscv64 GPU=${config:torizon_gpu} docker-compose down --remove-orphans"
-            ],
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "wait-a-bit"
-            ],
             "problemMatcher": "$msCompile",
             "icon": {
                 "id": "flame",
@@ -921,6 +876,9 @@
                 "tflitepythonvivante-debug"
             ],
             "dependsOrder": "sequence",
+            "dependsOn": [
+                "apply-torizon-packages"
+            ],
             "problemMatcher": "$msCompile",
             "icon": {
                 "id": "flame",
@@ -962,6 +920,9 @@
                 "tflitepythonvivante-debug"
             ],
             "dependsOrder": "sequence",
+            "dependsOn": [
+                "apply-torizon-packages"
+            ],
             "problemMatcher": "$msCompile",
             "icon": {
                 "id": "flame",
@@ -1003,6 +964,9 @@
                 "tflitepythonvivante-debug"
             ],
             "dependsOrder": "sequence",
+            "dependsOn": [
+                "apply-torizon-packages"
+            ],
             "problemMatcher": "$msCompile",
             "icon": {
                 "id": "flame",
@@ -1044,6 +1008,9 @@
                 "tflitepythonvivante-debug"
             ],
             "dependsOrder": "sequence",
+            "dependsOn": [
+                "apply-torizon-packages"
+            ],
             "problemMatcher": "$msCompile",
             "icon": {
                 "id": "flame",
@@ -1066,7 +1033,15 @@
                 "-t",
                 "cross-toolchain-arm64-tflitepythonvivante",
                 "--build-arg",
-                "IMAGE_ARCH=arm64"
+                "IMAGE_ARCH=arm64",
+                "--build-arg",
+                "GPU=${config:torizon_gpu}",
+                "--build-arg",
+                "APP_ROOT=${config:torizon_app_root}"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "apply-torizon-packages"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -1092,7 +1067,13 @@
                 "-t",
                 "cross-toolchain-arm-tflitepythonvivante",
                 "--build-arg",
-                "IMAGE_ARCH=arm"
+                "IMAGE_ARCH=arm",
+                "--build-arg",
+                "APP_ROOT=${config:torizon_app_root}"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "apply-torizon-packages"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -1118,7 +1099,13 @@
                 "-t",
                 "cross-toolchain-amd64-tflitepythonvivante",
                 "--build-arg",
-                "IMAGE_ARCH=amd64"
+                "IMAGE_ARCH=amd64",
+                "--build-arg",
+                "APP_ROOT=${config:torizon_app_root}"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "apply-torizon-packages"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -1144,7 +1131,13 @@
                 "-t",
                 "cross-toolchain-riscv64-tflitepythonvivante",
                 "--build-arg",
-                "IMAGE_ARCH=riscv64"
+                "IMAGE_ARCH=riscv64",
+                "--build-arg",
+                "APP_ROOT=${config:torizon_app_root}"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "apply-torizon-packages"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -1269,7 +1262,7 @@
                 "-o",
                 "StrictHostKeyChecking=no",
                 "torizon@${config:torizon_ip}",
-                "LOCAL_REGISTRY=${config:host_ip} TAG=arm64 docker-compose pull tflitepythonvivante-debug"
+                "LOCAL_REGISTRY=${config:host_ip} TAG=arm64 docker compose pull tflitepythonvivante-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1296,7 +1289,7 @@
                 "-o",
                 "StrictHostKeyChecking=no",
                 "torizon@${config:torizon_ip}",
-                "LOCAL_REGISTRY=${config:host_ip} TAG=arm docker-compose pull tflitepythonvivante-debug"
+                "LOCAL_REGISTRY=${config:host_ip} TAG=arm docker compose pull tflitepythonvivante-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1323,7 +1316,7 @@
                 "-o",
                 "StrictHostKeyChecking=no",
                 "torizon@${config:torizon_ip}",
-                "LOCAL_REGISTRY=${config:host_ip} TAG=amd64 docker-compose pull tflitepythonvivante-debug"
+                "LOCAL_REGISTRY=${config:host_ip} TAG=amd64 docker compose pull tflitepythonvivante-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1350,7 +1343,7 @@
                 "-o",
                 "StrictHostKeyChecking=no",
                 "torizon@${config:torizon_ip}",
-                "LOCAL_REGISTRY=${config:host_ip} TAG=riscv64 docker-compose pull tflitepythonvivante-debug"
+                "LOCAL_REGISTRY=${config:host_ip} TAG=riscv64 docker compose pull tflitepythonvivante-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1366,18 +1359,19 @@
             "label": "run-container-torizon-debug-arm64",
             "detail": "",
             "hide": true,
-            "command": "sshpass",
-            "type": "process",
+            "command": "DOCKER_HOST=${config:torizon_ip}:2375",
+            "type": "shell",
             "args": [
+                "LOCAL_REGISTRY=${config:host_ip}",
+                "TAG=arm64",
+                "GPU=${config:torizon_gpu}",
+                "docker",
+                "compose",
                 "-p",
-                "${config:torizon_psswd}",
-                "ssh",
-                "-o",
-                "UserKnownHostsFile=/dev/null",
-                "-o",
-                "StrictHostKeyChecking=no",
-                "torizon@${config:torizon_ip}",
-                "LOCAL_REGISTRY=${config:host_ip} TAG=arm64 GPU=${config:torizon_gpu} docker-compose up -d tflitepythonvivante-debug"
+                "torizon",
+                "up",
+                "-d",
+                "tflitepythonvivante-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1393,18 +1387,19 @@
             "label": "run-container-torizon-debug-arm",
             "detail": "",
             "hide": true,
-            "command": "sshpass",
-            "type": "process",
+            "command": "DOCKER_HOST=${config:torizon_ip}:2375",
+            "type": "shell",
             "args": [
+                "LOCAL_REGISTRY=${config:host_ip}",
+                "TAG=arm",
+                "GPU=${config:torizon_gpu}",
+                "docker",
+                "compose",
                 "-p",
-                "${config:torizon_psswd}",
-                "ssh",
-                "-o",
-                "UserKnownHostsFile=/dev/null",
-                "-o",
-                "StrictHostKeyChecking=no",
-                "torizon@${config:torizon_ip}",
-                "LOCAL_REGISTRY=${config:host_ip} TAG=arm GPU=${config:torizon_gpu} docker-compose up -d tflitepythonvivante-debug"
+                "torizon",
+                "up",
+                "-d",
+                "tflitepythonvivante-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1420,18 +1415,19 @@
             "label": "run-container-torizon-debug-amd64",
             "detail": "",
             "hide": true,
-            "command": "sshpass",
-            "type": "process",
+            "command": "DOCKER_HOST=${config:torizon_ip}:2375",
+            "type": "shell",
             "args": [
+                "LOCAL_REGISTRY=${config:host_ip}",
+                "TAG=amd64",
+                "GPU=${config:torizon_gpu}",
+                "docker",
+                "compose",
                 "-p",
-                "${config:torizon_psswd}",
-                "ssh",
-                "-o",
-                "UserKnownHostsFile=/dev/null",
-                "-o",
-                "StrictHostKeyChecking=no",
-                "torizon@${config:torizon_ip}",
-                "LOCAL_REGISTRY=${config:host_ip} TAG=amd64 GPU=${config:torizon_gpu} docker-compose up -d tflitepythonvivante-debug"
+                "torizon",
+                "up",
+                "-d",
+                "tflitepythonvivante-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1447,18 +1443,19 @@
             "label": "run-container-torizon-debug-riscv64",
             "detail": "",
             "hide": true,
-            "command": "sshpass",
-            "type": "process",
+            "command": "DOCKER_HOST=${config:torizon_ip}:2375",
+            "type": "shell",
             "args": [
+                "LOCAL_REGISTRY=${config:host_ip}",
+                "TAG=riscv64",
+                "GPU=${config:torizon_gpu}",
+                "docker",
+                "compose",
                 "-p",
-                "${config:torizon_psswd}",
-                "ssh",
-                "-o",
-                "UserKnownHostsFile=/dev/null",
-                "-o",
-                "StrictHostKeyChecking=no",
-                "torizon@${config:torizon_ip}",
-                "LOCAL_REGISTRY=${config:host_ip} TAG=riscv64 GPU=${config:torizon_gpu} docker-compose up -d tflitepythonvivante-debug"
+                "torizon",
+                "up",
+                "-d",
+                "tflitepythonvivante-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1499,6 +1496,9 @@
                 "tflitepythonvivante"
             ],
             "dependsOrder": "sequence",
+            "dependsOn": [
+                "apply-torizon-packages"
+            ],
             "problemMatcher": "$msCompile",
             "icon": {
                 "id": "flame",
@@ -1534,6 +1534,9 @@
                 "tflitepythonvivante"
             ],
             "dependsOrder": "sequence",
+            "dependsOn": [
+                "apply-torizon-packages"
+            ],
             "problemMatcher": "$msCompile",
             "icon": {
                 "id": "flame",
@@ -1569,6 +1572,9 @@
                 "tflitepythonvivante"
             ],
             "dependsOrder": "sequence",
+            "dependsOn": [
+                "apply-torizon-packages"
+            ],
             "problemMatcher": "$msCompile",
             "icon": {
                 "id": "flame",
@@ -1604,6 +1610,9 @@
                 "tflitepythonvivante"
             ],
             "dependsOrder": "sequence",
+            "dependsOn": [
+                "apply-torizon-packages"
+            ],
             "problemMatcher": "$msCompile",
             "icon": {
                 "id": "flame",
@@ -1737,7 +1746,7 @@
                 "-o",
                 "StrictHostKeyChecking=no",
                 "torizon@${config:torizon_ip}",
-                "DOCKER_LOGIN=${config:host_ip}:5002 TAG=arm64 docker-compose pull tflitepythonvivante"
+                "DOCKER_LOGIN=${config:host_ip}:5002 TAG=arm64 docker compose pull tflitepythonvivante"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1764,7 +1773,7 @@
                 "-o",
                 "StrictHostKeyChecking=no",
                 "torizon@${config:torizon_ip}",
-                "DOCKER_LOGIN=${config:host_ip}:5002 TAG=arm docker-compose pull tflitepythonvivante"
+                "DOCKER_LOGIN=${config:host_ip}:5002 TAG=arm docker compose pull tflitepythonvivante"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1791,7 +1800,7 @@
                 "-o",
                 "StrictHostKeyChecking=no",
                 "torizon@${config:torizon_ip}",
-                "DOCKER_LOGIN=${config:host_ip}:5002 TAG=amd64 docker-compose pull tflitepythonvivante"
+                "DOCKER_LOGIN=${config:host_ip}:5002 TAG=amd64 docker compose pull tflitepythonvivante"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1818,7 +1827,7 @@
                 "-o",
                 "StrictHostKeyChecking=no",
                 "torizon@${config:torizon_ip}",
-                "DOCKER_LOGIN=${config:host_ip}:5002 TAG=riscv64 docker-compose pull tflitepythonvivante"
+                "DOCKER_LOGIN=${config:host_ip}:5002 TAG=riscv64 docker compose pull tflitepythonvivante"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1833,26 +1842,25 @@
         {
             "label": "run-container-torizon-release-arm64",
             "detail": "This task will build the application based in the production Dockerfile, push it to the local registry (localhost:5002), pull it on the board and run it on the board, showing the result in the VSCode terminal",
-            "command": "sshpass",
-            "type": "process",
+            "command": "DOCKER_HOST=${config:torizon_ip}:2375",
+            "type": "shell",
             "args": [
+                "DOCKER_LOGIN=${config:host_ip}:5002",
+                "TAG=arm64",
+                "GPU=${config:torizon_gpu}",
+                "docker",
+                "compose",
                 "-p",
-                "${config:torizon_psswd}",
-                "ssh",
-                "-o",
-                "UserKnownHostsFile=/dev/null",
-                "-o",
-                "StrictHostKeyChecking=no",
-                "torizon@${config:torizon_ip}",
-                "DOCKER_LOGIN=${config:host_ip}:5002 TAG=arm64 GPU=${config:torizon_gpu} docker-compose up tflitepythonvivante"
+                "torizon",
+                "up",
+                "tflitepythonvivante"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
                 "validate-settings",
                 "validate-arch-arm64",
-                "apply-torizon-packages",
                 "copy-docker-compose",
-                "pre-cleanup-arm64",
+                "pre-cleanup",
                 "build-container-torizon-release-arm64",
                 "push-container-torizon-release-arm64",
                 "pull-container-torizon-release-arm64",
@@ -1867,26 +1875,25 @@
         {
             "label": "run-container-torizon-release-arm",
             "detail": "This task will build the application based in the production Dockerfile, push it to the local registry (localhost:5002), pull it on the board and run it on the board, showing the result in the VSCode terminal",
-            "command": "sshpass",
-            "type": "process",
+            "command": "DOCKER_HOST=${config:torizon_ip}:2375",
+            "type": "shell",
             "args": [
+                "DOCKER_LOGIN=${config:host_ip}:5002",
+                "TAG=arm",
+                "GPU=${config:torizon_gpu}",
+                "docker",
+                "compose",
                 "-p",
-                "${config:torizon_psswd}",
-                "ssh",
-                "-o",
-                "UserKnownHostsFile=/dev/null",
-                "-o",
-                "StrictHostKeyChecking=no",
-                "torizon@${config:torizon_ip}",
-                "DOCKER_LOGIN=${config:host_ip}:5002 TAG=arm GPU=${config:torizon_gpu} docker-compose up tflitepythonvivante"
+                "torizon",
+                "up",
+                "tflitepythonvivante"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
                 "validate-settings",
                 "validate-arch-arm",
-                "apply-torizon-packages",
                 "copy-docker-compose",
-                "pre-cleanup-arm",
+                "pre-cleanup",
                 "build-container-torizon-release-arm",
                 "push-container-torizon-release-arm",
                 "pull-container-torizon-release-arm",
@@ -1901,26 +1908,25 @@
         {
             "label": "run-container-torizon-release-amd64",
             "detail": "This task will build the application based in the production Dockerfile, push it to the local registry (localhost:5002), pull it on the board and run it on the board, showing the result in the VSCode terminal",
-            "command": "sshpass",
-            "type": "process",
+            "command": "DOCKER_HOST=${config:torizon_ip}:2375",
+            "type": "shell",
             "args": [
+                "DOCKER_LOGIN=${config:host_ip}:5002",
+                "TAG=amd64",
+                "GPU=${config:torizon_gpu}",
+                "docker",
+                "compose",
                 "-p",
-                "${config:torizon_psswd}",
-                "ssh",
-                "-o",
-                "UserKnownHostsFile=/dev/null",
-                "-o",
-                "StrictHostKeyChecking=no",
-                "torizon@${config:torizon_ip}",
-                "DOCKER_LOGIN=${config:host_ip}:5002 TAG=amd64 GPU=${config:torizon_gpu} docker-compose up tflitepythonvivante"
+                "torizon",
+                "up",
+                "tflitepythonvivante"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
                 "validate-settings",
                 "validate-arch-amd64",
-                "apply-torizon-packages",
                 "copy-docker-compose",
-                "pre-cleanup-amd64",
+                "pre-cleanup",
                 "build-container-torizon-release-amd64",
                 "push-container-torizon-release-amd64",
                 "pull-container-torizon-release-amd64",
@@ -1935,26 +1941,25 @@
         {
             "label": "run-container-torizon-release-riscv64",
             "detail": "This task will build the application based in the production Dockerfile, push it to the local registry (localhost:5002), pull it on the board and run it on the board, showing the result in the VSCode terminal",
-            "command": "sshpass",
-            "type": "process",
+            "command": "DOCKER_HOST=${config:torizon_ip}:2375",
+            "type": "shell",
             "args": [
+                "DOCKER_LOGIN=${config:host_ip}:5002",
+                "TAG=riscv64",
+                "GPU=${config:torizon_gpu}",
+                "docker",
+                "compose",
                 "-p",
-                "${config:torizon_psswd}",
-                "ssh",
-                "-o",
-                "UserKnownHostsFile=/dev/null",
-                "-o",
-                "StrictHostKeyChecking=no",
-                "torizon@${config:torizon_ip}",
-                "DOCKER_LOGIN=${config:host_ip}:5002 TAG=riscv64 GPU=${config:torizon_gpu} docker-compose up tflitepythonvivante"
+                "torizon",
+                "up",
+                "tflitepythonvivante"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
                 "validate-settings",
                 "validate-arch-riscv64",
-                "apply-torizon-packages",
                 "copy-docker-compose",
-                "pre-cleanup-riscv64",
+                "pre-cleanup",
                 "build-container-torizon-release-riscv64",
                 "push-container-torizon-release-riscv64",
                 "pull-container-torizon-release-riscv64",
@@ -1980,9 +1985,7 @@
                 "clear": false
             },
             "dependsOn": [
-                "wget-documentation-file",
-                "open-project-documentation-file",
-                "wait-a-bit"
+                "open-project-documentation-file"
             ],
             "dependsOrder": "sequence",
             "problemMatcher": "$msCompile",
@@ -2006,25 +2009,7 @@
                 "clear": true
             },
             "args": [
-                "python3Console-doc-README.md"
-            ],
-            "dependsOrder": "sequence",
-            "problemMatcher": "$msCompile",
-            "icon": {
-                "id": "flame",
-                "color": "terminal.ansiYellow"
-            }
-        },
-        {
-            "label": "wget-documentation-file",
-            "command": "wget",
-            "detail": "",
-            "hide": true,
-            "type": "process",
-            "args": [
-                "-O",
-                "python3Console-doc-README.md",
-                "https://raw.githubusercontent.com/toradex/vscode-torizon-templates-documentation/main/python3Console/README.md"
+                ".doc/README.md"
             ],
             "dependsOrder": "sequence",
             "problemMatcher": "$msCompile",
@@ -2043,6 +2028,7 @@
                 "cwd": "${workspaceFolder}",
                 "env": {
                     "DOCKER_REGISTRY": "${command:docker_registry}",
+                    "DOCKER_LOGIN": "${command:docker_login}",
                     "DOCKER_PSSWD": "${command:docker_password}",
                     "DOCKER_TAG": "${command:docker_tag}",
                     "TCB_CLIENTID": "${command:tcb.clientId}",
@@ -2053,6 +2039,7 @@
                 }
             },
             "args": [
+                "-nop",
                 ".conf/checkCIEnv.ps1"
             ],
             "problemMatcher": [
@@ -2083,6 +2070,7 @@
                 }
             },
             "args": [
+                "-nop",
                 ".conf/validateDepsRunning.ps1"
             ],
             "problemMatcher": [

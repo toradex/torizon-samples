@@ -7,8 +7,7 @@
 )]
 param()
 
-# TODO: we need to work with the offsets and limits
-
+# FIXME: ONLY CHANGE THIS WHEN UPDATING THE https://www.powershellgallery.com/packages/TorizonPlatformAPI
 $_VERSION = "0.1.0"
 
 $ErrorActionPreference = "Stop"
@@ -28,7 +27,7 @@ if ($null -eq $env:PLATFORM_CLIENT_SECRET) {
 $_mod = Get-Module -ListAvailable -Name "TorizonPlatformAPI"
 
 if (
-    -not ($_mod) -or 
+    -not ($_mod) -or
     ($_mod.Version[0].ToString().Contains($_VERSION) -eq $false)
 ) {
     Install-Module `
@@ -46,13 +45,13 @@ function _getJonOsterToken () {
     $_headers = @{
         "Content-Type" = "application/x-www-form-urlencoded"
     }
-    
+
     $_payload = @{
         "grant_type" = "client_credentials"
         "client_id" = "$env:PLATFORM_CLIENT_ID"
         "client_secret" = "$env:PLATFORM_CLIENT_SECRET"
     }
-    
+
     $_ret = Invoke-RestMethod `
         -Method Post `
         -Uri "https://kc.torizon.io/auth/realms/ota-users/protocol/openid-connect/token" `
@@ -60,7 +59,7 @@ function _getJonOsterToken () {
         -Body $_payload `
         -ContentType "application/x-www-form-urlencoded" `
         -ErrorAction Stop
-    
+
     # and we have the AWESOME JonOster Token 🦪
     return $_ret.access_token
 }
@@ -73,7 +72,8 @@ Set-TorizonPlatformAPIConfiguration `
     -ErrorAction Stop
 
 function _getTargetByHash ([string] $_hash) {
-    $_packages = Get-TorizonPlatformAPIPackages
+    $_packages = `
+        Get-TorizonPlatformAPIPackages -Limit ([System.Int64]::MaxValue)
 
     foreach ($_package in $_packages.values) {
         if ($_hash -eq $_package.hashes.sha256) {
@@ -85,7 +85,7 @@ function _getTargetByHash ([string] $_hash) {
 }
 
 function _getFleetDevices ($_fleetName) {
-    $_fleets = Get-TorizonPlatformAPIFleets
+    $_fleets = Get-TorizonPlatformAPIFleets -Limit ([System.Int64]::MaxValue)
 
     $_fleetId = (
         $_fleets.values |
@@ -96,10 +96,11 @@ function _getFleetDevices ($_fleetName) {
         throw "Fleet '$_fleetName' not found"
     }
 
-    $_devices = 
+    $_devices =
         Get-TorizonPlatformAPIFleetsFleetidDevices `
+            -Limit ([System.Int64]::MaxValue) `
             -FleetId $_fleetId
-    
+
     if ($_devices.total -eq 0) {
         throw "Fleet '$_fleetName' has no devices"
     }
@@ -108,7 +109,7 @@ function _getFleetDevices ($_fleetName) {
 }
 
 function _getFleetId ($_fleetName) {
-    $_fleets = Get-TorizonPlatformAPIFleets
+    $_fleets = Get-TorizonPlatformAPIFleets -Limit ([System.Int64]::MaxValue)
 
     $_fleetId = (
         $_fleets.values |
@@ -152,7 +153,8 @@ function _resolvePlatformMetadata ([object] $targets, [string] $targetName) {
 
 function package-latest-hash ([string] $packageName) {
     $_targetName = $packageName
-    $_targets = Get-TorizonPlatformAPIPackages
+    $_targets = `
+        Get-TorizonPlatformAPIPackages -Limit ([System.Int64]::MaxValue)
     $_hash = $null
 
     $_ret = _resolvePlatformMetadata $_targets $_targetName
@@ -168,7 +170,8 @@ function package-latest-hash ([string] $packageName) {
 
 function package-latest-version ([string] $packageName) {
     $_packageName = $packageName
-    $_packages = Get-TorizonPlatformAPIPackages
+    $_packages = `
+        Get-TorizonPlatformAPIPackages -Limit ([System.Int64]::MaxValue)
 
     $_ret = _resolvePlatformMetadata $_packages $_packageName
 
@@ -182,19 +185,19 @@ function update-fleet-latest ([string] $targetName, [string] $fleetName) {
 
     $_targetHash = package-latest-hash $_targetName
     $_target = _getTargetByHash($_targetHash)
-    
+
     if ($null -eq $_target) {
         throw "package $_targetName not found"
     }
 
     $_targetId = $_target.packageId
     $_fleetId = _getFleetId($_fleetName)
-    
+
     $_updateRequest = Initialize-TorizonPlatformAPIUpdateRequest `
         -PackageIds @($_targetId) `
         -Fleets @($_fleetId)
 
-    $Result = 
+    $Result =
         Submit-TorizonPlatformAPIUpdates `
             -UpdateRequest $_updateRequest
 

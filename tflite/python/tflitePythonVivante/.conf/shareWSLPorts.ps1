@@ -1,5 +1,5 @@
-# DOES NOT ADD THE suppress HERE
-# THIS NEED TO BE SUPPORTED ON THE WINDOWS POWERSHELL
+# DO NOT ADD THE suppress HERE
+# THIS NEEDS TO BE SUPPORTED ON THE WINDOWS POWERSHELL
 # this only makes sense for WSL
 if (! [string]::IsNullOrEmpty($env:WSL_DISTRO_NAME)) {
     $_workspace = $args[0]
@@ -51,8 +51,13 @@ if (! [string]::IsNullOrEmpty($env:WSL_DISTRO_NAME)) {
     # cspell:disable-next-line
     #Write-Host "start-process powershell -verb runas -ArgumentList '-NoProfile -C `"$($superScript) echo done`"'"
 
-    # cspell:disable-next-line
-    powershell.exe -NoProfile -C "start-process powershell -verb runas -ArgumentList '-NoProfile -C `"$superScript echo done`"'"
-    # for debug comment the above and uncomment the below
-    #powershell.exe -NoProfile -C "start-process powershell -verb runas -ArgumentList '-NoProfile -C `"$superScript echo done; Read-Host ; `"'"
+    if ($env:DEBUG_SHARED_PORTS -eq "true") {
+        # this command has a Read-Host so it will wait for the user to press enter
+        # this way we can see the output of the script before window closes
+        # cspell:disable-next-line
+        powershell.exe -NoProfile -C "start-process powershell -verb runas -ArgumentList '-NoProfile -C `"$superScript echo done; Read-Host ; `"'"
+    } else {
+        # cspell:disable-next-line
+        powershell.exe -NoProfile -C "start-process powershell -verb runas -ArgumentList '-NoProfile -C `"$superScript echo done`"'"
+    }
 }

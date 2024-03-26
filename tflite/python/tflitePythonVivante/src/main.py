@@ -12,8 +12,8 @@ except:
     except:
         from tensorflow import lite as tf #Tensorflow
 
-def main():
 
+def main():
     # If the external vx tflite delegate is not available, like in local debugging, use the cpu 
     try:
         delegate = tf.load_delegate('/usr/lib/libvx_delegate.so')
@@ -35,10 +35,10 @@ def main():
     print("Loading test images")
     images = []
     filenames=[]
-    for f in glob.iglob("cats_and_dogs_filtered/validation/dogs/*.jpg"):
+    for f in glob.iglob("/cats_and_dogs_filtered/validation/dogs/*.jpg"):
         images.append(Image.open(f).convert('RGB'))
         filenames.append(f)
-    for f in glob.iglob("cats_and_dogs_filtered/validation/cats/*.jpg"):
+    for f in glob.iglob("/cats_and_dogs_filtered/validation/cats/*.jpg"):
         images.append(Image.open(f).convert('RGB'))
         filenames.append(f)
 

@@ -17,8 +17,8 @@
             "port": "${config:torizon_debug_port}",
             "pathMappings": [
                 {
-                "localRoot": "${workspaceFolder}/src",
-                "remoteRoot": "${config:torizon_app_root}/src"
+                "localRoot": "${workspaceFolder}",
+                "remoteRoot": "${config:torizon_app_root}"
                 }
             ],
             "preLaunchTask": "wait-debugpy-start-arm"
@@ -32,8 +32,8 @@
             "port": "${config:torizon_debug_port}",
             "pathMappings": [
                 {
-                "localRoot": "${workspaceFolder}/src",
-                "remoteRoot": "${config:torizon_app_root}/src"
+                "localRoot": "${workspaceFolder}",
+                "remoteRoot": "${config:torizon_app_root}"
                 }
             ],
             "preLaunchTask": "wait-debugpy-start-arm64"

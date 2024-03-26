@@ -33,10 +33,11 @@ if ($Env:GITLAB_CI -eq $true) {
 $compoFilePath  = $args[0]
 $dockerLogin    = $args[1]
 $tag            = $args[2]
-$imageName      = $args[3]
+$registry       = $args[3]
+$imageName      = $args[4]
 
 # can be null
-$gpu            = $args[4]
+$gpu            = $args[5]
 
 $_iterative = $true
 
@@ -56,6 +57,12 @@ if ($null -eq $env:TORIZON_ARCH) {
     throw "❌ TORIZON_ARCH not set"
 } else {
     $imageArch = $env:TORIZON_ARCH
+}
+
+if ($null -eq $env:APP_ROOT) {
+    throw "❌ APP_ROOT not set"
+} else {
+    $appRoot = $env:APP_ROOT
 }
 
 if ($env:TASKS_ITERATIVE -eq $False) {
@@ -84,7 +91,7 @@ if ([string]::IsNullOrEmpty($dockerLogin)) {
 
 if ([string]::IsNullOrEmpty($psswd)) {
     if ($_iterative) {
-        $tag = Read-Host "Docker registry password"
+        $psswd = Read-Host -MaskInput "Docker registry password"
     }
 
     if ([string]::IsNullOrEmpty($psswd)) {
@@ -112,19 +119,24 @@ if ([string]::IsNullOrEmpty($tag)) {
     }
 }
 
-# rebuild and tag
-Write-Host "Rebuilding $dockerLogin/$($imageName):$tag ..."
-
 $objSettings = Get-Content ("$compoFilePath/.vscode/settings.json") | `
     Out-String | ConvertFrom-Json
 $localRegistry = $objSettings.host_ip
 
 $env:LOCAL_REGISTRY="$($localRegistry):5002"
 $env:TAG="$tag"
-$env:DOCKER_LOGIN="$dockerLogin"
+if ([string]::IsNullOrEmpty($registry)) {
+    $env:DOCKER_LOGIN="$dockerLogin"
+} else {
+    $env:DOCKER_LOGIN="$registry/$dockerLogin"
+}
 Set-Location $compoFilePath
 
+# rebuild and tag
+Write-Host "Rebuilding $env:DOCKER_LOGIN/${imageName}:$tag ..."
+
 docker compose build `
+    --build-arg APP_ROOT=$appRoot `
     --build-arg IMAGE_ARCH=$imageArch `
     --build-arg GPU=$gpu `
     $imageName
@@ -134,10 +146,10 @@ Set-Location -
 Write-Host -ForegroundColor DarkGreen "✅ Image rebuild and tagged"
 
 # push it
-Write-Host "Pushing it $dockerLogin/$($imageName):$tag ..."
+Write-Host "Pushing it $env:DOCKER_LOGIN/${imageName}:$tag ..."
 
-docker login --username $dockerLogin --password $psswd
-docker push $dockerLogin/$($imageName):$tag
+Write-Output "$psswd" | docker login $registry -u $dockerLogin --password-stdin
+docker push $env:DOCKER_LOGIN/${imageName}:$tag
 
 Write-Host -ForegroundColor DarkGreen "✅ Image push OK"
 
@@ -186,7 +198,7 @@ Write-Host "Replacing variables ..."
 foreach ($key in $prodKeys) {
     $composeServices[$key].Remove("build")
     $composeServices[$key].image = `
-        $composeServices[$key].image.replace("`${DOCKER_LOGIN}", $dockerLogin)
+        $composeServices[$key].image.replace("`${DOCKER_LOGIN}", $env:DOCKER_LOGIN)
     $composeServices[$key].image = `
         $composeServices[$key].image.replace("`${TAG}", $tag)
     $composeServices[$key].image = `

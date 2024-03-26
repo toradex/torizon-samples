@@ -1,0 +1,135 @@
+diff --git a/BUILD b/BUILD
+index 3c0bb42..f934af9 100644
+--- a/BUILD
++++ b/BUILD
+@@ -20,7 +20,7 @@ cc_library(
+ 
+ cc_library(
+     name = "tim-vx_interface",
+-    copts = ["-std=c++14", "-Werror", "-fvisibility=default", "-pthread"],
++    copts = ["-std=c++14", "-fvisibility=default", "-pthread"],
+     includes = [
+         "include",
+         "src/tim/vx",
+@@ -81,7 +81,7 @@ cc_binary(
+ 
+ cc_library(
+     name = "tim-lite_interface",
+-    copts = ["-std=c++14", "-Werror", "-fvisibility=default"],
++    copts = ["-std=c++14", "-fvisibility=default"],
+     includes = [
+         "include",
+         "src/tim/lite",
+@@ -118,7 +118,7 @@ cc_binary(
+ ##############################################################################
+ cc_test (
+     name = "unit_test",
+-    copts = ["-std=c++14", "-Werror"],
++    copts = ["-std=c++14"],
+     srcs = [
+         "src/tim/vx/test_utils.h",
+     ] + glob(["src/tim/**/*_test.cc"]),
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 3911488..0489b0b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -15,7 +15,7 @@ option(TIM_VX_ENABLE_PLATFORM           "Enable multi devices support"
+ 
+ set(CMAKE_CXX_STANDARD 14)
+ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+ set(CONFIG "" CACHE STRING "Target Platform")
+ 
+ if(${TIM_VX_CODE_COVERAGE})
+diff --git a/samples/benchmark_test/BUILD b/samples/benchmark_test/BUILD
+index e883a09..2763506 100644
+--- a/samples/benchmark_test/BUILD
++++ b/samples/benchmark_test/BUILD
+@@ -1,7 +1,7 @@
+ cc_test(
+     name = "benchmark_test",
+     copts = [
+-        "-Werror", "-std=c++14"
++        "-std=c++14"
+     ],
+     srcs = [
+         "benchmark_test.cc"
+diff --git a/samples/lenet/BUILD b/samples/lenet/BUILD
+index 46db564..56e380c 100644
+--- a/samples/lenet/BUILD
++++ b/samples/lenet/BUILD
+@@ -1,7 +1,7 @@
+ cc_test(
+     name = "lenet_asymu8_cc",
+     copts = [
+-        "-Werror", "-std=c++14"
++        "-std=c++14"
+     ],
+     srcs = [
+         "lenet_asymu8.cc",
+diff --git a/samples/lenet_lite/BUILD b/samples/lenet_lite/BUILD
+index 8728ef1..400f524 100644
+--- a/samples/lenet_lite/BUILD
++++ b/samples/lenet_lite/BUILD
+@@ -1,7 +1,7 @@
+ cc_test(
+     name = "lenet_lite_asymu8_cc",
+     copts = [
+-        "-Werror", "-std=c++14"
++        "-std=c++14"
+     ],
+     srcs = [
+         "lenet_lite_asymu8.cc",
+diff --git a/samples/lenet_multi_device/BUILD b/samples/lenet_multi_device/BUILD
+index 46db564..56e380c 100644
+--- a/samples/lenet_multi_device/BUILD
++++ b/samples/lenet_multi_device/BUILD
+@@ -1,7 +1,7 @@
+ cc_test(
+     name = "lenet_asymu8_cc",
+     copts = [
+-        "-Werror", "-std=c++14"
++        "-std=c++14"
+     ],
+     srcs = [
+         "lenet_asymu8.cc",
+diff --git a/samples/multi_thread_test/BUILD b/samples/multi_thread_test/BUILD
+index 356454e..d295c50 100644
+--- a/samples/multi_thread_test/BUILD
++++ b/samples/multi_thread_test/BUILD
+@@ -1,7 +1,7 @@
+ cc_test(
+     name = "multi_thread_test",
+     copts = [
+-        "-Werror", "-std=c++14",
++        "-std=c++14",
+     ],
+     linkopts = [
+         "-lpthread"
+diff --git a/src/tim/vx/internal/BUILD b/src/tim/vx/internal/BUILD
+index 392f1ec..2fec0a3 100644
+--- a/src/tim/vx/internal/BUILD
++++ b/src/tim/vx/internal/BUILD
+@@ -76,7 +76,7 @@ filegroup(
+ cc_library(
+     name = "ovxlibimpl",
+     copts = [
+-        "-Werror", "-Wmisleading-indentation",
++        "-Wmisleading-indentation",
+         "-fvisibility=hidden", '-DOVXLIB_API=__attribute__((visibility(\\"default\\")))',
+     ],
+     linkopts = ["-ldl", "-lm"],
+diff --git a/src/tim/vx/internal/src/makefile.linux b/src/tim/vx/internal/src/makefile.linux
+index 45e11b8..8c515a4 100644
+--- a/src/tim/vx/internal/src/makefile.linux
++++ b/src/tim/vx/internal/src/makefile.linux
+@@ -5,7 +5,7 @@ INCLUDE += -I../include/ops -I../include/utils -I../include/inference
+ INCLUDE += -I../include/client -I../include -I../include/libnnext
+ 
+ CFLAGS += $(INCLUDE)
+-CFLAGS += -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Werror
++CFLAGS += -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare
+ CFLAGS += -fvisibility=hidden -D'OVXLIB_API=__attribute__((visibility("default")))'
+ 
+ ################################################################################

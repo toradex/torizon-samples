@@ -626,7 +626,7 @@ function runTask () {
                 Set-Location $_cwd
             }
 
-            # abort we had a error
+            # abort we had an error
             if ($exitCode -ne 0) {
                 Write-Host -ForegroundColor Red `
                     "> TASK $($json.tasks[$i].label) exited with error code $($exitCode) <"

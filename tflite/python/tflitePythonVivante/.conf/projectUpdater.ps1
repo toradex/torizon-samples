@@ -76,7 +76,7 @@ if (-not (Test-Path $projectFolder/.conf/tmp)) {
 
 # get the metadata
 $_metadata = Get-Content "$Env:HOME/.apollox/templates.json" | ConvertFrom-Json
-$_templateMetadata = 
+$_templateMetadata =
     $_metadata.Templates |
         Where-Object { $_.folder -eq $templateName }
 
@@ -181,14 +181,14 @@ Copy-Item $Env:HOME/.apollox/$templateName/.vscode/tasks.json `
 
 if ($_templateMetadata.mergeCommon -ne $False) {
     Write-Host -ForegroundColor Yellow "Applying common tasks ..."
-    $commonTasks = 
-        Get-Content "$env:HOME/.apollox/assets/tasks/common.json" | 
+    $commonTasks =
+        Get-Content "$env:HOME/.apollox/assets/tasks/common.json" |
             ConvertFrom-Json
-    $commonInputs = 
-        Get-Content "$env:HOME/.apollox/assets/tasks/inputs.json" | 
+    $commonInputs =
+        Get-Content "$env:HOME/.apollox/assets/tasks/inputs.json" |
             ConvertFrom-Json
-    $projTasks = 
-        Get-Content "$projectFolder/.conf/tmp/tasks-next.json" | 
+    $projTasks =
+        Get-Content "$projectFolder/.conf/tmp/tasks-next.json" |
             ConvertFrom-Json
 
     $projTasks.tasks += $commonTasks.tasks
@@ -204,11 +204,15 @@ Set-Location $projectFolder/.conf/tmp
 
 # tcb does not have the common Docker files
 if ($templateName -ne "tcb") {
+    # The generic template doesn't have a Dockerfile.debug
+    if ($templateName -ne "genericTemplate") {
+        Copy-Item $Env:HOME/.apollox/$templateName/Dockerfile.debug .
+    }
     Copy-Item $Env:HOME/.apollox/$templateName/Dockerfile .
-    Copy-Item $Env:HOME/.apollox/$templateName/Dockerfile.debug .
     Copy-Item $Env:HOME/.apollox/$templateName/docker-compose.yml .
     Copy-Item $Env:HOME/.apollox/assets/github/workflows/build-application.yaml .
     Copy-Item $Env:HOME/.apollox/assets/gitlab/.gitlab-ci.yml .
+    Copy-Item $Env:HOME/.apollox/$templateName/.doc/README.md .
 }
 
 Copy-Item $Env:HOME/.apollox/$templateName/.gitignore .
@@ -246,7 +250,7 @@ Get-ChildItem -Force -File -Recurse * | ForEach-Object {
                 ForEach-Object {
                     $_ -replace "__home__",$env:HOME
                 } | Set-Content $a
-                
+
                 ( Get-Content $a ) |
                 ForEach-Object {
                     $_ -replace "__templateFolder__", $templateName
@@ -278,16 +282,17 @@ Write-Host -ForegroundColor DarkGreen "✅ tasks.json"
 
 # TCB does not have the common application Docker files
 if ($templateName -ne "tcb") {
+    # DOCKERFILE.DEBUG:
+    # The generic template doesn't have a Dockerfile.debug
+    if ($templateName -ne "genericTemplate") {
+        _openMergeWindow `
+            $projectFolder/.conf/tmp/Dockerfile.debug `
+            $projectFolder/Dockerfile.debug
+    }
     # DOCKERFILE:
     _openMergeWindow `
         $projectFolder/.conf/tmp/Dockerfile `
         $projectFolder/Dockerfile
-
-    # DOCKERFILE.DEBUG:
-    _openMergeWindow `
-        $projectFolder/.conf/tmp/Dockerfile.debug `
-        $projectFolder/Dockerfile.debug
-
     # DOCKER-COMPOSE:
     _openMergeWindow `
         $projectFolder/.conf/tmp/docker-compose.yml `
@@ -302,6 +307,17 @@ if ($templateName -ne "tcb") {
     _openMergeWindow `
         $projectFolder/.conf/tmp/.gitlab-ci.yml `
         $projectFolder/.gitlab-ci.yml
+
+    # TEMPLATE SPECIFIC DOCUMENTATION:
+    # check if the folder already exists, if not create it
+    # and always accept the new one
+    if (-not (Test-Path $projectFolder/.doc)) {
+        mkdir $projectFolder/.doc
+    }
+
+    Copy-Item `
+        $Env:HOME/.apollox/$templateName/.doc/README.md `
+        $projectFolder/.doc/README.md
 }
 
 # GITIGNORE:

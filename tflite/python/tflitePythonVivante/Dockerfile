@@ -3,36 +3,83 @@
 # Board architecture
 ##
 ARG IMAGE_ARCH=
-# For armv7 use:
-#ARG IMAGE_ARCH=arm
 
 ##
 # Base container version
 ##
-ARG BASE_VERSION=3.0.8-bookworm
+ARG BASE_VERSION=3.2.1-bookworm
 
 ARG APP_ROOT=
 
 FROM --platform=linux/${IMAGE_ARCH} \
-    torizon/debian:${BASE_VERSION} AS Deploy
+    torizon/debian:${BASE_VERSION} AS Build
 
 ARG IMAGE_ARCH
-ARG APP_EXECUTABLE
 ARG APP_ROOT
+ARG BASE_VERSION
 
-# your regular RUN statements here
-# Install required packages
-RUN apt-get -q -y update && \
-    apt-get -q -y install \
-    python3-minimal \
+## Install Python
+RUN apt-get -y update && apt-get install -y \
+    python3 \
+    python3-dev \
+    python3-numpy \
+    python3-pybind11 \
     python3-pip \
-    python3-venv \
+    python3-setuptools \
+    python3-wheel \
 # DO NOT REMOVE THIS LABEL: this is used for VS Code automation
     # __torizon_packages_prod_start__
     # __torizon_packages_prod_end__
 # DO NOT REMOVE THIS LABEL: this is used for VS Code automation
-    && apt-get clean && apt-get autoremove && \
-    rm -rf /var/lib/apt/lists/*
+    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+## Install build tools
+RUN apt-get -y update && apt-get install -y \
+    cmake \
+    build-essential \
+    gcc \
+    g++ \
+    git \
+    wget \
+    unzip \
+    patchelf \
+    autoconf \
+    automake \
+    libtool \
+    curl \
+    gfortran \
+    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+## Install dependencies
+RUN apt-get -y update && apt-get install -y \
+    zlib1g-dev \
+    libssl-dev \
+    imx-gpu-viv-wayland-dev \
+    openssl \
+    libffi-dev \
+    libjpeg-dev \
+    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+COPY recipes /build
+
+### Install TensorFlow Lite
+RUN ./nn-imx_1.3.0.sh
+RUN ./tim-vx.sh
+RUN ./tensorflow-lite_2.9.1.sh
+RUN ./tflite-vx-delegate.sh
+
+############################################################
+############ Build Application Container ###################
+############################################################
+
+FROM --platform=linux/$IMAGE_ARCH torizon/debian:${BASE_VERSION} AS Deploy
+
+## Install Python
+RUN apt-get -y update && apt-get install -y \
+    python3-venv \
+    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
 
 # Create virtualenv
 RUN python3 -m venv ${APP_ROOT}/.venv --system-site-packages
@@ -43,6 +90,36 @@ RUN . ${APP_ROOT}/.venv/bin/activate && \
     pip3 install --upgrade pip && pip3 install --break-system-packages -r requirements-release.txt && \
     rm requirements-release.txt
 
+## Install TF Lite ##
+COPY --from=Build /build /build
+RUN cp -r /build/* /
+RUN . ${APP_ROOT}/.venv/bin/activate && \
+    pip3 install --break-system-packages --no-cache-dir /tflite_runtime-*.whl && rm -rf *.whl
+
+## Install runtime TF Lite dependencies ## 
+RUN apt-get -y update && apt-get install -y \
+    libovxlib \
+    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+## Install application dependencies
+RUN apt-get -y update && apt-get install -y \
+    wget \
+    unzip \
+    imx-gpu-viv-wayland-dev \
+# DO NOT REMOVE THIS LABEL: this is used for VS Code automation
+    # __torizon_packages_prod_start__
+    # __torizon_packages_prod_end__
+# DO NOT REMOVE THIS LABEL: this is used for VS Code automation
+  && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+# Copy a filtered version of dogs vs cats dataset to measure performance
+RUN wget https://storage.googleapis.com/mledu-datasets/cats_and_dogs_filtered.zip
+RUN unzip cats_and_dogs_filtered.zip && chmod -R 0777 cats_and_dogs_filtered  && rm cats_and_dogs_filtered.zip
+
+# Copy the model
+COPY --chmod=0777 labels_mobilenet_quant_v1_224.txt ${APP_ROOT}/labels_mobilenet_quant_v1_224.txt
+COPY --chmod=0777 mobilenet_v1_1.0_224_quant.tflite ${APP_ROOT}/mobilenet_v1_1.0_224_quant.tflite
+
 # copy the source code
 COPY /src ${APP_ROOT}/src
 
@@ -51,4 +128,3 @@ WORKDIR ${APP_ROOT}
 ENV APP_ROOT=${APP_ROOT}
 # Activate and run the code
 CMD . ${APP_ROOT}/.venv/bin/activate && python3 src/main.py --no-sandbox
-
