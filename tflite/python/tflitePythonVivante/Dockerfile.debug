@@ -54,22 +54,24 @@ RUN apt-get -y update && apt-get install -y \
 #  && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 ## Prepare build output directory
-COPY global_variables.sh global_variables.sh
+COPY recipes/global_variables.sh global_variables.sh
+COPY recipes/build_variables.sh build_variables.sh
 
 ## Build nn-imx
-COPY nn-imx_1.3.0.sh nn-imx_1.3.0.sh
+COPY recipes/nn-imx_1.3.0.sh nn-imx_1.3.0.sh
 RUN ./nn-imx_1.3.0.sh
 
 ## Build tim vx
-COPY tim-vx.sh tim-vx.sh
+COPY recipes/tim-vx-remove-Werror.patch tim-vx-remove-Werror.patch
+COPY recipes/tim-vx.sh tim-vx.sh
 RUN ./tim-vx.sh
 
 ## Build tensorflow lite
-COPY tensorflow-lite_2.9.1.sh tensorflow-lite_2.9.1.sh
+COPY recipes/tensorflow-lite_2.9.1.sh tensorflow-lite_2.9.1.sh
 RUN ./tensorflow-lite_2.9.1.sh
 
 ## Build tflite vx delegate
-COPY tflite-vx-delegate.sh tflite-vx-delegate.sh
+COPY recipes/tflite-vx-delegate.sh tflite-vx-delegate.sh
 RUN ./tflite-vx-delegate.sh
 
 
@@ -136,10 +138,7 @@ RUN . ${APP_ROOT}/.venv/bin/activate && \
 
 
 ## Install TF Lite ##
-# Rebember to unzip build.zip before running it
-COPY build /build
-# If you want to build it from source, comment the line above and uncomment the line below
-# COPY --from=Base /build /build
+COPY --from=Base /build /build
 RUN cp -r /build/* /
 RUN . ${APP_ROOT}/.venv/bin/activate && pip3 install tflite_runtime-2.9.1-cp311-cp311-linux_aarch64.whl && rm -rf *.whl
 
