@@ -121,7 +121,7 @@ RUN apt-get -q -y update && \
     python3-pip \
     python3-setuptools \
     python3-venv \
-    python3-debugpy \    
+    python3-debugpy \
     && apt-get clean && apt-get autoremove && \
     rm -rf /var/lib/apt/lists/*
 
@@ -165,7 +165,7 @@ RUN apt-get -y update && apt-get install -y \
 
 # This example will use a filtered version of dogs vs cats dataset to measure performance
 RUN wget https://storage.googleapis.com/mledu-datasets/cats_and_dogs_filtered.zip
-RUN unzip cats_and_dogs_filtered.zip && chmod -R 0777 cats_and_dogs_filtered  && rm cats_and_dogs_filtered.zip
+RUN unzip cats_and_dogs_filtered.zip -d ${APP_ROOT}/ && chmod -R 0777 ${APP_ROOT}/cats_and_dogs_filtered  && rm cats_and_dogs_filtered.zip
 
 # Rebember to unzip cats_and_dogs_filtered.zip before running it
 ## Instead of the steps above, have the dataset already in your workspace. This way you can also use this sample for local debug

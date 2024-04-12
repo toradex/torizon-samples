@@ -31,14 +31,15 @@ def main():
     output_details = interpreter.get_output_details()
     nn_input_size=input_details[0]['shape'][1]
 
-    #load all images of the validation folder
+    # Load all images of the validation folder
+    # If you are debugging locally, make sure to unzip the cats_and_dogs_filtered.zip file
     print("Loading test images")
     images = []
     filenames=[]
-    for f in glob.iglob("/cats_and_dogs_filtered/validation/dogs/*.jpg"):
+    for f in glob.iglob("cats_and_dogs_filtered/validation/dogs/*.jpg"):
         images.append(Image.open(f).convert('RGB'))
         filenames.append(f)
-    for f in glob.iglob("/cats_and_dogs_filtered/validation/cats/*.jpg"):
+    for f in glob.iglob("cats_and_dogs_filtered/validation/cats/*.jpg"):
         images.append(Image.open(f).convert('RGB'))
         filenames.append(f)
 

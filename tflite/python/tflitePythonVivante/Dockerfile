@@ -114,7 +114,7 @@ RUN apt-get -y update && apt-get install -y \
 
 # Copy a filtered version of dogs vs cats dataset to measure performance
 RUN wget https://storage.googleapis.com/mledu-datasets/cats_and_dogs_filtered.zip
-RUN unzip cats_and_dogs_filtered.zip && chmod -R 0777 cats_and_dogs_filtered  && rm cats_and_dogs_filtered.zip
+RUN unzip cats_and_dogs_filtered.zip -d ${APP_ROOT}/ && chmod -R 0777 ${APP_ROOT}/cats_and_dogs_filtered  && rm cats_and_dogs_filtered.zip
 
 # Copy the model
 COPY --chmod=0777 labels_mobilenet_quant_v1_224.txt ${APP_ROOT}/labels_mobilenet_quant_v1_224.txt

@@ -119,7 +119,9 @@
                 "install",
                 "--break-system-packages",
                 "-r",
-                "requirements-debug.txt"
+                "requirements-debug.txt",
+                "-r",
+                "requirements-debug-local.txt"
             ],
             "dependsOrder": "sequence",
             "problemMatcher": "$msCompile",
