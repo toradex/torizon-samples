@@ -3,75 +3,111 @@
 
 Package: gstreamer1.0-plugins-ugly
 Pin: version 1.20.0-1
-Pin-Priority: 969
+Pin-Priority: 975
 
 Package: gstreamer1.0-libav
 Pin: version 1.20.0-1
-Pin-Priority: 969
+Pin-Priority: 975
 
-# We also need to version pin the following gstreamer1.0-plugins-base packages
+# We also need to version pin the following packages
 # due to:
 # rd/torizon-core/debian/debian-package-feed/-/commit/6b2cda2be2
 Package: gir1.2-gst-plugins-base-1.0
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
 
 Package: gstreamer1.0-alsa-dbgsym
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
 
 Package: gstreamer1.0-alsa
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
+
+Package: gstreamer1.0-pulseaudio
+Pin: version 1.20.0-2+toradex1
+Pin-Priority: 975
 
 Package: gstreamer1.0-gl-dbgsym
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
 
 Package: gstreamer1.0-gl
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
+
+Package: gstreamer1.0-gtk3
+Pin: version 1.20.0-1+toradex1
+Pin-Priority: 975
+
+Package: gstreamer1.0-qt5
+Pin: version 1.20.0-2+toradex1
+Pin-Priority: 975
 
 Package: gstreamer1.0-plugins-base-apps-dbgsym
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
 
 Package: gstreamer1.0-plugins-base-apps
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
 
 Package: gstreamer1.0-plugins-base-dbgsym
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
 
 Package: gstreamer1.0-plugins-base
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
+
+Package: gstreamer1.0-plugins-bad
+Pin: version 1.20.0-4+toradex1
+Pin-Priority: 975
+
+Package: gstreamer1.0-plugins-good
+Pin: version 1.20.0-2+toradex1
+Pin-Priority: 975
 
 Package: gstreamer1.0-x-dbgsym
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
 
 Package: gstreamer1.0-x
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
 
 Package: libgstreamer-gl1.0-0-dbgsym
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
 
 Package: libgstreamer-gl1.0-0
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
 
 Package: libgstreamer-plugins-base1.0-0-dbgsym
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
 
 Package: libgstreamer-plugins-base1.0-0
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
 
 Package: libgstreamer-plugins-base1.0-dev
 Pin: version 1.20.0-2+toradex1
-Pin-Priority: 969
+Pin-Priority: 975
+
+Package: libgstreamer-plugins-bad1.0-0
+Pin: version 1.20.0-4+toradex1
+Pin-Priority: 975
+
+Package: libgstreamer-plugins-bad1.0-dev
+Pin: version 1.20.0-4+toradex1
+Pin-Priority: 975
+
+Package: libgstreamer-opencv1.0-0
+Pin: version 1.20.0-4+toradex1
+Pin-Priority: 975
+
+Package: gir1.2-gst-plugins-bad-1.0
+Pin: version 1.20.0-4+toradex1
+Pin-Priority: 975
