@@ -28,6 +28,8 @@ Folders:
   collectd-influxdb-grafana setup
 - **gstreamer**
   in a docker container on Torizon
+- **isp**
+  resources to use Framos FSM:GO cameras on Torizon using containers
 - **multi-display**
   sample showing how to use multiple displays
 - **nodejs**

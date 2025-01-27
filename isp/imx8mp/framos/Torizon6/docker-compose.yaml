@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  weston:
+    image: torizon/weston-vivante:3
+    container_name: weston
+    command:
+      - --tty=/dev/tty7
+    environment:
+      - ACCEPT_FSL_EULA=1
+    network_mode: host
+    cap_add:
+      - CAP_SYS_TTY_CONFIG
+    volumes:
+      - /dev/:/dev/
+      - /tmp:/tmp
+      - /run/udev/:/run/udev/
+    device_cgroup_rules:
+      - 'c 4:* rmw'
+      - 'c 13:* rmw'
+      - 'c 199:* rmw'
+      - 'c 226:* rmw'
+
+  isp-imx:
+    image: <your-dockerhub-username>/torizon6-isp-imx
+    container_name: isp-imx
+    working_dir: /build-isp-imx/opt/imx8-isp/bin/
+    command: ["./start_isp.sh", "sleep 3"]
+    environment:
+      - ACCEPT_FSL_EULA=1
+    cap_add:
+      - CAP_SYS_TTY_CONFIG
+    volumes:
+      - /tmp:/tmp
+      - /var/run/dbus:/var/run/dbus
+      - /dev:/dev
+      - /sys:/sys
+      - /lib/modules:/lib/modules
+    healthcheck:
+      test: ["CMD", "true"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    tty: true
+    depends_on:
+      - weston
+    privileged: true
+    pull_policy: always
+
+  gstreamer:
+    image: <your-dockerhub-username>/gst_example
+    container_name: gstreamer
+    entrypoint: ["gst-launch-1.0", "-v", "v4l2src", "device=/dev/video2", "!", "video/x-raw", "!", "videoconvert", "!", "waylandsink"]
+    volumes:
+      - /var/rootdirs/media:/media:z
+      - /tmp:/tmp
+      - /var/run/dbus:/var/run/dbus
+      - /dev:/dev
+    device_cgroup_rules:
+      - 'c 199:* rmw'
+      - 'c 226:* rmw'
+      - 'c 81:* rmw'
+    depends_on:
+      isp-imx:
+        condition: service_healthy
