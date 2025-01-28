@@ -8,6 +8,7 @@ This sample is compatible with the following hardware:
  - 0070 - Verdin iMX8M Plus Quad 8GB WB IT
  - 0058 - Verdin iMX8M Plus Quad 4GB WB IT
  - 0063 - Verdin iMX8M Plus Quad 4GB IT
+ - 0064 - Verdin iMX8M Plus Quad 2GB WB IT 
 
 Currently, this demo should be used with the following TorizonOS versions:
 
