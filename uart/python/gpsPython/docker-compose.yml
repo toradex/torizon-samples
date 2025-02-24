@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  uartpython-debug:
+    build:
+      context: .
+      dockerfile: Dockerfile.debug
+    image: ${LOCAL_REGISTRY}:5002/uartpython-debug:${TAG}
+    ports:
+      - ${DEBUG_SSH_PORT}:${DEBUG_SSH_PORT}
+      - ${DEBUG_PORT1}:${DEBUG_PORT1}
+    devices:
+      - "/dev/colibri-uartc:/dev/colibri-uartc"
+
+  uartpython:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKER_LOGIN}/uartpython:${TAG}
+    devices:
+      - "/dev/colibri-uartc:/dev/colibri-uartc"
+
