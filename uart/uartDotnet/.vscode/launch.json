@@ -1,0 +1,70 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Local Debug",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-debug-local",
+            "program": "${workspaceFolder}/bin/Debug/net8.0/uartDotnet.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Torizon arm32",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${config:torizon_app_root}/uartDotnet",
+            "cwd": "${config:torizon_app_root}",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "args": [],
+            "pipeTransport": {
+                "pipeCwd": "${workspaceFolder}",
+                "pipeProgram": "ssh",
+                "pipeArgs": [
+                    "-T",
+                    "-q",
+                    "-p",
+                    "${config:torizon_debug_ssh_port}",
+                    "-o",
+                    "StrictHostKeyChecking=no",
+                    "-o",
+                    "UserKnownHostsFile /dev/null",
+                    "${config:torizon_run_as}@${config:torizon_ip}"
+                ],
+                "debuggerPath": "/vsdbg/vsdbg"
+            },
+            "preLaunchTask": "deploy-torizon-arm"
+        },
+        {
+            "name": "Torizon arm64",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${config:torizon_app_root}/uartDotnet",
+            "cwd": "${config:torizon_app_root}",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "args": [],
+            "pipeTransport": {
+                "pipeCwd": "${workspaceFolder}",
+                "pipeProgram": "ssh",
+                "pipeArgs": [
+                    "-T",
+                    "-q",
+                    "-p",
+                    "${config:torizon_debug_ssh_port}",
+                    "-o",
+                    "StrictHostKeyChecking=no",
+                    "-o",
+                    "UserKnownHostsFile /dev/null",
+                    "${config:torizon_run_as}@${config:torizon_ip}"
+                ],
+                "debuggerPath": "/vsdbg/vsdbg"
+            },
+            "preLaunchTask": "deploy-torizon-arm64"
+        }
+    ]
+}

@@ -1,0 +1,67 @@
+name: Build & Deploy TorizonCore
+on:
+  - push
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-24.04
+    name: Build & Deploy
+    container:
+      image: torizonextras/torizon-dev:dev
+      options: --user root
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initial Setup
+        shell: bash
+        env:
+          TASKS_DISABLE_INTERACTIVE_INPUT: "True"
+          TASKS_OVERRIDE_ENV: "False"
+          TORIZON_CI_SETTINGS_FILE: ".vscode/settings.json"
+          DOCKER_PSSWD: ${{ secrets.DOCKER_PSSWD }}
+          DOCKER_LOGIN: ${{ secrets.DOCKER_LOGIN }}
+          PLATFORM_CLIENT_ID: ${{ secrets.PLATFORM_CLIENT_ID }}
+          PLATFORM_CLIENT_SECRET: ${{ secrets.PLATFORM_CLIENT_SECRET }}
+          PLATFORM_CREDENTIALS: ${{ secrets.PLATFORM_CREDENTIALS }}
+        run: |
+
+          echo "${{ github.workspace }}" >> abs-path
+          cat abs-path
+          xonsh ./.conf/validate-json.xsh
+          xonsh ./.vscode/tasks.xsh run validate-pipeline-settings
+          xonsh ./.conf/apply-ci-settings-file.xsh
+
+      - name: Create and Publish Image
+        shell: bash
+        env:
+          TASKS_DISABLE_INTERACTIVE_INPUT: "True"
+          TASKS_OVERRIDE_ENV: "False"
+          DOCKER_PSSWD: ${{ secrets.DOCKER_PSSWD }}
+          DOCKER_LOGIN: ${{ secrets.DOCKER_LOGIN }}
+          PLATFORM_CLIENT_ID: ${{ secrets.PLATFORM_CLIENT_ID }}
+          PLATFORM_CLIENT_SECRET: ${{ secrets.PLATFORM_CLIENT_SECRET }}
+          PLATFORM_CREDENTIALS: ${{ secrets.PLATFORM_CREDENTIALS }}
+        run: |
+
+          echo $PLATFORM_CREDENTIALS | base64 -d > credentials.zip
+          xonsh ./.vscode/tasks.xsh run tcb-platform-publish
+
+      - name: Deploy Application
+        shell: bash
+        env:
+          TASKS_DISABLE_INTERACTIVE_INPUT: "True"
+          TASKS_OVERRIDE_ENV: "False"
+          PLATFORM_CLIENT_ID: ${{ secrets.PLATFORM_CLIENT_ID }}
+          PLATFORM_CLIENT_SECRET: ${{ secrets.PLATFORM_CLIENT_SECRET }}
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+
+          xonsh ./.vscode/tasks.xsh run platform-update-fleet
+
+      - name: Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-compose-prod
+          path: |
+            docker-compose.prod.yml
+            docker-compose.prod.lock.yml

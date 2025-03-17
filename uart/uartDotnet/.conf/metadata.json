@@ -1,0 +1,6 @@
+{
+    "projectName": "uartDotnet",
+    "templateName": "dotnetConsole",
+    "containerName": "uartdotner",
+    "torizonOSMajor": "7"
+}
