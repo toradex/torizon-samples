@@ -1,11 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>dotnet_console</RootNamespace>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <!-- Use the target framework that was used originally, e.g. netcoreapp3.1 -->
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
-
+  <ItemGroup>
+    <!-- Replace with the old package version that provided SerialPortDevice etc. -->
+    <PackageReference Include="SharpGIS.NmeaParser" Version="2.0.0" />
+    <PackageReference Include="System.IO.Ports" Version="7.0.0" />
+  </ItemGroup>
 </Project>
