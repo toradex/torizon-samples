@@ -1,0 +1,171 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Local AMD64",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build-local/debug/adcC",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description":  "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build-debug-local"
+        },
+        {
+            "name": "Torizon AMD64",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${config:torizon_app_root}/adcC",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${config:torizon_app_root}",
+            "environment": [],
+            "externalConsole": false,
+            "internalConsoleOptions": "openOnSessionStart",
+            "logging": {
+                "engineLogging": true
+            },
+            "sourceFileMap": {
+                "${config:torizon_app_root}": "${workspaceFolder}"
+            },
+            "pipeTransport": {
+                "debuggerPath": "/usr/bin/gdb",
+                "pipeProgram": "ssh",
+                "pipeArgs": [
+                    "-T",
+                    "-q",
+                    "-p",
+                    "${config:torizon_debug_ssh_port}",
+                    "-o",
+                    "StrictHostKeyChecking=no",
+                    "-o",
+                    "UserKnownHostsFile /dev/null",
+                    "${config:torizon_run_as}@${config:torizon_ip}"
+                ]
+            },
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description":  "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "deploy-torizon-amd64"
+        },
+        {
+            "name": "Torizon arm32",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${config:torizon_app_root}/adcC",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${config:torizon_app_root}",
+            "environment": [],
+            "externalConsole": false,
+            "internalConsoleOptions": "openOnSessionStart",
+            "logging": {
+                "engineLogging": true
+            },
+            "sourceFileMap": {
+                "${config:torizon_app_root}": "${workspaceFolder}"
+            },
+            "pipeTransport": {
+                "debuggerPath": "/usr/bin/gdb",
+                "pipeProgram": "ssh",
+                "pipeArgs": [
+                    "-T",
+                    "-q",
+                    "-p",
+                    "${config:torizon_debug_ssh_port}",
+                    "-o",
+                    "StrictHostKeyChecking=no",
+                    "-o",
+                    "UserKnownHostsFile /dev/null",
+                    "${config:torizon_run_as}@${config:torizon_ip}"
+                ]
+            },
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description":  "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "deploy-torizon-arm"
+        },
+        {
+            "name": "Torizon arm64",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${config:torizon_app_root}/adcC",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${config:torizon_app_root}",
+            "environment": [],
+            "externalConsole": false,
+            "internalConsoleOptions": "openOnSessionStart",
+            "logging": {
+                "engineLogging": true
+            },
+            "sourceFileMap": {
+                "${config:torizon_app_root}": "${workspaceFolder}"
+            },
+            "pipeTransport": {
+                "debuggerPath": "/usr/bin/gdb",
+                "pipeProgram": "ssh",
+                "pipeArgs": [
+                    "-T",
+                    "-q",
+                    "-p",
+                    "${config:torizon_debug_ssh_port}",
+                    "-o",
+                    "StrictHostKeyChecking=no",
+                    "-o",
+                    "UserKnownHostsFile /dev/null",
+                    "${config:torizon_run_as}@${config:torizon_ip}"
+                ]
+            },
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description":  "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "deploy-torizon-arm64"
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "packages": [
+        "openssh-client",
+        "sshpass",
+        "build-essential",
+        "make",
+        "gdb",
+        "g++"
+    ]
+}
