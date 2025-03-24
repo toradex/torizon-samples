@@ -1,4 +1,24 @@
-# C/C++ Console Template Specific Documentation
+# C/C++ Console Template
+
+## ADC C Sample
+
+This sample interacts with ADCs, in C, through the Industrial I/O (IIO) sysfs interface.
+
+In this sample, the program reads the raw ADC value from a channel and calculates the voltage using the scale factor.
+
+In the `docker-compose` file, we expose the necessary `/sys/bus/iio/devices` directory:
+
+```yaml
+volumes:
+  - type: bind
+    source: /sys/bus/iio/devices
+    target: /sys/bus/iio/devices
+```
+
+For more information about how to use ADC on Torizon, please check the
+[How to Use ADC on Torizon OS](https://developer.toradex.com/torizon/application-development/use-cases/peripheral-access/how-to-use-adc-on-torizoncore) article.
+
+## Specific Documentation
 
 > ⚠️ **WARNING:**  This is just the documentation part specific of this template. **For the complete and general Torizon IDE documentation, check the [developer website documentation](https://developer.toradex.com/torizon/application-development/ide-extension/)** ⚠️
 
