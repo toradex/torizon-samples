@@ -7,9 +7,14 @@ services:
     ports:
       - ${DEBUG_SSH_PORT}:${DEBUG_SSH_PORT}
       - ${DEBUG_PORT1}:${DEBUG_PORT1}
+    devices:
+      - "/dev/colibri-uartc:/dev/colibri-uartc"
 
   gpspython:
     build:
       context: .
       dockerfile: Dockerfile
     image: ${DOCKER_LOGIN}/gpspython:${TAG}
+    devices:
+      - "/dev/colibri-uartc:/dev/colibri-uartc"
+
