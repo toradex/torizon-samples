@@ -66,5 +66,13 @@
             "baseTemplateSupport": "Toradex",
             "sampleSupport": "Community"
         }
+    },
+    "UART": {
+        "python": {
+            "folder": "gpsPython",
+            "baseTemplate": "python3Console",
+            "baseTemplateSupport": "Toradex",
+            "sampleSupport": "Toradex"
+        }
     }
 }

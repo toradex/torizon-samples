@@ -37,3 +37,7 @@ For more details about each sample metadata, please check the [samples.json](sam
 - **vpu:**
   Sample showing an example of using VPU on i.MX8 for encoding and decoding
   Example available as a generic Dockerfile.
+
+- **uart:**
+  Sample showing how to interact with a GPS through the UART interface on Torizon.
+  Examples avaible in Python (interacting with a GPS sensor).
