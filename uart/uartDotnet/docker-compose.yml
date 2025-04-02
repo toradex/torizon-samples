@@ -1,0 +1,14 @@
+services:
+  uartdotnet-debug:
+    build:
+      context: .
+      dockerfile: Dockerfile.debug
+    image: ${LOCAL_REGISTRY}:5002/uartdotnet-debug:${TAG}
+    ports:
+      - ${DEBUG_SSH_PORT}:${DEBUG_SSH_PORT}
+
+  uartdotnet:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKER_LOGIN}/uartdotnet:${TAG}

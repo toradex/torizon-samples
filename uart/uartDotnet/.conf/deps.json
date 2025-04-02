@@ -1,0 +1,9 @@
+{
+    "packages": [
+        "openssh-client",
+        "sshpass"
+    ],
+    "installDepsScripts": [
+        ".conf/installDepsScripts/installDotnetSDK8.sh"
+    ]
+}
