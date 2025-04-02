@@ -1,4 +1,20 @@
-# .NET 8 C# Console Template Specific Documentation
+# .NET 8 C# Console Template
+
+## UART GPS Sample
+
+This sample demonstrates how to interact with UART devices in .NET using the NmeaParser library to process NMEA messages from a GPS receiver.
+The application connects to a serial port (UART), listens for NMEA messages, and displays latitude and longitude extracted from RMC messages.
+
+To check the available interfaces for your device, please check
+the [UART (Linux)](https://developer.toradex.com/linux-bsp/application-development/peripheral-access/uart-linux) article.
+
+And then update it on the `Program.cs` and `docker-compose.yml` files.
+
+For more information about how to use UART on Torizon, please check the
+[How to Use UART on Torizon OS](https://developer.toradex.com/torizon/application-development/use-cases/peripheral-access/how-to-use-uart-on-torizoncore) article.
+
+
+## Specific Documentation
 
 
 > ⚠️ **WARNING:**  This is just the documentation part specific of this template. **For the complete and general Torizon IDE documentation, check the [developer website documentation](https://developer.toradex.com/torizon/application-development/ide-extension/)** ⚠️
