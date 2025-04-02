@@ -8,4 +8,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- Replace with the old package version that provided SerialPortDevice etc. -->
+    <PackageReference Include="SharpGIS.NmeaParser" Version="2.0.0" />
+  </ItemGroup>
 </Project>
