@@ -1,12 +1,16 @@
 # Torizon Samples Repository
 
 All sample code related to TorizonCore project. For more details about each
-sample, how to use them and how to contribute by adding or improving a 
+sample, how to use them and how to contribute by adding or improving a
 sample, please check the [samples article on developer](https://developer.toradex.com/torizon/application-development/use-cases/samples/#the-torizon-samples-repository).
 
 For more details about each sample metadata, please check the [samples.json](samples.json) file.
 
 **Folders**:
+
+- **adc:**
+  Samples showing how to interact with ADC interface exposed through the Industrial I/O (IIO) sysfs interface.
+  Examples available in C.
 
 - **bluetooth:**
   Samples showing how to interact with libbluetooth on TorizonCore.
@@ -25,13 +29,13 @@ For more details about each sample metadata, please check the [samples.json](sam
   Examples available in C.
 
 - **spi:**
-  Samples using the SPI communication protocol, through the 
+  Samples using the SPI communication protocol, through the
 `spidev` interface, on the User-Space.
   Examples available in C.
 
 - **tflite:**
-  Sample showing an example using Tensorflow Lite with hardware acceleration 
-  on the IMX8 SoCs with Vivante GPU. 
+  Sample showing an example using Tensorflow Lite with hardware acceleration
+  on the IMX8 SoCs with Vivante GPU.
   Examples available in Python.
 
 - **vpu:**

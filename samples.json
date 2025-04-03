@@ -1,4 +1,12 @@
 {
+    "ADC": {
+        "c": {
+            "folder": "adcC",
+            "baseTemplate": "cppConsole",
+            "baseTemplateSupport": "Toradex",
+            "sampleSupport": "Toradex"
+        }
+    },
     "BLUETOOTH": {
         "c": {
             "folder": "bluetoothC",

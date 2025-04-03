@@ -1,0 +1,42 @@
+# ARGUMENTS --------------------------------------------------------------------
+ARG CROSS_SDK_BASE_TAG=4
+
+##
+# Board architecture
+##
+ARG IMAGE_ARCH=
+
+##
+# Application root directory inside the container
+##
+ARG APP_ROOT=
+
+
+# BUILD ------------------------------------------------------------------------
+FROM torizon/cross-toolchain-${IMAGE_ARCH}:${CROSS_SDK_BASE_TAG}
+
+ARG APP_ROOT
+ARG IMAGE_ARCH
+
+# __deps__
+RUN apt-get -q -y update && \
+    apt-get -q -y install \
+    # ADD YOUR PACKAGES HERE
+    && \
+    apt-get clean && apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/*
+# __deps__
+
+# automate for torizonPackages.json
+RUN apt-get -q -y update && \
+    apt-get -q -y install \
+# DO NOT REMOVE THIS LABEL: this is used for VS Code automation
+    # __torizon_packages_build_start__
+    # __torizon_packages_build_end__
+# DO NOT REMOVE THIS LABEL: this is used for VS Code automation
+    && \
+    apt-get clean && apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/*
+
+USER torizon
+WORKDIR ${APP_ROOT}
