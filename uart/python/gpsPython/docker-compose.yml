@@ -1,0 +1,20 @@
+services:
+  gpspython-debug:
+    build:
+      context: .
+      dockerfile: Dockerfile.debug
+    image: ${LOCAL_REGISTRY}:5002/gpspython-debug:${TAG}
+    ports:
+      - ${DEBUG_SSH_PORT}:${DEBUG_SSH_PORT}
+      - ${DEBUG_PORT1}:${DEBUG_PORT1}
+    devices:
+      - "/dev/colibri-uartc:/dev/colibri-uartc"
+
+  gpspython:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKER_LOGIN}/gpspython:${TAG}
+    devices:
+      - "/dev/colibri-uartc:/dev/colibri-uartc"
+

@@ -1,0 +1,3 @@
+debugpy
+pyserial
+pynmea2
