@@ -38,10 +38,11 @@ For more details about each sample metadata, please check the [samples.json](sam
   on the IMX8 SoCs with Vivante GPU.
   Examples available in Python.
 
+  - **uart:**
+  Sample showing how to interact with a GPS through the UART interface on Torizon.
+  Examples available in Python and .Net (interacting with a GPS sensor).
+
 - **vpu:**
   Sample showing an example of using VPU on i.MX8 for encoding and decoding
   Example available as a generic Dockerfile.
 
-- **uart:**
-  Sample showing how to interact with a GPS through the UART interface on Torizon.
-  Examples avaible in Python (interacting with a GPS sensor).

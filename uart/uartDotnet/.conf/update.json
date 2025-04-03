@@ -1,0 +1,10 @@
+[
+    {
+        "source": "uartDotnet.csproj",
+        "target": "$projectName.csproj"
+    },
+    {
+        "source": "Dockerfile",
+        "target": "Dockerfile"
+    }
+]

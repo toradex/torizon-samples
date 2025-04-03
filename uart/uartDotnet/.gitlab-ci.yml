@@ -1,0 +1,85 @@
+image: docker
+
+services:
+  - docker:dind
+
+variables:
+  # This should be set by docker image already, just to be sure...
+  DOCKER_HOST: tcp://docker:2375
+  # Use overlayfs driver for better performance
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_DRIVER: overlay2
+  DOCKER_BUILDKIT: 1
+  TASKS_DISABLE_INTERACTIVE_INPUT: "True"
+  TASKS_OVERRIDE_ENV: "False"
+  TORIZON_CI_SETTINGS_FILE: ".vscode/settings.json"
+  DOCKER_PSSWD: "$DOCKER_PSSWD"
+  DOCKER_LOGIN: "$DOCKER_LOGIN"
+  PLATFORM_CLIENT_ID: "$PLATFORM_CLIENT_ID"
+  PLATFORM_CLIENT_SECRET: "$PLATFORM_CLIENT_SECRET"
+  PLATFORM_CREDENTIALS: "$PLATFORM_CREDENTIALS"  # added to support decoding step
+
+stages:
+  - setup
+  - publish
+  - deploy
+
+
+# Step 1: Initial Setup
+initial_setup:
+  stage: setup
+  image:
+    name: torizonextras/torizon-dev:dev
+    docker:
+      user: root
+    entrypoint: [""]
+  script:
+    - echo $CI_PROJECT_DIR > abs-path
+    - cat abs-path
+    - xonsh ./.conf/validate-json.xsh
+    - xonsh ./.vscode/tasks.xsh run validate-pipeline-settings
+    - xonsh ./.conf/apply-ci-settings-file.xsh
+    - cat $GITLAB_ENV > build.env
+
+  artifacts:
+    paths:
+    - abs-path
+    reports:
+      dotenv: build.env
+
+
+# Step 2: Create and Publish Image
+publish_image:
+  stage: publish
+  image:
+    name: torizonextras/torizon-dev:dev
+    docker:
+      user: root
+    entrypoint: [""]
+  script:
+    - echo $PLATFORM_CREDENTIALS | base64 -d > credentials.zip
+    - xonsh ./.vscode/tasks.xsh run tcb-platform-publish
+
+  dependencies:
+    - initial_setup
+  artifacts:
+    paths:
+      - docker-compose.prod.yml
+      - docker-compose.prod.lock.yml
+    when: on_success
+
+# Step 3: Deploy Application (Only on main branch)
+deploy_application:
+  stage: deploy
+  image:
+    name: torizonextras/torizon-dev:dev
+    docker:
+      user: root
+    entrypoint: [""]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - xonsh ./.vscode/tasks.xsh run platform-update-fleet
+
+  dependencies:
+    - publish_image
