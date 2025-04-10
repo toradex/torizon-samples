@@ -1,6 +1,21 @@
-
-
 # Python 3 Console Template Specific Documentation
+
+## ADC Python Sample
+
+This sample interacts with ADCs, in Python, through the Industrial I/O (IIO) sysfs interface.
+
+In this sample, the program reads the Voltage directly from the Toradex Device interface and prints it in
+the output.
+
+To check the available interfaces for your device, please check the [UART (Linux)](https://developer.toradex.com/linux-bsp/application-development/peripheral-access/uart-linux/) article.
+
+And then update it on the `main.py` and `docker-compose.yml` files.
+
+For more information about how to use ADC on Torizon, please check the
+[How to Use ADC on Torizon OS](https://developer.toradex.com/torizon/application-development/use-cases/peripheral-access/how-to-use-adc-on-torizoncore) article.
+
+## Specific Documentation
+
 
 
 > ⚠️ **WARNING:**  This is just the documentation part specific of this template. **For the complete and general Torizon IDE documentation, check the [developer website documentation](https://developer.toradex.com/torizon/application-development/ide-extension/)** ⚠️
