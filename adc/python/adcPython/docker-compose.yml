@@ -7,9 +7,17 @@ services:
     ports:
       - ${DEBUG_SSH_PORT}:${DEBUG_SSH_PORT}
       - ${DEBUG_PORT1}:${DEBUG_PORT1}
+    volumes:
+    - type: bind
+      source: /dev/verdin-adc1
+      target: /dev/verdin-adc1
 
   adcpython:
     build:
       context: .
       dockerfile: Dockerfile
     image: ${DOCKER_LOGIN}/adcpython:${TAG}
+    volumes:
+    - type: bind
+      source: /dev/verdin-adc1
+      target: /dev/verdin-adc1
