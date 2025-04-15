@@ -7,9 +7,10 @@ services:
     ports:
       - ${DEBUG_SSH_PORT}:${DEBUG_SSH_PORT}
     volumes:
-      - type: bind
-        source: /sys/bus/iio/devices
-        target: /sys/bus/iio/devices
+    - type: bind
+      source: /dev/verdin-adc1
+      target: /dev/verdin-adc1
+    
 
   adcc:
     build:
@@ -17,6 +18,7 @@ services:
       dockerfile: Dockerfile
     image: ${DOCKER_LOGIN}/adcc:${TAG}
     volumes:
-      - type: bind
-        source: /sys/bus/iio/devices
-        target: /sys/bus/iio/devices
+    - type: bind
+      source: /dev/verdin-adc1
+      target: /dev/verdin-adc1
+    

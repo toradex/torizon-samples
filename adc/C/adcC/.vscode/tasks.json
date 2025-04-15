@@ -121,7 +121,7 @@
                 "cross-toolchain-arm64-adcc",
                 "make",
                 "ARCH=arm64",
-                "CC=aarch64-linux-gnu-g++",
+                "CC=aarch64-linux-gnu-gcc",
                 "debug"
             ],
             "problemMatcher": [
@@ -197,7 +197,7 @@
                 "cross-toolchain-arm-adcc",
                 "make",
                 "ARCH=arm",
-                "CC=arm-linux-gnueabihf-g++",
+                "CC=arm-linux-gnueabihf-gcc",
                 "debug"
             ],
             "problemMatcher": [
