@@ -1,6 +1,6 @@
-# tool macros
-CC := g++
-CCFLAGS := -Iincludes/ -fpermissive
+# Tool macros
+CC := gcc
+CCFLAGS := -Iincludes/
 DBGFLAGS := -g
 LDFLAGS :=
 CCOBJFLAGS := $(CCFLAGS) -c

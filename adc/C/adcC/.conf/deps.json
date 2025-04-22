@@ -5,6 +5,6 @@
         "build-essential",
         "make",
         "gdb",
-        "g++"
+        "gcc"
     ]
 }

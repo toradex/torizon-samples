@@ -2,149 +2,61 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build-makedir-local",
+            "label": "create-prepare-venv",
+            "detail": "",
             "hide": true,
-            "command": "make",
-            "type": "shell",
+            "command": "echo",
+            "type": "process",
             "args": [
-                "ARCH=local",
-                "makedir"
+                "venv",
+                "ok"
             ],
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "icon": {
-                "id": "tools",
-                "color": "terminal.ansiYellow"
-            },
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": true,
-                "panel": "shared",
-                "group": "build-execution"
-            }
-        },
-        {
-            "label": "build-makedir-arm",
-            "hide": true,
-            "command": "make",
-            "type": "shell",
-            "args": [
-                "ARCH=arm",
-                "makedir"
-            ],
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "dependsOn": [
-                "build-container-image-sdk-arm"
-            ],
-            "icon": {
-                "id": "tools",
-                "color": "terminal.ansiYellow"
-            },
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": true,
-                "panel": "shared",
-                "group": "build-execution"
-            }
-        },
-        {
-            "label": "build-makedir-arm64",
-            "hide": true,
-            "command": "make",
-            "type": "shell",
-            "args": [
-                "ARCH=arm64",
-                "makedir"
-            ],
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "dependsOn": [
-                "build-container-image-sdk-arm64"
-            ],
-            "icon": {
-                "id": "tools",
-                "color": "terminal.ansiYellow"
-            },
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": true,
-                "panel": "shared",
-                "group": "build-execution"
-            }
-        },
-        {
-            "label": "build-debug-local",
-            "detail": "Build a debug version of the application for amd64 using\nthe toolchain installed in the host.",
-            "command": "make",
-            "type": "shell",
-            "args": [
-                "ARCH=local",
-                "debug"
-            ],
-            "problemMatcher": [
-                "$gcc"
-            ],
+            "problemMatcher": "$msCompile",
             "dependsOrder": "sequence",
             "dependsOn": [
-                "build-makedir-local"
+                "create-venv",
+                "host-install-pip-requirements"
             ],
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
             "icon": {
-                "id": "tools",
-                "color": "terminal.ansiYellow"
+                "id": "vm-active",
+                "color": "terminal.ansiCyan"
             },
             "presentation": {
                 "echo": true,
-                "reveal": "always",
+                "reveal": "silent",
                 "focus": true,
                 "panel": "shared",
-                "group": "build-execution"
+                "group": "python-related"
             }
         },
         {
-            "label": "build-debug-arm64",
-            "detail": "Build a debug version of the application for arm64 using\nthe toolchain from the SDK container.",
-            "command": "DOCKER_HOST=",
-            "type": "shell",
+            "label": "create-venv",
+            "detail": "Create Python virtual environment at .venv, if it doesn't already exist in the workspace",
+            "command": "/usr/bin/python3",
+            "type": "process",
             "args": [
-                "docker",
-                "run",
-                "--rm",
-                "-v",
-                "${workspaceFolder}:${config:torizon_app_root}",
-                "cross-toolchain-arm64-adcc",
-                "make",
-                "ARCH=arm64",
-                "CC=aarch64-linux-gnu-gcc",
-                "debug"
+                "-m",
+                "venv",
+                ".venv"
             ],
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "build-makedir-arm64"
-            ],
+            "problemMatcher": "$msCompile",
             "icon": {
-                "id": "tools",
-                "color": "terminal.ansiYellow"
+                "id": "vm",
+                "color": "terminal.ansiCyan"
             },
             "presentation": {
                 "echo": true,
-                "reveal": "always",
+                "reveal": "silent",
                 "focus": true,
                 "panel": "shared",
-                "group": "build-execution"
+                "group": "python-related"
             }
         },
         {
-            "label": "deploy-torizon-arm64",
+            "label": "rsync-torizon-generic",
             "detail": "",
             "hide": true,
             "command": "rsync",
@@ -154,23 +66,10 @@
                 "-av",
                 "-e",
                 "ssh -p ${config:torizon_debug_ssh_port} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null",
-                "${workspaceFolder}/build-arm64/debug/",
-                "${config:torizon_run_as}@${config:torizon_ip}:${config:torizon_app_root}"
-            ],
-            "dependsOn": [
-                "validate-settings",
-                "validate-arch-arm64",
-                "copy-docker-compose",
-                "pre-cleanup",
-                "build-debug-arm64",
-                "build-container-torizon-debug-arm64",
-                "push-container-torizon-debug-arm64",
-                "pull-container-torizon-debug-arm64",
-                "run-container-torizon-debug-arm64",
-                "pos-cleanup"
+                "${workspaceFolder}/src",
+                "${config:torizon_run_as}@${config:torizon_ip}:${config:torizon_app_root}/"
             ],
             "dependsOrder": "sequence",
-            "problemMatcher": "$msCompile",
             "icon": {
                 "id": "debug-alt",
                 "color": "terminal.ansiYellow"
@@ -184,31 +83,25 @@
             }
         },
         {
-            "label": "build-debug-arm",
-            "detail": "Build a debug version of the application for arm using\nthe toolchain from the SDK container.",
-            "command": "DOCKER_HOST=",
-            "type": "shell",
+            "label": "stop-torizon-debug-generic",
+            "detail": "",
+            "hide": true,
+            "command": "ssh",
+            "type": "process",
             "args": [
-                "docker",
-                "run",
-                "--rm",
-                "-v",
-                "${workspaceFolder}:${config:torizon_app_root}",
-                "cross-toolchain-arm-adcc",
-                "make",
-                "ARCH=arm",
-                "CC=arm-linux-gnueabihf-gcc",
-                "debug"
-            ],
-            "problemMatcher": [
-                "$gcc"
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "-p",
+                "${config:torizon_debug_ssh_port}",
+                "${config:torizon_run_as}@${config:torizon_ip}",
+                "pkill python3 || true"
             ],
             "dependsOrder": "sequence",
-            "dependsOn": [
-                "build-makedir-arm"
-            ],
+            "problemMatcher": "$msCompile",
             "icon": {
-                "id": "tools",
+                "id": "stop",
                 "color": "terminal.ansiYellow"
             },
             "presentation": {
@@ -223,26 +116,60 @@
             "label": "deploy-torizon-arm",
             "detail": "",
             "hide": true,
-            "command": "rsync",
-            "type": "process",
+            "command": "ssh",
+            "type": "shell",
             "args": [
-                "-P",
-                "-av",
-                "-e",
-                "ssh -p ${config:torizon_debug_ssh_port} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null",
-                "${workspaceFolder}/build-arm/debug/",
-                "${config:torizon_run_as}@${config:torizon_ip}:${config:torizon_app_root}"
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "-p",
+                "${config:torizon_debug_ssh_port}",
+                "${config:torizon_run_as}@${config:torizon_ip}",
+                "cT=0; while ! grep -r \": wait_for_client()\" ${config:torizon_app_root}/src/log/debugpy.server*.log 2> /dev/null; do sleep 0.1; if [ \"$cT\" -eq 100 ]; then echo \"Problem debugging main.py file\"; break; fi; cT=$(expr $cT + 1); done"
             ],
             "dependsOn": [
                 "validate-settings",
                 "validate-arch-arm",
                 "copy-docker-compose",
                 "pre-cleanup",
-                "build-debug-arm",
                 "build-container-torizon-debug-arm",
                 "push-container-torizon-debug-arm",
                 "pull-container-torizon-debug-arm",
-                "run-container-torizon-debug-arm"
+                "run-container-torizon-debug-arm",
+                "wait-a-bit",
+                "stop-torizon-debug-generic",
+                "rsync-torizon-generic",
+                "start-torizon-debug-arm"
+            ],
+            "dependsOrder": "sequence",
+            "icon": {
+                "id": "debug-alt",
+                "color": "terminal.ansiYellow"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "group": "build-execution"
+            }
+        },
+        {
+            "label": "start-torizon-debug-arm",
+            "detail": "",
+            "hide": true,
+            "command": "ssh",
+            "type": "process",
+            "args": [
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "-p",
+                "${config:torizon_debug_ssh_port}",
+                "${config:torizon_run_as}@${config:torizon_ip}",
+                "cd ${config:torizon_app_root} && . ${config:torizon_app_root}/.venv/bin/activate && screen -d -m python3 -m debugpy --listen 0.0.0.0:${config:torizon_debug_port1} --log-to src/log --wait-for-client src/main.py"
             ],
             "dependsOrder": "sequence",
             "problemMatcher": "$msCompile",
@@ -259,19 +186,38 @@
             }
         },
         {
-            "label": "clean-local",
-            "detail": "Clean the local application build directory. `make clean`",
-            "command": "make",
+            "label": "deploy-torizon-arm64",
+            "detail": "",
+            "hide": true,
+            "command": "ssh",
             "type": "shell",
             "args": [
-                "clean",
-                "ARCH=local"
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "-p",
+                "${config:torizon_debug_ssh_port}",
+                "${config:torizon_run_as}@${config:torizon_ip}",
+                "cT=0; while ! grep -r \": wait_for_client()\" ${config:torizon_app_root}/src/log/debugpy.server*.log 2> /dev/null; do sleep 0.1; if [ \"$cT\" -eq 100 ]; then echo \"Problem debugging main.py file\"; break; fi; cT=$(expr $cT + 1); done"
             ],
-            "problemMatcher": [
-                "$gcc"
+            "dependsOn": [
+                "validate-settings",
+                "validate-arch-arm64",
+                "copy-docker-compose",
+                "pre-cleanup",
+                "build-container-torizon-debug-arm64",
+                "push-container-torizon-debug-arm64",
+                "pull-container-torizon-debug-arm64",
+                "run-container-torizon-debug-arm64",
+                "wait-a-bit",
+                "stop-torizon-debug-generic",
+                "rsync-torizon-generic",
+                "start-torizon-debug-arm64"
             ],
+            "dependsOrder": "sequence",
             "icon": {
-                "id": "trash",
+                "id": "debug-alt",
                 "color": "terminal.ansiYellow"
             },
             "presentation": {
@@ -283,23 +229,25 @@
             }
         },
         {
-            "label": "clean-arm64",
-            "detail": "Clean the arm64 application build directory. `make clean`",
-            "command": "make",
-            "type": "shell",
+            "label": "start-torizon-debug-arm64",
+            "detail": "",
+            "hide": true,
+            "command": "ssh",
+            "type": "process",
             "args": [
-                "clean",
-                "ARCH=arm64"
-            ],
-            "problemMatcher": [
-                "$gcc"
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "-p",
+                "${config:torizon_debug_ssh_port}",
+                "${config:torizon_run_as}@${config:torizon_ip}",
+                "cd ${config:torizon_app_root} && . ${config:torizon_app_root}/.venv/bin/activate && screen -d -m python3 -m debugpy --listen 0.0.0.0:${config:torizon_debug_port1} --log-to src/log --wait-for-client src/main.py"
             ],
             "dependsOrder": "sequence",
-            "dependsOn": [
-                "build-container-image-sdk-arm64"
-            ],
+            "problemMatcher": "$msCompile",
             "icon": {
-                "id": "trash",
+                "id": "debug-alt",
                 "color": "terminal.ansiYellow"
             },
             "presentation": {
@@ -311,31 +259,54 @@
             }
         },
         {
-            "label": "clean-arm",
-            "detail": "Clean the arm application build directory. `make clean`",
-            "command": "make",
-            "type": "shell",
+            "label": "host-install-pip-requirements",
+            "detail": "Install pip requirements on the host",
+            "command": "${config:python.defaultInterpreterPath}",
+            "type": "process",
             "args": [
-                "clean",
-                "ARCH=arm"
-            ],
-            "problemMatcher": [
-                "$gcc"
+                "-m",
+                "pip",
+                "install",
+                "-r",
+                "requirements-local.txt"
             ],
             "dependsOrder": "sequence",
-            "dependsOn": [
-                "build-container-image-sdk-arm"
-            ],
+            "problemMatcher": "$msCompile",
             "icon": {
-                "id": "trash",
-                "color": "terminal.ansiYellow"
+                "id": "layers",
+                "color": "terminal.ansiCyan"
             },
             "presentation": {
                 "echo": true,
-                "reveal": "always",
+                "reveal": "silent",
                 "focus": true,
                 "panel": "shared",
-                "group": "build-execution"
+                "group": "python-related"
+            }
+        },
+        {
+            "label": "host-upgrade-pip",
+            "detail": "Upgrade pip in the host",
+            "command": "${config:python.defaultInterpreterPath}",
+            "type": "process",
+            "args": [
+                "-m",
+                "pip",
+                "install",
+                "--upgrade",
+                "pip"
+            ],
+            "dependsOrder": "sequence",
+            "icon": {
+                "id": "layers",
+                "color": "terminal.ansiCyan"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": true,
+                "panel": "shared",
+                "group": "python-related"
             }
         },
         {
@@ -450,7 +421,7 @@
                 "${workspaceFolder}/.conf/create-docker-compose-production.xsh",
                 "${workspaceFolder}",
                 "${command:docker_tag}",
-                "adcc",
+                "adcpython",
                 "${config:torizon_gpu}"
             ],
             "dependsOrder": "sequence",
@@ -480,7 +451,7 @@
                     "DOCKER_TAG": "${command:docker_tag}",
                     "TCB_CLIENTID": "${command:tcb.clientId}",
                     "TCB_CLIENTSECRET": "${command:tcb.clientSecret}",
-                    "TCB_PACKAGE": "adcC",
+                    "TCB_PACKAGE": "adcPython",
                     "TCB_FLEET": "${command:tcb.fleetName}",
                     "TORIZON_ARCH": "${command:torizon_arch}"
                 }
@@ -530,7 +501,7 @@
                 "update",
                 "fleet",
                 "latest",
-                "adcC",
+                "adcPython",
                 "${command:tcb.fleetName}"
             ],
             "problemMatcher": [
@@ -561,7 +532,7 @@
                     "DOCKER_PSSWD": "${command:docker_password}",
                     "DOCKER_LOGIN": "${command:docker_login}",
                     "DOCKER_REGISTRY": "${command:docker_registry}",
-                    "VSCODE_CMD": "--verbose platform push --credentials credentials.zip --package-name adcC --package-version ${command:tcb.getNextPackageVersion} --login-to $DOCKER_REGISTRY $DOCKER_LOGIN $DOCKER_PSSWD --canonicalize docker-compose.prod.yml"
+                    "VSCODE_CMD": "--verbose platform push --credentials credentials.zip --package-name adcPython --package-version ${command:tcb.getNextPackageVersion} --login-to $DOCKER_REGISTRY $DOCKER_LOGIN $DOCKER_PSSWD --canonicalize docker-compose.prod.yml"
                 }
             },
             "args": [
@@ -1086,8 +1057,8 @@
                 "-p",
                 "torizon",
                 "stop",
-                "adcc",
-                "adcc-debug",
+                "adcpython",
+                "adcpython-debug",
                 "&&",
                 "docker",
                 "compose",
@@ -1095,8 +1066,8 @@
                 "torizon",
                 "rm",
                 "-f",
-                "adcc",
-                "adcc-debug"
+                "adcpython",
+                "adcpython-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1175,7 +1146,7 @@
                 "DEBUG_SSH_PORT=${config:torizon_debug_ssh_port}",
                 "--build-arg",
                 "GPU=${config:torizon_gpu}",
-                "adcc-debug"
+                "adcpython-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1226,7 +1197,7 @@
                 "DEBUG_SSH_PORT=${config:torizon_debug_ssh_port}",
                 "--build-arg",
                 "GPU=${config:torizon_gpu}",
-                "adcc-debug"
+                "adcpython-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1277,7 +1248,7 @@
                 "DEBUG_SSH_PORT=${config:torizon_debug_ssh_port}",
                 "--build-arg",
                 "GPU=${config:torizon_gpu}",
-                "adcc-debug"
+                "adcpython-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1310,7 +1281,7 @@
                 "${workspaceFolder}/Dockerfile.sdk",
                 "${workspaceFolder}",
                 "-t",
-                "cross-toolchain-arm64-adcc",
+                "cross-toolchain-arm64-adcpython",
                 "--build-arg",
                 "IMAGE_ARCH=arm64",
                 "--build-arg",
@@ -1351,7 +1322,7 @@
                 "${workspaceFolder}/Dockerfile.sdk",
                 "${workspaceFolder}",
                 "-t",
-                "cross-toolchain-arm-adcc",
+                "cross-toolchain-arm-adcpython",
                 "--build-arg",
                 "IMAGE_ARCH=arm",
                 "--build-arg",
@@ -1392,7 +1363,7 @@
                 "${workspaceFolder}/Dockerfile.sdk",
                 "${workspaceFolder}",
                 "-t",
-                "cross-toolchain-amd64-adcc",
+                "cross-toolchain-amd64-adcpython",
                 "--build-arg",
                 "IMAGE_ARCH=amd64",
                 "--build-arg",
@@ -1440,7 +1411,7 @@
                 "docker",
                 "compose",
                 "push",
-                "adcc-debug"
+                "adcpython-debug"
             ],
             "dependsOrder": "sequence",
             "problemMatcher": "$msCompile",
@@ -1477,7 +1448,7 @@
                 "docker",
                 "compose",
                 "push",
-                "adcc-debug"
+                "adcpython-debug"
             ],
             "dependsOrder": "sequence",
             "problemMatcher": "$msCompile",
@@ -1514,7 +1485,7 @@
                 "docker",
                 "compose",
                 "push",
-                "adcc-debug"
+                "adcpython-debug"
             ],
             "dependsOrder": "sequence",
             "problemMatcher": "$msCompile",
@@ -1547,7 +1518,7 @@
                 "docker",
                 "compose",
                 "pull",
-                "adcc-debug"
+                "adcpython-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1583,7 +1554,7 @@
                 "docker",
                 "compose",
                 "pull",
-                "adcc-debug"
+                "adcpython-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1619,7 +1590,7 @@
                 "docker",
                 "compose",
                 "pull",
-                "adcc-debug"
+                "adcpython-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1658,7 +1629,7 @@
                 "torizon",
                 "up",
                 "-d",
-                "adcc-debug"
+                "adcpython-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1697,7 +1668,7 @@
                 "torizon",
                 "up",
                 "-d",
-                "adcc-debug"
+                "adcpython-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1736,7 +1707,7 @@
                 "torizon",
                 "up",
                 "-d",
-                "adcc-debug"
+                "adcpython-debug"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1786,7 +1757,7 @@
                 "IMAGE_ARCH=arm64",
                 "--build-arg",
                 "GPU=${config:torizon_gpu}",
-                "adcc"
+                "adcpython"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1836,7 +1807,7 @@
                 "IMAGE_ARCH=arm",
                 "--build-arg",
                 "GPU=${config:torizon_gpu}",
-                "adcc"
+                "adcpython"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1886,7 +1857,7 @@
                 "IMAGE_ARCH=amd64",
                 "--build-arg",
                 "GPU=${config:torizon_gpu}",
-                "adcc"
+                "adcpython"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -1925,7 +1896,7 @@
                 "docker",
                 "compose",
                 "push",
-                "adcc"
+                "adcpython"
             ],
             "dependsOn": [
                 "build-container-torizon-release-arm64"
@@ -1964,7 +1935,7 @@
                 "docker",
                 "compose",
                 "push",
-                "adcc"
+                "adcpython"
             ],
             "dependsOn": [
                 "build-container-torizon-release-arm"
@@ -2003,7 +1974,7 @@
                 "docker",
                 "compose",
                 "push",
-                "adcc"
+                "adcpython"
             ],
             "dependsOn": [
                 "build-container-torizon-release-amd64"
@@ -2040,7 +2011,7 @@
                 "docker",
                 "compose",
                 "pull",
-                "adcc"
+                "adcpython"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -2077,7 +2048,7 @@
                 "docker",
                 "compose",
                 "pull",
-                "adcc"
+                "adcpython"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -2114,7 +2085,7 @@
                 "docker",
                 "compose",
                 "pull",
-                "adcc"
+                "adcpython"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -2151,7 +2122,7 @@
                 "-p",
                 "torizon",
                 "up",
-                "adcc"
+                "adcpython"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -2195,7 +2166,7 @@
                 "-p",
                 "torizon",
                 "up",
-                "adcc"
+                "adcpython"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -2239,7 +2210,7 @@
                 "-p",
                 "torizon",
                 "up",
-                "adcc"
+                "adcpython"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
@@ -2298,7 +2269,7 @@
                     "DOCKER_TAG": "${command:docker_tag}",
                     "TCB_CLIENTID": "${command:tcb.clientId}",
                     "TCB_CLIENTSECRET": "${command:tcb.clientSecret}",
-                    "TCB_PACKAGE": "adcC",
+                    "TCB_PACKAGE": "adcPython",
                     "TCB_FLEET": "${command:tcb.fleetName}",
                     "TORIZON_CI_SETTINGS_FILE": ".vscode/settings.json"
                 }

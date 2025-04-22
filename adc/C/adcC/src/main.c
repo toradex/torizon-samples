@@ -1,76 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include <unistd.h>   // For sleep() and access()
 #include <errno.h>
+#include <string.h>
 
-#include "iio_utils.h"
 
-#define MAX_BUF 20
-#define CHANNEL 0
+#define ADC_DEVICE_PATH "/dev/verdin-adc1"
 
-static int read_adc_sample(char *sysfs_dir)
-{
-	char *tmp;
-	int adc_sample;
+int main(void) {
 
-	if (asprintf(&tmp, "in_voltage%u_raw", CHANNEL) < 0)
-	{
-		printf("%s: failed to allocate memory\n", __func__);
-		return -1;
-	}
+    FILE *adc_file;
+    char buffer[64];
+    int adc_value_mv;
+    double adc_value_v=1000;
 
-	adc_sample = read_sysfs_posint(tmp,sysfs_dir);
-	free(tmp);
+    // Check if the ADC device file exists.
+    if (access(ADC_DEVICE_PATH, F_OK) != 0) {
+        fprintf(stderr, "Error: ADC device %s not found. Check that it is mapped correctly.\n", ADC_DEVICE_PATH);
+        return EXIT_FAILURE;
+    } else if (!fopen(ADC_DEVICE_PATH, "r")) {
+            fprintf(stderr, "Error: Unable to open ADC device %s: %s\n", ADC_DEVICE_PATH, strerror(errno));
+            sleep(1);
+            return EXIT_FAILURE;
+    }
 
-	return adc_sample;
-}
+    fprintf(stdout, "Reading ADC values from %s... Press Ctrl+C to stop.\n", ADC_DEVICE_PATH);
+    fflush(stdout);
 
-static int read_voltage_scale(char *sysfs_dir, float *val)
-{
-	return read_sysfs_float("in_voltage_scale",sysfs_dir,val);
-}
+    // Infinite loop: read and print the ADC value once per second.
+    while (1) {
+        adc_file = fopen(ADC_DEVICE_PATH, "r");
+        
+        if (!fgets(buffer, sizeof(buffer), adc_file)) {
+            fprintf(stderr, "Error: Unable to read ADC value from %s: %s\n", ADC_DEVICE_PATH, strerror(errno));
+            fclose(adc_file);
+            sleep(1);
+            continue;
+        }
 
-int main(int argc, char **argv)
-{
-	int sample_val;
-	float voltage_scale;
-	char *sysfs_dir;
-	int dev_num = 0;
-	long sample_val_dec;
+        fclose(adc_file);
 
-	if (asprintf(&sysfs_dir, "/sys/bus/iio/devices/iio:device%d", dev_num) < 0)
-	{
-		printf("%d: Failed to allocate memory\n", __LINE__);
-		free(sysfs_dir);
-		return -1;
-	}
+        // Convert the value (assumed to be in millivolts) to an integer, then to volts.
+        adc_value_mv = atoi(buffer);
+        adc_value_v = adc_value_mv / 1000.0;
 
-	while (1) {
+        fprintf(stdout, "ADC Reading: %.3f V\n", adc_value_v);
+        fflush(stdout);
+        sleep(1);
+    }
 
-		sample_val = read_adc_sample(sysfs_dir);
-		if (sample_val < 0)
-		{
-			free(sysfs_dir);
-			return -1;
-		}
-		
-		printf("Sample Value (Decimal): %d\n", (unsigned int) sample_val);
-
-		if (read_voltage_scale(sysfs_dir, &voltage_scale) < 0)
-		{
-			free(sysfs_dir);
-			return -1;
-		}
-		
-		printf("Voltage: %.2f V\n", (sample_val * voltage_scale / 1000));
-
-		fflush(stdout);  // Flush the output buffer
-	
-		sleep(2);
-	}
-
-	free(sysfs_dir);
-    return 0;
+    return EXIT_SUCCESS;
 }

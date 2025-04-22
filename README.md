@@ -10,7 +10,7 @@ For more details about each sample metadata, please check the [samples.json](sam
 
 - **adc:**
   Samples showing how to interact with ADC interface exposed through the Industrial I/O (IIO) sysfs interface.
-  Examples available in C.
+  Examples available in C and Python.
 
 - **bluetooth:**
   Samples showing how to interact with libbluetooth on TorizonCore.

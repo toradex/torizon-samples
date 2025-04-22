@@ -5,6 +5,12 @@
             "baseTemplate": "cppConsole",
             "baseTemplateSupport": "Toradex",
             "sampleSupport": "Toradex"
+        },
+        "python": {
+            "folder": "adcPython",
+            "baseTemplate": "adcpython",
+            "baseTemplateSupport": "Toradex",
+            "sampleSupport": "Toradex"
         }
     },
     "BLUETOOTH": {

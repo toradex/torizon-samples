@@ -1,24 +1,23 @@
 services:
-  adcc-debug:
+  adcpython-debug:
     build:
       context: .
       dockerfile: Dockerfile.debug
-    image: ${LOCAL_REGISTRY}:5002/adcc-debug:${TAG}
+    image: ${LOCAL_REGISTRY}:5002/adcpython-debug:${TAG}
     ports:
       - ${DEBUG_SSH_PORT}:${DEBUG_SSH_PORT}
+      - ${DEBUG_PORT1}:${DEBUG_PORT1}
     volumes:
     - type: bind
       source: /dev/verdin-adc1
       target: /dev/verdin-adc1
-    
 
-  adcc:
+  adcpython:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ${DOCKER_LOGIN}/adcc:${TAG}
+    image: ${DOCKER_LOGIN}/adcpython:${TAG}
     volumes:
     - type: bind
       source: /dev/verdin-adc1
       target: /dev/verdin-adc1
-    

@@ -38,11 +38,11 @@ RUN rm -rf ${APP_ROOT}/build-${IMAGE_ARCH}
 
 # Compile the application
 RUN if [ "$IMAGE_ARCH" = "arm64" ] ; then \
-        make ARCH=${IMAGE_ARCH} CC=aarch64-linux-gnu-g++ ; \
+        make ARCH=${IMAGE_ARCH} CC=aarch64-linux-gnu-gcc ; \
     elif [ "$IMAGE_ARCH" = "armhf" ] ; then \
-        make ARCH=${IMAGE_ARCH} CC=arm-linux-gnueabihf-g++ ; \
+        make ARCH=${IMAGE_ARCH} CC=arm-linux-gnueabihf-gcc ; \
     elif [ "$IMAGE_ARCH" = "amd64" ] ; then \
-        make ARCH=${IMAGE_ARCH} CC=x86_64-linux-gnu-g++ ; \
+        make ARCH=${IMAGE_ARCH} CC=x86_64-linux-gnu-gcc ; \
     fi
 
 # BUILD ------------------------------------------------------------------------
