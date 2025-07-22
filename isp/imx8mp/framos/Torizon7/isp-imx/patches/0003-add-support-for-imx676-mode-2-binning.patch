@@ -1,0 +1,20 @@
+--- a/imx/run.sh	2025-07-22 12:20:48.440591247 -0400
++++ b/imx/run.sh	2025-07-22 12:21:06.080615291 -0400
+@@ -377,7 +377,16 @@
+ 			MODE="0"
+ 			write_sensor_cfg_file "Sensor0_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+ 			;;
+-
++		imx676_binned )
++			MODULES_TO_REMOVE=(  "imx676" "${MODULES[@]}")
++			MODULES=("imx676" "${MODULES[@]}")
++			RUN_OPTION="CAMERA0"
++			CAM_NAME="imx676"
++			DRV_FILE="imx676.drv"
++			MODE_FILE="IMX676_MODES.txt"
++			MODE="2"
++			write_sensor_cfg_file "Sensor0_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
++			;;
+ 		dual_imx676_4k )
+ 			MODULES_TO_REMOVE=("imx676" "${MODULES[@]}")
+ 			MODULES=("imx676" "${MODULES[@]}")
